@@ -7,11 +7,16 @@
 
 using Microsoft.AspNetCore.Mvc;
 using PrimeroEdge.SharedUtilities.Components;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace PrimeroEdge.SharedUtilities.Api.Controllers
 {
+
+    /// <summary>
+    /// AuditsController
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class AuditsController : ControllerBase
@@ -24,6 +29,9 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
         /// <param name="auditManager"></param>
         public AuditsController(IAuditManager auditManager)
         {
+            if (auditManager == null)
+                throw new ArgumentNullException(nameof(auditManager));
+
             _auditManager = auditManager;
         }
 
