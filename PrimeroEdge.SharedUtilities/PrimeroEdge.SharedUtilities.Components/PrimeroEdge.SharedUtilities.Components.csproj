@@ -5,9 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Cybersoft.Platform.Azure" Version="1.0.0" />
-    <PackageReference Include="Cybersoft.Platform.Data.MongDb" Version="1.0.2" />
-    <PackageReference Include="Cybersoft.Platform.Data.Sql" Version="1.1.2.5" />
+    <PackageReference Include="Cybersoft.Platform.Azure" Version="1.1.0.1298" />
+    <PackageReference Include="Cybersoft.Platform.Data.MongDb" Version="1.1.0.1298" />
+    <PackageReference Include="Cybersoft.Platform.Data.Sql" Version="1.1.0.1298" />
     <PackageReference Include="MediaTypeMap.Core" Version="2.3.3" />
   </ItemGroup>
 
