@@ -14,9 +14,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Cybersoft.Platform.Autofac" Version="1.0.0.1" />
-    <PackageReference Include="Cybersoft.Platform.AutoMapper" Version="1.0.0" />
-    <PackageReference Include="Cybersoft.Platform.Swashbuckle.AspNetCore" Version="1.0.0" />
+    <PackageReference Include="Cybersoft.Platform.Autofac" Version="1.1.0.1298" />
+    <PackageReference Include="Cybersoft.Platform.Swashbuckle.AspNetCore" Version="1.1.0.1298" />
   </ItemGroup>
 
   <ItemGroup>
