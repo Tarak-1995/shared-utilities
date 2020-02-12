@@ -24,13 +24,13 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
         /// <summary>
         /// ModuleManager
         /// </summary>
-        private readonly IFileStorageManager _fileStorageManager;
+        private readonly Lazy<Task<IFileStorageManager>> _fileStorageManager;
 
         /// <summary>
         ///  FileStorage controller constructor
         /// </summary>
         /// <param name="fileStorageManager"></param>
-        public FileStorageController(IFileStorageManager fileStorageManager)
+        public FileStorageController(Lazy<Task<IFileStorageManager>> fileStorageManager)
         {
             if (fileStorageManager == null)
                 throw new ArgumentNullException(nameof(fileStorageManager));
@@ -46,7 +46,9 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
         [HttpGet("{fileName}/download")]
         public async Task<ActionResult> DownloadFile(string fileName)
         {
-            var data = await _fileStorageManager.ReadFileAsync(fileName);
+
+            var fileStorageManager = await _fileStorageManager.Value;
+            var data = await fileStorageManager.ReadFileAsync(fileName);
 
             if(data.Content == null || string.IsNullOrWhiteSpace(data.ContentType))
              return  NotFound();
@@ -65,7 +67,8 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
         [HttpGet("{fileName}/image")]
         public async Task<ActionResult> ViewImage(string fileName)
         {
-            var data = await _fileStorageManager.ReadFileAsync(fileName);
+            var fileStorageManager = await _fileStorageManager.Value;
+            var data = await fileStorageManager.ReadFileAsync(fileName);
 
             if (data.Content == null || string.IsNullOrWhiteSpace(data.ContentType))
                 return NotFound();
@@ -83,7 +86,9 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
         {
             var data = GetFileData(file);
             var fileName = $"{Guid.NewGuid()}_{file.FileName}"; //unique file name to avoid overwrite
-            await _fileStorageManager.CreateFileAsync(data, fileName, file.ContentType);
+
+            var fileStorageManager = await _fileStorageManager.Value;
+            await fileStorageManager.CreateFileAsync(data, fileName, file.ContentType);
             return new ApiResponse<string>(fileName);
         }
 
@@ -97,7 +102,8 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
         public async Task<ApiResponse<string>> Put(IFormFile file, string fileName)
         {
             var data = GetFileData(file);
-            await _fileStorageManager.UpdateFileAsync(data, fileName, file.ContentType);
+            var fileStorageManager = await _fileStorageManager.Value;
+            await fileStorageManager.UpdateFileAsync(data, fileName, file.ContentType);
             return new ApiResponse<string>(fileName);
         }
 
@@ -109,7 +115,8 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
         [HttpDelete("{fileName}")]
         public async Task Delete(string fileName)
         {
-            await _fileStorageManager.DeleteFileAsync(fileName);
+            var fileStorageManager = await _fileStorageManager.Value;
+            await fileStorageManager.DeleteFileAsync(fileName);
         }
 
 

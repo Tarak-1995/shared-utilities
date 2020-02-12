@@ -17,7 +17,7 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// <summary>
         /// sqlDbManager
         /// </summary>
-        private readonly ISqlDbManager _sqlDbManager;
+        private readonly Lazy<Task<ISqlDbManager>> _sqlDbManager;
 
         private const string ReadFileSql = "[dbo].[NF_File_Read]";
         private const string WriteFileSql = "[dbo].[NF_File_Create]";
@@ -29,7 +29,7 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// ModuleRepository
         /// </summary>
         /// <param name="sqlDbManager"></param>
-        public SqldbStorageRepository(ISqlDbManager sqlDbManager)
+        public SqldbStorageRepository(Lazy<Task<ISqlDbManager>> sqlDbManager)
         {
             if (sqlDbManager == null)
                 throw new ArgumentNullException(nameof(sqlDbManager));
@@ -45,7 +45,8 @@ namespace PrimeroEdge.SharedUtilities.Components
         public async Task<FileStorageData> ReadFileAsync(string fileName)
         {
             var paramValues = new SqlParameter[] { new SqlParameter("@FileName", fileName) };
-            var data = await _sqlDbManager.GetDataAsync<FileStorageData>(ReadFileSql, paramValues).ConfigureAwait(false);
+            var sqlDbManager = await _sqlDbManager.Value.ConfigureAwait(false);
+            var data = await sqlDbManager.GetDataAsync<FileStorageData>(ReadFileSql, paramValues).ConfigureAwait(false);
             return data.FirstOrDefault();
         }
 
@@ -63,7 +64,8 @@ namespace PrimeroEdge.SharedUtilities.Components
                 new SqlParameter("@FileName", fileName),
                 new SqlParameter("@ContentType", contentType)
             };
-            await _sqlDbManager.CreateAsync(WriteFileSql, paramValues).ConfigureAwait(false);
+            var sqlDbManager = await _sqlDbManager.Value.ConfigureAwait(false);
+            await sqlDbManager.CreateAsync(WriteFileSql, paramValues).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -80,7 +82,8 @@ namespace PrimeroEdge.SharedUtilities.Components
                 new SqlParameter("@FileName", fileName),
                 new SqlParameter("@ContentType", contentType)
             };
-            await _sqlDbManager.UpdateAsync(UpdateFileSql, paramValues).ConfigureAwait(false);
+            var sqlDbManager = await _sqlDbManager.Value.ConfigureAwait(false);
+            await sqlDbManager.UpdateAsync(UpdateFileSql, paramValues).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -91,7 +94,8 @@ namespace PrimeroEdge.SharedUtilities.Components
         public async Task DeleteFileAsync(string fileName)
         {
             var paramValues = new SqlParameter[] { new SqlParameter("@FileName", fileName) };
-            await _sqlDbManager.UpdateAsync(DeleteFileSql, paramValues).ConfigureAwait(false);
+            var sqlDbManager = await _sqlDbManager.Value.ConfigureAwait(false);
+            await sqlDbManager.UpdateAsync(DeleteFileSql, paramValues).ConfigureAwait(false);
         }
     }
 }

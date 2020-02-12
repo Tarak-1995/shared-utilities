@@ -54,15 +54,6 @@ namespace PrimeroEdge.SharedUtilities.Api
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
             });
-
-            
-            services.AddSingleton(Configuration.
-               GetSection(nameof(MongoDbSettings))
-               .Get<MongoDbSettings>());
-
-            services.AddSingleton(Configuration.
-                GetSection(FileStorageSettings.SectionName)
-                .Get<FileStorageSettings>());
         }
 
         /// <summary>

@@ -5,6 +5,7 @@
  ***********************************************************************
  */
 using Cybersoft.Platform.Data.MongDb;
+using Newtonsoft.Json;
 using System;
 using System.ComponentModel.DataAnnotations;
 
@@ -13,8 +14,14 @@ namespace PrimeroEdge.SharedUtilities.Components
     /// <summary>
     /// Audit
     /// </summary>
-    public class Audit : MongoBaseDocument
+    public class Audit : IMongoEntity
     {
+        /// <summary>
+        /// Get or set Id
+        /// </summary>
+        [JsonProperty("_id")]
+        public string Id { get; set; }
+
 
         /// <summary>
         /// Get or set RegionId
@@ -72,5 +79,6 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// </summary>
         public string NewValue { get; set; }
 
+       
     }
 }

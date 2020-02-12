@@ -21,13 +21,13 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// <summary>
         /// mongoDbManager
         /// </summary>
-        private readonly IMongoDbManager<Audit> _mongoDbManager;
+        private readonly Lazy<Task<IMongoDbManager<Audit>>> _mongoDbManager;
 
         /// <summary>
         /// AuditRepository
         /// </summary>
         /// <param name="mongoDbManager"></param>
-        public AuditRepository(IMongoDbManager<Audit> mongoDbManager)
+        public AuditRepository(Lazy<Task<IMongoDbManager<Audit>>> mongoDbManager)
         {
             if (mongoDbManager == null)
                 throw new ArgumentNullException(nameof(mongoDbManager));
@@ -48,7 +48,8 @@ namespace PrimeroEdge.SharedUtilities.Components
                 x.Id = Guid.NewGuid().ToString();
                 x.CreatedDate = DateTime.Now;
             });
-            await _mongoDbManager.CreateAsync(audit).ConfigureAwait(false);
+            var mongoDbManager = await _mongoDbManager.Value.ConfigureAwait(false);
+            await mongoDbManager.CreateAsync(audit).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -60,10 +61,11 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// <returns></returns>
         public async Task<List<Audit>> GetAuditDataAsync(EntityType entityTypeId, int entityId, string field)
         {
+            var mongoDbManager = await _mongoDbManager.Value.ConfigureAwait(false); 
             if (string.IsNullOrWhiteSpace(field))
-                return await _mongoDbManager.QueryAsync(x => x.EntityTypeId == entityTypeId && x.EntityId == entityId).ConfigureAwait(false);
+                return await mongoDbManager.QueryAsync(x => x.EntityTypeId == entityTypeId && x.EntityId == entityId).ConfigureAwait(false);
             else
-                return await _mongoDbManager.QueryAsync(x => x.EntityTypeId == entityTypeId && x.EntityId == entityId && x.Field.Equals(field)).ConfigureAwait(false);
+                return await mongoDbManager.QueryAsync(x => x.EntityTypeId == entityTypeId && x.EntityId == entityId && x.Field.Equals(field)).ConfigureAwait(false);
         }
     }
 }

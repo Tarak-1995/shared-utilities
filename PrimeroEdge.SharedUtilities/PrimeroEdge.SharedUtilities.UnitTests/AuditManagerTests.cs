@@ -22,13 +22,14 @@ namespace PrimeroEdge.SharedUtilities.UnitTests
         private IAuditManager _auditManager;
         private IAuditRepository _auditRepository;
         private IMongoDbManager<Audit> _mongoDbManager;
-
+        private Lazy<Task<IMongoDbManager<Audit>>> _lazyMongoDbManager;
 
         [SetUp]
         public void SetUp()
         {
             _mongoDbManager = Substitute.For<IMongoDbManager<Audit>>();
-            _auditRepository = new AuditRepository(_mongoDbManager);
+            _lazyMongoDbManager = new Lazy<Task<IMongoDbManager<Audit>>>(async () => await Task.FromResult(_mongoDbManager));
+            _auditRepository = new AuditRepository(_lazyMongoDbManager);
             _auditManager = new AuditManager(_auditRepository);
         }
 
@@ -36,6 +37,7 @@ namespace PrimeroEdge.SharedUtilities.UnitTests
         public void TearDown()
         {
             _mongoDbManager = null;
+            _lazyMongoDbManager = null;
             _auditRepository = null;
             _auditManager = null;
         }
@@ -77,7 +79,7 @@ namespace PrimeroEdge.SharedUtilities.UnitTests
         [Test]
         public void AuditRepositoryConstructor_WhenAllValidArguments_ShouldReturnInstance()
         {
-            Assert.DoesNotThrow(() => new AuditRepository(_mongoDbManager));
+            Assert.DoesNotThrow(() => new AuditRepository(_lazyMongoDbManager));
         }
 
         [Test]
