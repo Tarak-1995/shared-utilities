@@ -17,4 +17,13 @@
     <ProjectReference Include="..\PrimeroEdge.SharedUtilities.Components\PrimeroEdge.SharedUtilities.Components.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="Cybersoft.Platform.Data.MongDb">
+      <HintPath>..\..\..\Platform\Cybersoft.Platform.Data.MongDb\bin\Debug\netcoreapp3.1\Cybersoft.Platform.Data.MongDb.dll</HintPath>
+    </Reference>
+    <Reference Include="Cybersoft.Platform.Data.Sql">
+      <HintPath>..\..\..\Platform\Cybersoft.Platform.Data.Sql\bin\Debug\netcoreapp3.1\Cybersoft.Platform.Data.Sql.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

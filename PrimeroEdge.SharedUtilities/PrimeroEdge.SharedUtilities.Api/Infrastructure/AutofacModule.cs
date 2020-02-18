@@ -9,9 +9,14 @@
 using Autofac;
 using Autofac.Features.Indexed;
 using AutoMapper;
+using Cybersoft.Platform.Configuration;
 using Cybersoft.Platform.Data.MongDb;
 using Cybersoft.Platform.Data.Sql;
+using Cybersoft.Platform.Utilities;
+using Microsoft.Extensions.Configuration;
 using PrimeroEdge.SharedUtilities.Components;
+using System;
+using System.Threading.Tasks;
 
 namespace PrimeroEdge.SharedUtilities.Api
 {
@@ -29,27 +34,52 @@ namespace PrimeroEdge.SharedUtilities.Api
         protected override void Load(ContainerBuilder builder)
         {
 
-            builder.RegisterGeneric(typeof(MongoDbManager<>)).As(typeof(IMongoDbManager<>)).InstancePerLifetimeScope();
-            builder.RegisterType<AuditManager>().As<IAuditManager>().InstancePerLifetimeScope();
-            builder.RegisterType<AuditRepository>().As<IAuditRepository>().InstancePerLifetimeScope();
+            //Configuration settings
+            builder.AddConfiguration();
 
-            var mapper = new MapperConfiguration(mc =>
-            {
-            }).CreateMapper();
-            builder.Register<IMapper>(c => mapper).InstancePerLifetimeScope();
+            //Audit settings
+            builder.RegisterSettings<AuditSettings>(ConfigKeys.AuditSettings);
+            builder.RegisterType<AuditManager>().As<IAuditManager>().SingleInstance();
+            builder.RegisterType<AuditRepository>().As<IAuditRepository>().SingleInstance();
+            builder.Register((c) => {
+                var context = c.Resolve<IComponentContext>();
+                return new Lazy<Task<IMongoDbManager<Audit>>>(async () => {
+                    var auditSettings = await context.Resolve<Lazy<Task<AuditSettings>>>().Value.ConfigureAwait(false);
+                    auditSettings.MongoDbSettings.ConnectionString = CryptoManager.Decrypt(CryptoManager.CONNECTION_STRING_KEY, auditSettings.MongoDbSettings.ConnectionString);
+                    return new MongoDbManager<Audit>(auditSettings.MongoDbSettings);
+                });
+            }).SingleInstance();
 
-            builder.RegisterType<BlobStorageRepository>().Keyed<IFileStorageRepository>(FileStorageType.BlobStorage).InstancePerLifetimeScope();
-            builder.RegisterType<FileShareStorageRepository>().Keyed<IFileStorageRepository>(FileStorageType.FlieShare).InstancePerLifetimeScope();
-            builder.RegisterType<SqldbStorageRepository>().Keyed<IFileStorageRepository>(FileStorageType.SqlDataBase).InstancePerLifetimeScope();
 
-            builder.Register<IFileStorageManager>(c =>
-            {
-                var fileStorageSettings = c.Resolve<FileStorageSettings>();
-                var rep = c.Resolve<IIndex<FileStorageType, IFileStorageRepository>>()[fileStorageSettings.StorageType];
-                return new FileStorageManager(rep);
-            }).InstancePerLifetimeScope();
+            //File storge settings
+            builder.RegisterSettings<FileStorageSettings>(ConfigKeys.FileStorageSettings);
+            var mapper = new MapperConfiguration(mc => { }).CreateMapper();
+            builder.Register<IMapper>(c => mapper).SingleInstance();
+            builder.RegisterType<BlobStorageRepository>().Keyed<IFileStorageRepository>(FileStorageType.BlobStorage).SingleInstance();
+            builder.RegisterType<FileShareStorageRepository>().Keyed<IFileStorageRepository>(FileStorageType.FlieShare).SingleInstance();
+            builder.RegisterType<SqldbStorageRepository>().Keyed<IFileStorageRepository>(FileStorageType.SqlDataBase).SingleInstance();
+            builder.Register((c) => {
+                var context = c.Resolve<IComponentContext>();
+                return new Lazy<Task<IFileStorageManager>>(async () => {
+                    var fileStorageSettings = await context.Resolve<Lazy<Task<FileStorageSettings>>>().Value.ConfigureAwait(false);
+                    fileStorageSettings.BlobConnString = CryptoManager.Decrypt(CryptoManager.CONNECTION_STRING_KEY, fileStorageSettings.BlobConnString);
+                    var rep = context.Resolve<IIndex<FileStorageType, IFileStorageRepository>>()[fileStorageSettings.StorageType];
+                    return new FileStorageManager(rep);
+                });
+            }).SingleInstance();
 
-            builder.RegisterType<SqlDbManager>().As<ISqlDbManager>().InstancePerLifetimeScope();
+            //Connection strings
+            builder.RegisterSettings<ConnectionStrings>(ConfigKeys.ConnectionStrings);
+            builder.Register((c) => {
+                var context = c.Resolve<IComponentContext>();
+                return new Lazy<Task<ISqlDbManager>>(async () => {
+                    var connectionStrings = await context.Resolve<Lazy<Task<ConnectionStrings>>>().Value.ConfigureAwait(false);
+                    var iMapper = context.Resolve<IMapper>();
+                    var conntring = CryptoManager.Decrypt(CryptoManager.CONNECTION_STRING_KEY, connectionStrings.Connections[ConnectionType.ADMINISTRATION.ToString()]);
+                    return new SqlDbManager(conntring, iMapper);
+                });
+            }).SingleInstance();
+           
         }
     }
 }

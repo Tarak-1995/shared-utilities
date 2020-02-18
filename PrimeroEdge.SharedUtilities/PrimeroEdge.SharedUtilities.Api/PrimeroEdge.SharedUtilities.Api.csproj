@@ -15,11 +15,18 @@
 
   <ItemGroup>
     <PackageReference Include="Cybersoft.Platform.Autofac" Version="1.1.0.1298" />
+    <PackageReference Include="Cybersoft.Platform.AutoMapper" Version="1.1.0.1311" />
     <PackageReference Include="Cybersoft.Platform.Swashbuckle.AspNetCore" Version="1.1.0.1298" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\PrimeroEdge.SharedUtilities.Components\PrimeroEdge.SharedUtilities.Components.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 

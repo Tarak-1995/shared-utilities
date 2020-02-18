@@ -6,6 +6,7 @@
  */
 
 using MimeTypes;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -16,18 +17,16 @@ namespace PrimeroEdge.SharedUtilities.Components
     /// </summary>
     public class FileShareStorageRepository : IFileStorageRepository
     {
-        /// <summary>
-        /// File share path
-        /// </summary>
-        private readonly string _fileSharePath;
+
+        private readonly Lazy<Task<FileStorageSettings>> _fileStorageSettings;
 
         /// <summary>
         /// File share storage repository
         /// </summary>
         /// <param name="fileStorageSettings"></param>
-        public FileShareStorageRepository(FileStorageSettings fileStorageSettings)
+        public FileShareStorageRepository(Lazy<Task<FileStorageSettings>> fileStorageSettings)
         {
-            _fileSharePath = fileStorageSettings.FileSharePath;
+            _fileStorageSettings = fileStorageSettings;
         }
 
         /// <summary>
@@ -39,7 +38,8 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// <returns></returns>
         public async Task CreateFileAsync(byte[] bytes, string fileName, string contentType)
         {
-            var path = Path.Combine(_fileSharePath, fileName);
+           var fileSharePath = (await _fileStorageSettings.Value.ConfigureAwait(false)).FileSharePath;
+            var path = Path.Combine(fileSharePath, fileName);
             await File.WriteAllBytesAsync(path, bytes).ConfigureAwait(false);
         }
 
@@ -50,7 +50,8 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// <returns></returns>
         public async Task DeleteFileAsync(string fileName)
         {
-            var path = Path.Combine(_fileSharePath, fileName);
+            var fileSharePath = (await _fileStorageSettings.Value.ConfigureAwait(false)).FileSharePath;
+            var path = Path.Combine(fileSharePath, fileName);
 
             if (File.Exists(path))
                 File.Delete(path);
@@ -65,7 +66,8 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// <returns></returns>
         public async Task<FileStorageData> ReadFileAsync(string fileName)
         {
-            var path = Path.Combine(_fileSharePath, fileName);
+            var fileSharePath = (await _fileStorageSettings.Value.ConfigureAwait(false)).FileSharePath;
+            var path = Path.Combine(fileSharePath, fileName);
             
             if (File.Exists(path))
                 return new FileStorageData();
@@ -84,7 +86,8 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// <returns></returns>
         public async Task UpdateFileAsync(byte[] bytes, string fileName, string contentType)
         {
-            var path = Path.Combine(_fileSharePath, fileName);
+            var fileSharePath = (await _fileStorageSettings.Value.ConfigureAwait(false)).FileSharePath;
+            var path = Path.Combine(fileSharePath, fileName);
             await File.WriteAllBytesAsync(path, bytes).ConfigureAwait(false);
         }
     }
