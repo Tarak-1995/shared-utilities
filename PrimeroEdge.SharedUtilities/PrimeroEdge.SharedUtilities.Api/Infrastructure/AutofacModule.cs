@@ -17,6 +17,7 @@ using Microsoft.Extensions.Configuration;
 using PrimeroEdge.SharedUtilities.Components;
 using System;
 using System.Threading.Tasks;
+using Cybersoft.Platform.KeyVault;
 
 namespace PrimeroEdge.SharedUtilities.Api
 {
@@ -36,6 +37,7 @@ namespace PrimeroEdge.SharedUtilities.Api
 
             //Configuration settings
             builder.AddConfiguration();
+            builder.ConfigureKeyVault();
 
             //Audit settings
             builder.RegisterSettings<AuditSettings>(ConfigKeys.AuditSettings);
@@ -45,7 +47,7 @@ namespace PrimeroEdge.SharedUtilities.Api
                 var context = c.Resolve<IComponentContext>();
                 return new Lazy<Task<IMongoDbManager<Audit>>>(async () => {
                     var auditSettings = await context.Resolve<Lazy<Task<AuditSettings>>>().Value.ConfigureAwait(false);
-                    auditSettings.MongoDbSettings.ConnectionString = CryptoManager.Decrypt(CryptoManager.CONNECTION_STRING_KEY, auditSettings.MongoDbSettings.ConnectionString);
+                    auditSettings.MongoDbSettings.ConnectionString = context.DecryptKeyVaultString(CryptoManager.CONNECTION_STRING_KEY, auditSettings.MongoDbSettings.ConnectionString);
                     return new MongoDbManager<Audit>(auditSettings.MongoDbSettings);
                 });
             }).SingleInstance();
@@ -62,7 +64,7 @@ namespace PrimeroEdge.SharedUtilities.Api
                 var context = c.Resolve<IComponentContext>();
                 return new Lazy<Task<IFileStorageManager>>(async () => {
                     var fileStorageSettings = await context.Resolve<Lazy<Task<FileStorageSettings>>>().Value.ConfigureAwait(false);
-                    fileStorageSettings.BlobConnString = CryptoManager.Decrypt(CryptoManager.CONNECTION_STRING_KEY, fileStorageSettings.BlobConnString);
+                    fileStorageSettings.BlobConnString = context.DecryptKeyVaultString(CryptoManager.CONNECTION_STRING_KEY, fileStorageSettings.BlobConnString);
                     var rep = context.Resolve<IIndex<FileStorageType, IFileStorageRepository>>()[fileStorageSettings.StorageType];
                     return new FileStorageManager(rep);
                 });
@@ -75,8 +77,8 @@ namespace PrimeroEdge.SharedUtilities.Api
                 return new Lazy<Task<ISqlDbManager>>(async () => {
                     var connectionStrings = await context.Resolve<Lazy<Task<ConnectionStrings>>>().Value.ConfigureAwait(false);
                     var iMapper = context.Resolve<IMapper>();
-                    var conntring = CryptoManager.Decrypt(CryptoManager.CONNECTION_STRING_KEY, connectionStrings.Connections[ConnectionType.ADMINISTRATION.ToString()]);
-                    return new SqlDbManager(conntring, iMapper);
+                    var connString = context.DecryptKeyVaultString(CryptoManager.CONNECTION_STRING_KEY, connectionStrings.Connections[ConnectionType.ADMINISTRATION.ToString()]);
+                    return new SqlDbManager(connString, iMapper);
                 });
             }).SingleInstance();
            
