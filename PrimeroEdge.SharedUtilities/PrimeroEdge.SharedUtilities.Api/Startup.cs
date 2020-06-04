@@ -76,6 +76,7 @@ namespace PrimeroEdge.SharedUtilities.Api
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseCors();
 
             app.UseRouting();
 
