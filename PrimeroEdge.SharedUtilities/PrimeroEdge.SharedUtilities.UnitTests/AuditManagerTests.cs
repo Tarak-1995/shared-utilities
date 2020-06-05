@@ -46,7 +46,7 @@ namespace PrimeroEdge.SharedUtilities.UnitTests
         {
             new Audit
             {
-                EntityTypeId = EntityType.User,
+                EntityTypeId = 1,
                 EntityId = 1,
                 Field ="Test Filed",
                 OldValue = "Test Old Value",

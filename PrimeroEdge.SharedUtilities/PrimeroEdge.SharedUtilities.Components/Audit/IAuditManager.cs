@@ -28,7 +28,7 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// <param name="entityId"></param>
         /// <param name="field"></param>
         /// <returns></returns>
-        Task<List<Audit>> GetAuditDataAsync(EntityType entityTypeId, int entityId, string field);
+        Task<List<Audit>> GetAuditDataAsync(int entityTypeId, int entityId, string field);
 
     }
 }

@@ -29,10 +29,7 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
         /// <param name="auditManager"></param>
         public AuditsController(IAuditManager auditManager)
         {
-            if (auditManager == null)
-                throw new ArgumentNullException(nameof(auditManager));
-
-            _auditManager = auditManager;
+            _auditManager = auditManager ?? throw new ArgumentNullException(nameof(auditManager));
         }
 
 
@@ -44,19 +41,18 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
         /// <param name="field"></param>
         /// <returns></returns>
         [HttpGet("entityType/{entityTypeId}/entity/{entityId}")]
-        public async Task<ApiResponse<List<Audit>>> GetByUser(EntityType entityTypeId, int entityId, string field)
+        public async Task<List<Audit>> GetAuditDataAsync(int entityTypeId, int entityId, string field)
         {
-            var data = await _auditManager.GetAuditDataAsync(entityTypeId, entityId, field);
-            return new ApiResponse<List<Audit>>(data);
+            return  await _auditManager.GetAuditDataAsync(entityTypeId, entityId, field);
         }
 
         /// <summary>
         /// Create audits
         /// </summary>
-        /// <param name="module"></param>
+        /// <param name="audit"></param>
         /// <returns></returns>
-        [HttpPut]
-        public async Task Put(List<Audit> audit)
+        [HttpPost]
+        public async Task CreateAuditAsync(List<Audit> audit)
         {
             await _auditManager.CreateAuditAsync(audit);
         }
