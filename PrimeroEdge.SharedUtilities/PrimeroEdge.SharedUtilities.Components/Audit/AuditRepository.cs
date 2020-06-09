@@ -9,6 +9,7 @@ using Cybersoft.Platform.Data.MongDb;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using MongoDB.Driver;
 
 namespace PrimeroEdge.SharedUtilities.Components
 {
@@ -29,10 +30,7 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// <param name="mongoDbManager"></param>
         public AuditRepository(Lazy<Task<IMongoDbManager<Audit>>> mongoDbManager)
         {
-            if (mongoDbManager == null)
-                throw new ArgumentNullException(nameof(mongoDbManager));
-
-            _mongoDbManager = mongoDbManager;
+            _mongoDbManager = mongoDbManager ?? throw new ArgumentNullException(nameof(mongoDbManager));
         }
 
 
@@ -59,13 +57,17 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// <param name="entityId"></param>
         /// <param name="field"></param>
         /// <returns></returns>
-        public async Task<List<Audit>> GetAuditDataAsync(EntityType entityTypeId, int entityId, string field)
+        public async Task<List<Audit>> GetAuditDataAsync(int entityTypeId, int entityId, string field)
         {
-            var mongoDbManager = await _mongoDbManager.Value.ConfigureAwait(false); 
-            if (string.IsNullOrWhiteSpace(field))
-                return await mongoDbManager.QueryAsync(x => x.EntityTypeId == entityTypeId && x.EntityId == entityId).ConfigureAwait(false);
-            else
-                return await mongoDbManager.QueryAsync(x => x.EntityTypeId == entityTypeId && x.EntityId == entityId && x.Field.Equals(field)).ConfigureAwait(false);
+            var mongoDbManager = await _mongoDbManager.Value.ConfigureAwait(false);
+
+            var filter = string.IsNullOrWhiteSpace(field)
+                ? Builders<Audit>.Filter.Where(x => x.EntityTypeId == entityTypeId && x.EntityId == entityId)
+                : Builders<Audit>.Filter.Where(x =>
+                    x.EntityTypeId == entityTypeId && x.EntityId == entityId && x.Field.Equals(field));
+
+            return await mongoDbManager.QueryAsync(filter).ConfigureAwait(false);
+
         }
     }
 }

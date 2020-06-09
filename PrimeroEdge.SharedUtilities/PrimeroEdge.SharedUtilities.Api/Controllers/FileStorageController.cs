@@ -60,11 +60,11 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
         }
 
         /// <summary>
-        /// View image
+        /// View file
         /// </summary>
         /// <param name="fileName"></param>
         /// <returns></returns>
-        [HttpGet("{fileName}/image")]
+        [HttpGet("{fileName}/view")]
         public async Task<ActionResult> ViewImage(string fileName)
         {
             var fileStorageManager = await _fileStorageManager.Value;
@@ -72,6 +72,9 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
 
             if (data.Content == null || string.IsNullOrWhiteSpace(data.ContentType))
                 return NotFound();
+
+            if(data.ContentType.ToLower().Contains("video"))
+                return new FileStreamResult(new MemoryStream(data.Content), data.ContentType);
 
             return File(data.Content, data.ContentType);
         }

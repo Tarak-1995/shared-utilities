@@ -14,9 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Cybersoft.Platform.Autofac" Version="1.1.0.2211" />
-    <PackageReference Include="Cybersoft.Platform.AutoMapper" Version="1.1.0.2211" />
-    <PackageReference Include="Cybersoft.Platform.Swashbuckle.AspNetCore" Version="1.1.0.2211" />
+    <Compile Remove="Controllers\FileStorageController.cs" />
   </ItemGroup>
 
   <ItemGroup>

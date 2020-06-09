@@ -25,13 +25,10 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// <summary>
         /// auditRepository
         /// </summary>
-        /// <param name="mongoDbManager"></param>
+        /// <param name="auditRepository"></param>
         public AuditManager(IAuditRepository auditRepository)
         {
-            if (auditRepository == null)
-                throw new ArgumentNullException(nameof(auditRepository));
-
-            _auditRepository = auditRepository;
+            _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
         }
 
         /// <summary>
@@ -51,7 +48,7 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// <param name="entityId"></param>
         /// <param name="field"></param>
         /// <returns></returns>
-        public async Task<List<Audit>> GetAuditDataAsync(EntityType entityTypeId, int entityId, string field)
+        public async Task<List<Audit>> GetAuditDataAsync(int entityTypeId, int entityId, string field)
         {
             return await _auditRepository.GetAuditDataAsync(entityTypeId, entityId, field).ConfigureAwait(false);
         }

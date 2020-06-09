@@ -31,7 +31,7 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// <summary>
         /// Get or set EntityTypeId
         /// </summary>
-        public EntityType EntityTypeId { get; set; }
+        public int EntityTypeId { get; set; }
 
         /// <summary>
         /// Get or set EntityId
@@ -48,6 +48,11 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// Get or set UserId
         /// </summary>
         public int UserId { get; set; }
+
+        /// <summary>
+        /// Get or set UserId
+        /// </summary>
+        public string UserName { get; set; }
 
         /// <summary>
         /// Get or set CreatedDate

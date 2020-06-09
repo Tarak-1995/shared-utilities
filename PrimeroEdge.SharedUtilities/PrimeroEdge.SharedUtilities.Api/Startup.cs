@@ -7,14 +7,12 @@
 
 using System;
 using System.IO;
-using Cybersoft.Platform.Data.MongDb;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using PrimeroEdge.SharedUtilities.Components;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace PrimeroEdge.SharedUtilities.Api
@@ -67,6 +65,10 @@ namespace PrimeroEdge.SharedUtilities.Api
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            app.UseMiddleware<ResponseMiddleware>();
+            app.UseHttpsRedirection();
 
             app.UseRouting();
 
