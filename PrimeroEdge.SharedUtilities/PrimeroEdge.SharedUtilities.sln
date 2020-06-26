@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrimeroEdge.SharedUtilities
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrimeroEdge.SharedUtilities.Components", "PrimeroEdge.SharedUtilities.Components\PrimeroEdge.SharedUtilities.Components.csproj", "{2BBA6660-FF03-45C4-8267-CBC302E0E4FD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrimeroEdge.SharedUtilities.UnitTests", "PrimeroEdge.SharedUtilities.UnitTests\PrimeroEdge.SharedUtilities.UnitTests.csproj", "{3CBB653A-8CCC-4E75-B300-F3448452FEE5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrimeroEdge.SharedUtilities.UnitTests", "PrimeroEdge.SharedUtilities.UnitTests\PrimeroEdge.SharedUtilities.UnitTests.csproj", "{3CBB653A-8CCC-4E75-B300-F3448452FEE5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

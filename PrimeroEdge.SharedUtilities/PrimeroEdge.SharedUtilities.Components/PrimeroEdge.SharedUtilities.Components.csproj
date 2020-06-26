@@ -1,25 +1,21 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Cybersoft.Platform.Azure" Version="1.1.0.5293" />
-    <PackageReference Include="Cybersoft.Platform.Configuration" Version="1.1.0.5293" />
-    <PackageReference Include="Cybersoft.Platform.Data.MongDb" Version="1.1.0.5293" />
-    <PackageReference Include="Cybersoft.Platform.Data.Sql" Version="1.1.0.5293" />
-    <PackageReference Include="Cybersoft.Platform.KeyVault" Version="1.1.0.5293" />
-    <PackageReference Include="Cybersoft.Platform.Utilities" Version="1.1.0.5293" />
+    <PackageReference Include="Cybersoft.Platform.Azure" Version="1.1.0.6261" />
+    <PackageReference Include="Cybersoft.Platform.Configuration" Version="1.1.0.6261" />
+    <PackageReference Include="Cybersoft.Platform.Data.MongDb" Version="1.1.0.6261" />
+    <PackageReference Include="Cybersoft.Platform.Data.Sql" Version="1.1.0.6261" />
+    <PackageReference Include="Cybersoft.Platform.DocumentStorage" Version="1.1.0.6261" />
+    <PackageReference Include="Cybersoft.Platform.KeyVault" Version="1.1.0.6261" />
     <PackageReference Include="MediaTypeMap.Core" Version="2.3.3" />
-    <PackageReference Include="Cybersoft.Platform.Autofac" Version="1.1.0.5293" />
-    <PackageReference Include="Cybersoft.Platform.AutoMapper" Version="1.1.0.5293" />
-    <PackageReference Include="Cybersoft.Platform.Swashbuckle.AspNetCore" Version="1.1.0.5293" />
-    <PackageReference Include="Cybersoft.Platform.Logging" Version="1.1.0.5293" />
+    <PackageReference Include="Cybersoft.Platform.Autofac" Version="1.1.0.6261" />
+    <PackageReference Include="Cybersoft.Platform.AutoMapper" Version="1.1.0.6261" />
+    <PackageReference Include="Cybersoft.Platform.Swashbuckle.AspNetCore" Version="1.1.0.6261" />
+    <PackageReference Include="Cybersoft.Platform.Logging" Version="1.1.0.6261" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="FileStorage\" />
-  </ItemGroup>
-
+ 
 </Project>
