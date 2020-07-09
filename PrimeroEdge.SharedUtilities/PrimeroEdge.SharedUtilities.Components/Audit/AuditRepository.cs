@@ -8,8 +8,11 @@
 using Cybersoft.Platform.Data.MongDb;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
+using Cybersoft.Platform.Message.Publisher;
 using MongoDB.Driver;
+using Newtonsoft.Json;
 
 namespace PrimeroEdge.SharedUtilities.Components
 {
@@ -25,12 +28,19 @@ namespace PrimeroEdge.SharedUtilities.Components
         private readonly Lazy<Task<IMongoDbManager<Audit>>> _mongoDbManager;
 
         /// <summary>
+        /// MessagePublisher
+        /// </summary>
+        private readonly MessagePublisher _messagePublisher;
+
+        /// <summary>
         /// AuditRepository
         /// </summary>
         /// <param name="mongoDbManager"></param>
-        public AuditRepository(Lazy<Task<IMongoDbManager<Audit>>> mongoDbManager)
+        /// <param name="messagePublisher"></param>
+        public AuditRepository(Lazy<Task<IMongoDbManager<Audit>>> mongoDbManager, MessagePublisher messagePublisher)
         {
             _mongoDbManager = mongoDbManager ?? throw new ArgumentNullException(nameof(mongoDbManager));
+            _messagePublisher = messagePublisher ?? throw new ArgumentNullException(nameof(messagePublisher));
         }
 
 
@@ -46,8 +56,14 @@ namespace PrimeroEdge.SharedUtilities.Components
                 x.Id = Guid.NewGuid().ToString();
                 x.CreatedDate = DateTime.Now;
             });
-            var mongoDbManager = await _mongoDbManager.Value.ConfigureAwait(false);
-            await mongoDbManager.CreateAsync(audit).ConfigureAwait(false);
+
+            var reqContext = GetTempRequestContextJson(); 
+            var logReqContext = JsonConvert.DeserializeObject<IRequestContext>(reqContext);
+            var payload = JsonConvert.SerializeObject(audit);
+            var message = MessageBuilderHelper.BuildMessage(payload, MessageType.Audit, logReqContext);
+            var type = _messagePublisher.Publisher.GetType();
+            _messagePublisher.DispatchMessage(message);
+            await Task.CompletedTask;
         }
 
         /// <summary>
@@ -69,5 +85,45 @@ namespace PrimeroEdge.SharedUtilities.Components
             return await mongoDbManager.QueryAsync(filter).ConfigureAwait(false);
 
         }
+
+
+        private string GetTempRequestContextJson()
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("{");
+            sb.AppendLine("'Tenant': {");
+            sb.AppendLine("'Id': 'Tenant1',");
+            sb.AppendLine("'IsdId': 0,");
+            sb.AppendLine("'IsdName': null,");
+            sb.AppendLine("'RealmType': 0,");
+            sb.AppendLine("'RealmId': null,");
+            sb.AppendLine("'DomainName': null,");
+            sb.AppendLine("'AdminEmail': null,");
+            sb.AppendLine("'CreatedOn': '2020-01-30T07:58:00',");
+            sb.AppendLine("'CreatedBy': 'Demo User',");
+            sb.AppendLine("'ModifiedOn': '2020-01-30T07:58:00',");
+            sb.AppendLine("'ModifiedBy': 'Demo User',");
+            sb.AppendLine("'IsActive': false,");
+            sb.AppendLine("'Name': 'Tenant-X'");
+            sb.AppendLine("},");
+            sb.AppendLine("'User': {");
+            sb.AppendLine("'UserId': 1,");
+            sb.AppendLine("'UserName': 'Demo User',");
+            sb.AppendLine("'FirstName': 'Demo User',");
+            sb.AppendLine("'LastName': 'Demo User',");
+            sb.AppendLine("'MI': null,");
+            sb.AppendLine("'Email': 'Demo User@primeroedge.com'");
+            sb.AppendLine("},");
+            sb.AppendLine("'TenantSettings': {");
+            sb.AppendLine("'Id': 1,");
+            sb.AppendLine("'TenantId': 'Tenant1',");
+            sb.AppendLine("'LoggerType': 'Serilog',");
+            sb.AppendLine("'AuditProvider': null");
+            sb.AppendLine("}");
+            sb.AppendLine("}");
+            return sb.ToString();
+        }
+
+
     }
 }
