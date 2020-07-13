@@ -83,15 +83,6 @@ namespace PrimeroEdge.SharedUtilities.UnitTests
         }
 
         [Test]
-        public async Task CreateAuditAsyncTest()
-        {
-            _mongoDbManager.CreateAsync(Arg.Any<List<Audit>>()).Returns(Task.CompletedTask);
-            await _auditManager.CreateAuditAsync(_audits).ConfigureAwait(false);
-            Assert.IsTrue(true);
-        }
-
-
-        [Test]
         public async Task GetAuditDataAsyncTest()
         {
             _mongoDbManager.QueryAsync(Arg.Any<Expression<Func<Audit, bool>>>()).Returns(Task.FromResult(_audits));
