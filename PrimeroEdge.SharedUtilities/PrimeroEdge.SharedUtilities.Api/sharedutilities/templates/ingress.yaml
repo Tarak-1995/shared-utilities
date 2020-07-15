@@ -1,0 +1,18 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: sharedutilities
+  namespace: dev
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  rules:
+    - host: primero-aks-dev-gateway.centralus.cloudapp.azure.com
+      http:
+        paths:
+          - path: /sharedutilities(/|$)(.*)
+            backend:
+              serviceName: sharedutilities
+              servicePort: 80

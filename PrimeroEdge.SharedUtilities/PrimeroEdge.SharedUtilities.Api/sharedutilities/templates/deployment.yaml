@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sharedutilities
+spec:
+  replicas: 2
+  selector:
+    matchLabels: 
+      app: sharedutilities
+  template:
+    metadata:
+      labels:
+        app: sharedutilities
+    spec:
+      imagePullSecrets: 
+        - name: 'primeroedgedevacr7322f765-auth'
+      containers:
+        - name: sharedutilities
+          image: primeroedgedevacr.azurecr.io/sharedutilities
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 80
