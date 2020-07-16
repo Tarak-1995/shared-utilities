@@ -11,7 +11,7 @@ resources:
 variables:
 
   # .sln .csproj(UnitTests) relative paths
-  project_sln: "PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.sln"
+  project_sln: "/PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.sln"
   project_csproj: "./PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/PrimeroEdge.SharedUtilities.Api.csproj"
   test_csproj: "./PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.UnitTests/PrimeroEdge.AccountManagement.UnitTests.csproj"
   
