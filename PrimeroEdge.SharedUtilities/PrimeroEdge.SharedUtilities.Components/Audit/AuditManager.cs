@@ -30,16 +30,7 @@ namespace PrimeroEdge.SharedUtilities.Components
         {
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
         }
-
-        /// <summary>
-        /// CreateAuditAsync
-        /// </summary>
-        /// <param name="audits"></param>
-        /// <returns></returns>
-        public async Task CreateAuditAsync(List<Audit> audits)
-        {
-            await _auditRepository.CreateAuditAsync(audits).ConfigureAwait(false);
-        }
+        
 
         /// <summary>
         /// Get Audit Data

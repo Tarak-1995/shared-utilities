@@ -45,17 +45,5 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
         {
             return  await _auditManager.GetAuditDataAsync(entityTypeId, entityId, field);
         }
-
-        /// <summary>
-        /// Create audits
-        /// </summary>
-        /// <param name="audit"></param>
-        /// <returns></returns>
-        [HttpPost]
-        public async Task CreateAuditAsync(List<Audit> audit)
-        {
-            await _auditManager.CreateAuditAsync(audit);
-        }
-
     }
 }

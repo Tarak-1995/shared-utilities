@@ -29,7 +29,7 @@ namespace PrimeroEdge.SharedUtilities.UnitTests
         {
             _mongoDbManager = Substitute.For<IMongoDbManager<Audit>>();
             _lazyMongoDbManager = new Lazy<Task<IMongoDbManager<Audit>>>(async () => await Task.FromResult(_mongoDbManager));
-            _auditRepository = new AuditRepository(_lazyMongoDbManager);
+            _auditRepository = new AuditRepository(_lazyMongoDbManager, null);
             _auditManager = new AuditManager(_auditRepository);
         }
 
@@ -72,24 +72,15 @@ namespace PrimeroEdge.SharedUtilities.UnitTests
         [Test]
         public void AuditRepositoryConstructor_WhenMissingSqlDbManager_ShouldThrowError()
         {
-            var exception = Assert.Throws<ArgumentNullException>(() => new AuditRepository(null));
+            var exception = Assert.Throws<ArgumentNullException>(() => new AuditRepository(null, null));
             Assert.That(exception.ParamName, Is.EqualTo("mongoDbManager"));
         }
 
         [Test]
         public void AuditRepositoryConstructor_WhenAllValidArguments_ShouldReturnInstance()
         {
-            Assert.DoesNotThrow(() => new AuditRepository(_lazyMongoDbManager));
+            Assert.DoesNotThrow(() => new AuditRepository(_lazyMongoDbManager, null));
         }
-
-        [Test]
-        public async Task CreateAuditAsyncTest()
-        {
-            _mongoDbManager.CreateAsync(Arg.Any<List<Audit>>()).Returns(Task.CompletedTask);
-            await _auditManager.CreateAuditAsync(_audits).ConfigureAwait(false);
-            Assert.IsTrue(true);
-        }
-
 
         [Test]
         public async Task GetAuditDataAsyncTest()

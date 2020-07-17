@@ -9,6 +9,7 @@ using Cybersoft.Platform.Data.MongDb;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Cybersoft.Platform.Message.Publisher;
 using MongoDB.Driver;
 
 namespace PrimeroEdge.SharedUtilities.Components
@@ -25,29 +26,19 @@ namespace PrimeroEdge.SharedUtilities.Components
         private readonly Lazy<Task<IMongoDbManager<Audit>>> _mongoDbManager;
 
         /// <summary>
+        /// MessagePublisher
+        /// </summary>
+        private readonly MessagePublisher _messagePublisher;
+
+        /// <summary>
         /// AuditRepository
         /// </summary>
         /// <param name="mongoDbManager"></param>
-        public AuditRepository(Lazy<Task<IMongoDbManager<Audit>>> mongoDbManager)
+        /// <param name="messagePublisher"></param>
+        public AuditRepository(Lazy<Task<IMongoDbManager<Audit>>> mongoDbManager, MessagePublisher messagePublisher)
         {
             _mongoDbManager = mongoDbManager ?? throw new ArgumentNullException(nameof(mongoDbManager));
-        }
-
-
-        /// <summary>
-        /// CreateAuditAsync
-        /// </summary>
-        /// <param name="audit"></param>
-        /// <returns></returns>
-        public async Task CreateAuditAsync(List<Audit> audit)
-        {
-            audit.ForEach(x => 
-            {
-                x.Id = Guid.NewGuid().ToString();
-                x.CreatedDate = DateTime.Now;
-            });
-            var mongoDbManager = await _mongoDbManager.Value.ConfigureAwait(false);
-            await mongoDbManager.CreateAsync(audit).ConfigureAwait(false);
+            _messagePublisher = messagePublisher ?? throw new ArgumentNullException(nameof(messagePublisher));
         }
 
         /// <summary>

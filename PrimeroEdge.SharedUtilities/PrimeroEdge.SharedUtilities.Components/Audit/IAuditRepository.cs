@@ -14,14 +14,6 @@ namespace PrimeroEdge.SharedUtilities.Components
     /// </summary>
     public interface IAuditRepository
     {
-
-        /// <summary>
-        /// CreateAuditAsync
-        /// </summary>
-        /// <param name="audit"></param>
-        /// <returns></returns>
-        Task CreateAuditAsync(List<Audit> audit);
-
         /// <summary>
         /// GetAuditDataAsync
         /// </summary>
