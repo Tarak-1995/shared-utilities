@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: sharedutilitiesservice
+  name: sharedutilities
   labels:
-    app: sharedutilitiesservice
+    app: sharedutilities
 spec:
   ports:
   - port: 80

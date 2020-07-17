@@ -12,7 +12,7 @@ spec:
     - host: primero-aks-dev-gateway.centralus.cloudapp.azure.com
       http:
         paths:
-          - path: /sharedutilitiesservice(/|$)(.*)
+          - path: /sharedutilities(/|$)(.*)
             backend:
-              serviceName: sharedutilitiesservice
+              serviceName: sharedutilities
               servicePort: 80
