@@ -26,7 +26,7 @@ variables:
   dockerfilePath: './PrimeroEdge.SharedUtilities/Dockerfile'
   tag: '$(Build.BuildId)'
   imagePullSecret: './primeroedgedevacr7322f765-auth'
-  helmChartPath: './PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/sharedutilities/'
+  helmChartPath: './PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/deployment/sharedutilities/'
   # Agent VM image name
   vmImageNameW: 'vs2017-win2016'
   vmImageNameU: 'ubuntu-latest'
@@ -95,7 +95,7 @@ stages:
           latest
   
 - stage: HelmInstall
-  displayName: Helm Install
+  displayName: Helm Installs
   dependsOn: ImageBuild
   jobs: 
   - job: Init
@@ -123,3 +123,18 @@ stages:
         artifact: 'sharedutilities'
         publishLocation: 'pipeline'
   
+- stage: Secret
+  displayName: Generate secret
+  dependsOn: HelmPackage
+  jobs: 
+  - job: Kubesecret
+    displayName: Kubernetes Secret
+    steps:
+    - task: Kubernetes@1
+      inputs:
+        connectionType: 'Kubernetes Service Connection'
+        kubernetesServiceEndpoint: 'Development-PrimeroEdgeDev-AKS-dev-1592763342384'
+        namespace: 'dev'
+        secretType: 'generic'
+        secretArguments: '--from-file=PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/config/appsettings.dev.json' #--dry-run=client'
+        secretName: 'sharedutilities-dev-secret-appsettings'

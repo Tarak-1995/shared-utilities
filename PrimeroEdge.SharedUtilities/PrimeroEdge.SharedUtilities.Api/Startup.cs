@@ -1,6 +1,6 @@
 /*
  ***********************************************************************
- * Copyright © 2020 Cybersoft Technologies, Inc. All rights reserved.
+ * Copyright ï¿½ 2020 Cybersoft Technologies, Inc. All rights reserved.
  * Unauthorized copying of this file is strictly prohibited.
  ***********************************************************************
  */
@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerUI;
@@ -79,6 +80,11 @@ namespace PrimeroEdge.SharedUtilities.Api
                 endpoints.MapControllers();
             });
 
+
+            app.Run(async (context) =>
+            {
+                await context.Response.WriteAsync("Welcome to Item Management APIs");
+            });
 
             var vpath = Configuration["SubDomain"];
 
