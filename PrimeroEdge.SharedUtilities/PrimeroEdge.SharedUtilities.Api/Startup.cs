@@ -83,7 +83,7 @@ namespace PrimeroEdge.SharedUtilities.Api
 
             app.Run(async (context) =>
             {
-                await context.Response.WriteAsync("Welcome to Item Management APIs");
+                await context.Response.WriteAsync("Welcome to Shared Utilities APIs");
             });
 
             var vpath = Configuration["SubDomain"];
