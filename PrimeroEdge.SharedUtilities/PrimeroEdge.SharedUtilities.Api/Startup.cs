@@ -81,10 +81,10 @@ namespace PrimeroEdge.SharedUtilities.Api
             });
 
 
-            app.Run(async (context) =>
-            {
-                await context.Response.WriteAsync("Welcome to Shared Utilities APIs");
-            });
+            // app.Run(async (context) =>
+            // {
+            //     await context.Response.WriteAsync("Welcome to Shared Utilities APIs");
+            // });
 
             var vpath = Configuration["SubDomain"];
 
