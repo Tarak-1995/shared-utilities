@@ -17,7 +17,6 @@ using Cybersoft.Platform.Contracts;
 using Cybersoft.Platform.DocumentStorage;
 using Cybersoft.Platform.KeyVault;
 using Cybersoft.Platform.Logging;
-using Cybersoft.Platform.Message.Publisher;
 using Cybersoft.Platform.Utilities.ResponseModels;
 using Microsoft.Extensions.Configuration;
 
@@ -63,15 +62,6 @@ namespace PrimeroEdge.SharedUtilities.Api
                 return new MongoDbManager<MessageData>(settings.MongoDbSettings);
             }).SingleInstance();
 
-            builder.Register<IPublisher>(c =>
-            {
-                var settings = c.Resolve<IConfiguration>().GetSection("MessageQueueSettings")
-                    .Get<BaseMessageSettings<RabbitMQQueueSettings>>();
-                var type = Type.GetType(settings.PublisherAssembly);
-                return (IPublisher)Activator.CreateInstance(type, Newtonsoft.Json.JsonConvert.SerializeObject(settings.MessageProviderSettings));
-            });
-
-            builder.RegisterType<MessagePublisher>().AsSelf();
 
             builder.Register<ICybersoftLogger>(c =>
             {
