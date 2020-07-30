@@ -22,7 +22,7 @@ spec:
           - containerPort: 80
           env:
           - name: "AppEnv"
-            value: "dev"
+            value: {{ .Values.namespace }}
           volumeMounts:
           - name: secrets
             mountPath: /app/secrets
@@ -30,4 +30,4 @@ spec:
       volumes:
         - name: secrets
           secret:
-            secretName: sharedutilities-dev-secret-appsettings
+            secretName: {{ .Values.secretname }}

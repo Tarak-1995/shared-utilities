@@ -127,7 +127,7 @@ stages:
   displayName: Generate secret
   dependsOn: HelmPackage
   jobs: 
-  - job: Kubesecret
+  - job: DevKubesecret
     displayName: Kubernetes Secret
     steps:
     - task: Kubernetes@1
@@ -138,3 +138,15 @@ stages:
         secretType: 'generic'
         secretArguments: '--from-file=PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/config/appsettings.dev.json' #--dry-run=client'
         secretName: 'sharedutilities-dev-secret-appsettings'
+
+  - job: QAKubesecret
+    displayName: Kubernetes QA Secret
+    steps:
+    - task: Kubernetes@1
+      inputs:
+        connectionType: 'Kubernetes Service Connection'
+        kubernetesServiceEndpoint: 'Development-PrimeroEdgeQA-AKS-qa'
+        namespace: 'qa'
+        secretType: 'generic'
+        secretArguments: '--from-file=PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/config/appsettings.qa.json' #--dry-run=client'
+        secretName: 'sharedutilities-qa-secret-appsettings'

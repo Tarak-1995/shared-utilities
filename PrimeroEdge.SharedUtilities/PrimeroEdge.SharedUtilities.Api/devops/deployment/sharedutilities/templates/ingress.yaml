@@ -2,12 +2,12 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: sharedutilities
-  namespace: dev
+  namespace: {{ .Values.namespace }}
   annotations:
     kubernetes.io/ingress.class: azure/application-gateway
 spec:
   rules:
-    - host: dev.sharedutilitiesservice.gateway.perseusedge.com
+    - host: {{ .Values.host }}
       http:
         paths:
           - path: /
