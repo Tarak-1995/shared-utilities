@@ -3,7 +3,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
 trigger:
-- devops
+- dev
 
 resources:
 - repo: self
@@ -69,12 +69,12 @@ stages:
   dependsOn: BuildandAnalysis
   jobs:
   - job: UnitTest
-#    steps:
-#    - task: DotNetCoreCLI@2
-#      inputs:
-#        command: test
-#        projects: '$(test_csproj)'
-#        arguments: '--configuration $(buildConfiguration)'
+    steps:
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: test
+        projects: '$(test_csproj)'
+        arguments: '--configuration $(buildConfiguration)'
   
 - stage: ImageBuild
   displayName: Image Build $ Push
