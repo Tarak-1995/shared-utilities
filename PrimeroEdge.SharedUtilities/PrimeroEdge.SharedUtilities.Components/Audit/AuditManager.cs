@@ -31,26 +31,25 @@ namespace PrimeroEdge.SharedUtilities.Components
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
         }
 
+
         /// <summary>
-        /// CreateAuditAsync
+        /// Get audit data
         /// </summary>
-        /// <param name="audits"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
-        public async Task CreateAuditAsync(List<Audit> audits)
+        public async Task<List<Audit>> GetAuditDataAsync(AuditRequest request)
         {
-            await _auditRepository.CreateAuditAsync(audits).ConfigureAwait(false);
+            return await _auditRepository.GetAuditDataAsync(request).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Get Audit Data
+        /// Save audit data
         /// </summary>
-        /// <param name="entityTypeId"></param>
-        /// <param name="entityId"></param>
-        /// <param name="field"></param>
+        /// <param name="data"></param>
         /// <returns></returns>
-        public async Task<List<Audit>> GetAuditDataAsync(int entityTypeId, int entityId, string field)
+        public async Task SaveAuditDataAsync(List<Audit> data)
         {
-            return await _auditRepository.GetAuditDataAsync(entityTypeId, entityId, field).ConfigureAwait(false);
+            await _auditRepository.SaveAuditDataAsync(data).ConfigureAwait(false);
         }
     }
 }

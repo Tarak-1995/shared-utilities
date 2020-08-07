@@ -32,30 +32,26 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
             _auditManager = auditManager ?? throw new ArgumentNullException(nameof(auditManager));
         }
 
-
         /// <summary>
-        /// Get audits data
+        /// Save audit data
         /// </summary>
-        /// <param name="entityTypeId"></param>
-        /// <param name="entityId"></param>
-        /// <param name="field"></param>
+        /// <param name="data"></param>
         /// <returns></returns>
-        [HttpGet("entityType/{entityTypeId}/entity/{entityId}")]
-        public async Task<List<Audit>> GetAuditDataAsync(int entityTypeId, int entityId, string field)
+        [HttpPost("Create")]
+        public async Task SaveAuditDataAsync(List<Audit> data)
         {
-            return  await _auditManager.GetAuditDataAsync(entityTypeId, entityId, field);
+            await _auditManager.SaveAuditDataAsync(data);
         }
 
         /// <summary>
-        /// Create audits
+        /// Get audit data
         /// </summary>
-        /// <param name="audit"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
-        [HttpPost]
-        public async Task CreateAuditAsync(List<Audit> audit)
+        [HttpPost("Read")]
+        public async Task<List<Audit>> GetAuditDataAsync(AuditRequest request)
         {
-            await _auditManager.CreateAuditAsync(audit);
+            return  await _auditManager.GetAuditDataAsync(request);
         }
-
     }
 }

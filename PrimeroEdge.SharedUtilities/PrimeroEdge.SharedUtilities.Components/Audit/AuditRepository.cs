@@ -8,6 +8,7 @@
 using Cybersoft.Platform.Data.MongDb;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MongoDB.Driver;
 
@@ -24,6 +25,7 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// </summary>
         private readonly Lazy<Task<IMongoDbManager<Audit>>> _mongoDbManager;
 
+
         /// <summary>
         /// AuditRepository
         /// </summary>
@@ -33,40 +35,52 @@ namespace PrimeroEdge.SharedUtilities.Components
             _mongoDbManager = mongoDbManager ?? throw new ArgumentNullException(nameof(mongoDbManager));
         }
 
-
         /// <summary>
-        /// CreateAuditAsync
+        /// Save audit data
         /// </summary>
-        /// <param name="audit"></param>
+        /// <param name="data"></param>
         /// <returns></returns>
-        public async Task CreateAuditAsync(List<Audit> audit)
+        public async Task SaveAuditDataAsync(List<Audit> data)
         {
-            audit.ForEach(x => 
+            var mongoManager = await _mongoDbManager.Value.ConfigureAwait(false);
+            data = data.Where(x => x.NewValue != x.OldValue).ToList();
+
+            var utcNow = DateTime.UtcNow;
+            data.ForEach(x =>
             {
                 x.Id = Guid.NewGuid().ToString();
-                x.CreatedDate = DateTime.Now;
+                x.CreatedDate = utcNow;
             });
-            var mongoDbManager = await _mongoDbManager.Value.ConfigureAwait(false);
-            await mongoDbManager.CreateAsync(audit).ConfigureAwait(false);
+
+            if(data.Any())
+             await mongoManager.CreateAsync(data).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Get Audit Data
+        /// Get audit data
         /// </summary>
-        /// <param name="entityTypeId"></param>
-        /// <param name="entityId"></param>
-        /// <param name="field"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
-        public async Task<List<Audit>> GetAuditDataAsync(int entityTypeId, int entityId, string field)
+        public async Task<List<Audit>> GetAuditDataAsync(AuditRequest request)
         {
-            var mongoDbManager = await _mongoDbManager.Value.ConfigureAwait(false);
+            var mongoManager = await _mongoDbManager.Value.ConfigureAwait(false);
 
-            var filter = string.IsNullOrWhiteSpace(field)
-                ? Builders<Audit>.Filter.Where(x => x.EntityTypeId == entityTypeId && x.EntityId == entityId)
-                : Builders<Audit>.Filter.Where(x =>
-                    x.EntityTypeId == entityTypeId && x.EntityId == entityId && x.Field.Equals(field));
+            var filter =  Builders<Audit>.Filter.Where(x => x.EntityTypeId == request.EntityTypeId && x.EntityId == request.EntityId);
+            
+            if(!string.IsNullOrWhiteSpace(request.Field))
+               filter = filter & Builders<Audit>.Filter.Where(x=> x.Field.Equals(request.Field));
 
-            return await mongoDbManager.QueryAsync(filter).ConfigureAwait(false);
+            var sort = Builders<Audit>.Sort.Descending(x => x.CreatedDate);
+
+            if (request.PageNumber <= 0)
+                request.PageNumber = 1;
+
+            if (request.PageSize <= 0)
+                request.PageSize = 100;
+
+            var skip = (request.PageNumber - 1) * request.PageSize;
+
+            return await mongoManager.QueryAsync(filter, sort, skip, request.PageSize).ConfigureAwait(false);
 
         }
     }
