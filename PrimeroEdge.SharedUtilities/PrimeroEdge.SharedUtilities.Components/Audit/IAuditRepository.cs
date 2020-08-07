@@ -14,22 +14,20 @@ namespace PrimeroEdge.SharedUtilities.Components
     /// </summary>
     public interface IAuditRepository
     {
+        /// <summary>
+        /// Get audit data
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        Task<List<Audit>> GetAuditDataAsync(AuditRequest request);
+
 
         /// <summary>
-        /// CreateAuditAsync
+        /// Save audit data
         /// </summary>
-        /// <param name="audit"></param>
+        /// <param name="data"></param>
         /// <returns></returns>
-        Task CreateAuditAsync(List<Audit> audit);
-
-        /// <summary>
-        /// GetAuditDataAsync
-        /// </summary>
-        /// <param name="entityTypeId"></param>
-        /// <param name="entityId"></param>
-        /// <param name="field"></param>
-        /// <returns></returns>
-        Task<List<Audit>> GetAuditDataAsync(int entityTypeId, int entityId, string field);
+        Task SaveAuditDataAsync(List<Audit> data);
 
     }
 }

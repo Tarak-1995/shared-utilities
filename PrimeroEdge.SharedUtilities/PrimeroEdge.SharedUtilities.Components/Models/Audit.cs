@@ -80,10 +80,13 @@ namespace PrimeroEdge.SharedUtilities.Components
 
         /// <summary>
         /// Get or set NewValue
-        /// Get or set NewValue
         /// </summary>
         public string NewValue { get; set; }
 
-       
+
+        /// <summary>
+        /// Get or set Comment
+        /// </summary>
+        public string Comment { get; set; }
     }
 }

@@ -5,17 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Cybersoft.Platform.Azure" Version="1.1.0.6261" />
-    <PackageReference Include="Cybersoft.Platform.Configuration" Version="1.1.0.6261" />
-    <PackageReference Include="Cybersoft.Platform.Data.MongDb" Version="1.1.0.6261" />
-    <PackageReference Include="Cybersoft.Platform.Data.Sql" Version="1.1.0.6261" />
-    <PackageReference Include="Cybersoft.Platform.DocumentStorage" Version="1.1.0.6261" />
-    <PackageReference Include="Cybersoft.Platform.KeyVault" Version="1.1.0.6261" />
-    <PackageReference Include="MediaTypeMap.Core" Version="2.3.3" />
-    <PackageReference Include="Cybersoft.Platform.Autofac" Version="1.1.0.6261" />
-    <PackageReference Include="Cybersoft.Platform.AutoMapper" Version="1.1.0.6261" />
-    <PackageReference Include="Cybersoft.Platform.Swashbuckle.AspNetCore" Version="1.1.0.6261" />
-    <PackageReference Include="Cybersoft.Platform.Logging" Version="1.1.0.6261" />
+    <PackageReference Include="Cybersoft.Platform.Data.MongDb" Version="1.1.0.7281" />
+    <PackageReference Include="Cybersoft.Platform.DocumentStorage" Version="1.1.0.7281" />
+    <PackageReference Include="Cybersoft.Platform.Swashbuckle.AspNetCore" Version="1.1.0.7281" />
+    <PackageReference Include="Cybersoft.Platform.Logging" Version="1.1.0.7281" />
   </ItemGroup>
  
 </Project>
