@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using MongoDB.Driver;
 
 namespace PrimeroEdge.SharedUtilities.UnitTests
 {
@@ -85,7 +86,7 @@ namespace PrimeroEdge.SharedUtilities.UnitTests
         [Test]
         public async Task GetAuditDataAsyncTest()
         {
-            _mongoDbManager.QueryAsync(Arg.Any<Expression<Func<Audit, bool>>>()).Returns(Task.FromResult(_audits));
+            _mongoDbManager.QueryAsync(Arg.Any<FilterDefinition<Audit>>(), Arg.Any<SortDefinition<Audit>>(), Arg.Any<int>(), Arg.Any<int>()).Returns(Task.FromResult(_audits));
             var data = await _auditManager.GetAuditDataAsync(new AuditRequest()).ConfigureAwait(false);
             Assert.IsTrue(data.Count == _audits.Count);
         }
