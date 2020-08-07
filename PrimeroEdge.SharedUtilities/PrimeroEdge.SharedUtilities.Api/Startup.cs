@@ -1,6 +1,6 @@
 /*
  ***********************************************************************
- * Copyright © 2020 Cybersoft Technologies, Inc. All rights reserved.
+ * Copyright ï¿½ 2020 Cybersoft Technologies, Inc. All rights reserved.
  * Unauthorized copying of this file is strictly prohibited.
  ***********************************************************************
  */
@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerUI;
@@ -47,10 +48,10 @@ namespace PrimeroEdge.SharedUtilities.Api
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Shared Utilities", Version = "v1" });
                 var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.XML";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                c.IncludeXmlComments(xmlPath);
+                //c.IncludeXmlComments(xmlPath);
             });
         }
 
@@ -77,6 +78,9 @@ namespace PrimeroEdge.SharedUtilities.Api
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
             });
 
 
@@ -91,7 +95,7 @@ namespace PrimeroEdge.SharedUtilities.Api
                 app.UseSwaggerUI(options =>
                 {
                     options.DocExpansion(DocExpansion.None);
-                    options.SwaggerEndpoint($"/{vpath}/swagger/v1/swagger.json", name: "My API V1");
+                    options.SwaggerEndpoint($"/{vpath}/swagger/v1/swagger.json", name: "Shared Utilities API");
                 });
             }
             else
@@ -100,7 +104,7 @@ namespace PrimeroEdge.SharedUtilities.Api
                 app.UseSwaggerUI(c =>
                 {
                     c.DocExpansion(DocExpansion.None);
-                    c.SwaggerEndpoint(url: "/swagger/v1/swagger.json", name: "My API V1");
+                    c.SwaggerEndpoint(url: "/swagger/v1/swagger.json", name: "Shared Utilities API");
                 });
             }
         }
