@@ -11,6 +11,8 @@ spec:
     metadata:
       labels:
         app: sharedutilities 
+      annotations:
+        timestamp: "{{ date "20060102150405" .Release.Time }}"
     spec:
       imagePullSecrets: 
         - name: 'primeroedgedevacr11838027-auth'
