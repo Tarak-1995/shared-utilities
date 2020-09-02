@@ -1,0 +1,35 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: sharedutilities
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sharedutilities
+  template:
+    metadata:
+      labels:
+        app: sharedutilities 
+      annotations:
+        timestamp: "{{ date "20060102150405" .Release.Time }}"
+    spec:
+      imagePullSecrets: 
+        - name: 'primeroedgedevacr11838027-auth'
+      containers:
+        - name: sharedutilities 
+          image: primeroedgedevacr.azurecr.io/sharedutilities:latest
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 80
+          env:
+          - name: "AppEnv"
+            value: {{ .Values.namespace }}
+          volumeMounts:
+          - name: secrets
+            mountPath: /app/secrets
+            readOnly: true
+      volumes:
+        - name: secrets
+          secret:
+            secretName: {{ .Values.secretname }}
