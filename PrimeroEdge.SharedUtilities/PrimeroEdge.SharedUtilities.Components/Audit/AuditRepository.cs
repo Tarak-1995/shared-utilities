@@ -61,7 +61,7 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        public async Task<List<Audit>> GetAuditDataAsync(AuditRequest request)
+        public async Task<Tuple<List<Audit>, long>> GetAuditDataAsync(AuditRequest request)
         {
             var mongoManager = await _mongoDbManager.Value.ConfigureAwait(false);
 
@@ -80,7 +80,11 @@ namespace PrimeroEdge.SharedUtilities.Components
 
             var skip = (request.PageNumber - 1) * request.PageSize;
 
-            return await mongoManager.QueryAsync(filter, sort, skip, request.PageSize).ConfigureAwait(false);
+            var count = await mongoManager.CountDocumentsAsync(filter).ConfigureAwait(false);
+
+            var data= await mongoManager.QueryAsync(filter, sort, skip, request.PageSize).ConfigureAwait(false);
+
+            return Tuple.Create(data, count);
 
         }
     }
