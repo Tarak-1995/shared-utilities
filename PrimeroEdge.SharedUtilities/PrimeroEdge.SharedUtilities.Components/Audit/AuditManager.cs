@@ -8,13 +8,14 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Cybersoft.Platform.Utilities.ResponseModels;
 
 namespace PrimeroEdge.SharedUtilities.Components
 {
     /// <summary>
     /// AuditRepository
     /// </summary>
-    public class AuditManager : IAuditManager
+    public class AuditManager : SharedUtilitiesBase<AuditManager>, IAuditManager
     {
 
         /// <summary>
@@ -39,7 +40,9 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// <returns></returns>
         public async Task<List<Audit>> GetAuditDataAsync(AuditRequest request)
         {
-            return await _auditRepository.GetAuditDataAsync(request).ConfigureAwait(false);
+            var data = await _auditRepository.GetAuditDataAsync(request).ConfigureAwait(false);
+            PaginationEnvelope = new Pagination(request.PageNumber, request.PageSize, (int)data.Item2);
+            return data.Item1;
         }
 
         /// <summary>
