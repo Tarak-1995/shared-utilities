@@ -1,7 +1,6 @@
 FROM mcr.microsoft.com/dotnet/core/aspnet:latest AS base
 WORKDIR /app
-EXPOSE 80
-EXPOSE 443
+EXPOSE 5000
 
 FROM mcr.microsoft.com/dotnet/core/sdk:latest AS  build
 WORKDIR /src

@@ -21,7 +21,7 @@ spec:
           image: primeroedgedevacr.azurecr.io/sharedutilities:latest
           imagePullPolicy: Always
           ports:
-          - containerPort: 80
+          - containerPort: 5000
           env:
           - name: "AppEnv"
             value: {{ .Values.namespace }}
