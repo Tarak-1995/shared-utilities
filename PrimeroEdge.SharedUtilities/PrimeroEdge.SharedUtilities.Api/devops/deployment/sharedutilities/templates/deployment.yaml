@@ -13,9 +13,7 @@ spec:
         app: sharedutilities 
       annotations:
         timestamp: "{{ date "20060102150405" .Release.Time }}"
-    spec:
-      imagePullSecrets: 
-        - name: 'primeroedgedevacr11838027-auth'
+    spec:     
       containers:
         - name: sharedutilities 
           image: primeroedgedevacr.azurecr.io/sharedutilities:latest
@@ -23,6 +21,8 @@ spec:
           ports:
           - containerPort: 5000
           env:
+          - name: "ASPNETCORE_ENVIRONMENT"
+            value: {{ .Values.aspnetcore }}
           - name: "AppEnv"
             value: {{ .Values.namespace }}
           volumeMounts:

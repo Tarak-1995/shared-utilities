@@ -1,0 +1,3 @@
+host: devsharedutilitiesservice.perseusedge.com
+namespace: dev
+secretname: sharedutilities-dev-secret-appsettings
