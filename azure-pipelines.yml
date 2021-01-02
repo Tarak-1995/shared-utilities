@@ -136,7 +136,7 @@ stages:
         kubernetesServiceEndpoint: 'Development-PrimeroEdgeDev-AKS-dev-1592763342384'
         namespace: 'dev'
         secretType: 'generic'
-        secretArguments: '--from-file=PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/config/appsettings.dev.json' #--dry-run=client'
+        secretArguments: '--from-file=PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/appsettings.Development.json'
         secretName: 'sharedutilities-dev-secret-appsettings'
 
   - job: QAKubesecret
@@ -148,5 +148,5 @@ stages:
         kubernetesServiceEndpoint: 'Development-PrimeroEdgeQA-AKS-qa'
         namespace: 'qa'
         secretType: 'generic'
-        secretArguments: '--from-file=PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/config/appsettings.qa.json' #--dry-run=client'
+        secretArguments: '--from-file=PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/appsettings.QA.json'
         secretName: 'sharedutilities-qa-secret-appsettings'
