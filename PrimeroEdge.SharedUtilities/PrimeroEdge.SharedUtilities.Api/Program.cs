@@ -8,6 +8,7 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
 namespace PrimeroEdge.SharedUtilities.Api
@@ -34,6 +35,23 @@ namespace PrimeroEdge.SharedUtilities.Api
         /// <returns></returns>
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration((hostingContext, config) =>
+                {
+                    config.Sources.Clear();
+
+                    var env = hostingContext.HostingEnvironment;
+
+                    config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                        .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
+
+                    config.AddJsonFile("secrets/appsettings.secrets.json", optional: true);
+
+                    config.AddEnvironmentVariables();
+
+                    if (args != null)
+                        config.AddCommandLine(args);
+                })
+
                 .UseServiceProviderFactory(new AutofacServiceProviderFactory())
                 .ConfigureContainer<ContainerBuilder>(builder =>
                 {
