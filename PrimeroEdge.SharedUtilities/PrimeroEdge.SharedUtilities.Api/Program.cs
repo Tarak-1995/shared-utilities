@@ -41,7 +41,7 @@ namespace PrimeroEdge.SharedUtilities.Api
 
                     var env = hostingContext.HostingEnvironment;
 
-                    config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                    config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                         .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
 
                     config.AddJsonFile("secrets/appsettings.secrets.json", optional: true);
