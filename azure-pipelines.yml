@@ -58,13 +58,6 @@ stages:
         arguments: '/p:RunCodeAnalysis=true'
         configuration: '$(buildConfiguration)'
 
-  
-- stage: UnitTest
-  displayName: Unit Test
-  dependsOn: BuildandAnalysis
-  jobs:
-  - job: UnitTest
-    steps:
     - task: DotNetCoreCLI@2
       inputs:
         command: test
@@ -97,7 +90,7 @@ stages:
   
 - stage: HelmInstall
   displayName: Helm Installs
-  dependsOn: ImageBuild
+  dependsOn: BuildandAnalysis
   jobs: 
   - job: Init
     steps:
@@ -162,6 +155,7 @@ stages:
 
   - job: QAKubesecret
     displayName: Kubernetes QA Secret
+    dependsOn: HelmPackage
     steps:
     - task: Kubernetes@1
       inputs:
