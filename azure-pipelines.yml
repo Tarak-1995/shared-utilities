@@ -22,6 +22,7 @@ variables:
   # Container registry service connection established during pipeline creation
   dockerRegistryServiceConnection: 'c789fcf2-0f5c-47c7-9610-e0148479b574'
   imageRepository: 'sharedutilities'
+  qaimageRepository: 'sharedutilities_qa'
   containerRegistry: 'primeroedgedevacr.azurecr.io'
   dockerfilePath: './PrimeroEdge.SharedUtilities/Dockerfile'
   tag: '$(Build.BuildId)'
@@ -57,12 +58,6 @@ stages:
         arguments: '/p:RunCodeAnalysis=true'
         configuration: '$(buildConfiguration)'
 
-    #- task: VSBuild@1
-    #  inputs:
-    #    solution: '$(project_sln)'
-    #    msbuildArgs: '/t:Metrics /p:MetricsOutputFile=$(Build.ArtifactStagingDirectory)/PrimeroEdgeCode.Metrics.xml'
-    #    platform: '$(buildPlatform)'
-    #    configuration: '$(buildConfiguration)'
   
 - stage: UnitTest
   displayName: Unit Test
@@ -76,15 +71,9 @@ stages:
         projects: '$(test_csproj)'
         arguments: '--configuration $(buildConfiguration)'
   
-- stage: ImageBuild
-  displayName: Image Build $ Push
-  dependsOn: BuildandAnalysis
-  pool:
-    vmImage: $(vmImageNameU)
-  jobs:
-  - job: ImageBuild
-    steps:
-    - task: Docker@2
+- task: Docker@2
+      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/Devops/fixbuild'))
+      displayName: Image Build $ Push
       inputs:
         command: buildAndPush
         repository: $(imageRepository)
@@ -93,6 +82,18 @@ stages:
         tags: |
           $(tag)
           latest
+
+    - task: Docker@2
+      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+      displayName: Image Build $ Push
+      inputs:
+        command: buildAndPush
+        repository: $(qaimageRepository)
+        dockerfile: $(dockerfilePath)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        tags: |
+          $(tag)
+          latest   
   
 - stage: HelmInstall
   displayName: Helm Installs
@@ -116,12 +117,32 @@ stages:
         command: 'package'
         chartPath: $(helmChartPath)
         destination: $(Build.ArtifactStagingDirectory)
-        chartName: 'sharedutilities'  
+        chartName: 'sharedutilities'
+
     - task: PublishPipelineArtifact@1
+      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/Devops/fixbuild'))
       inputs:
         targetPath: '$(Pipeline.Workspace)/a/sharedutilities-0.1.0.tgz'
-        artifact: 'sharedutilities'
+        artifact: 'sharedutilities-dev'
         publishLocation: 'pipeline'
+    - task: PublishPipelineArtifact@1
+      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+      inputs:
+        targetPath: '$(Pipeline.Workspace)/a/sharedutilities-0.1.0.tgz'
+        artifact: 'sharedutilities-qa'
+        publishLocation: 'pipeline'    
+    - task: PublishPipelineArtifact@1
+      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/Devops/fixbuild'))
+      inputs:
+        targetPath: 'PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/deployment/sharedutilities/values.dev.yaml'
+        artifact: 'dev_values'
+        publishLocation: 'pipeline' 
+    - task: PublishPipelineArtifact@1
+      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+      inputs:
+        targetPath: 'PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/deployment/sharedutilities/values.qa.yaml'
+        artifact: 'qa_values'
+        publishLocation: 'pipeline' 
   
 - stage: Secret
   displayName: Generate secret
