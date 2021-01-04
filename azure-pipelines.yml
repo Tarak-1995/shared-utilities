@@ -63,7 +63,15 @@ stages:
         command: test
         projects: '$(test_csproj)'
         arguments: '--configuration $(buildConfiguration)'
-  
+
+- stage: ImageBuild
+  displayName: Image Build $ Push
+  dependsOn: BuildandAnalysis
+  pool:
+    vmImage: $(vmImageNameU)
+  jobs:
+  - job: ImageBuild
+    steps:  
     - task: Docker@2
       condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/Devops/fixbuild'))
       displayName: Image Build $ Push
@@ -90,7 +98,7 @@ stages:
   
 - stage: HelmInstall
   displayName: Helm Installs
-  dependsOn: BuildandAnalysis
+  dependsOn: ImageBuild
   jobs: 
   - job: Init
     steps:
