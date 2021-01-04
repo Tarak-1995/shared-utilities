@@ -1,3 +1,4 @@
 host: qasharedutilitiesservice.perseusedge.com
 namespace: qa
 secretname: sharedutilities-qa-secret-appsettings
+aspnetcore: QA
