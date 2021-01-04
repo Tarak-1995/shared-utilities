@@ -128,5 +128,5 @@ stages:
         kubernetesServiceEndpoint: 'Development-PrimeroEdgeQA-AKS-qa'
         namespace: 'qa'
         secretType: 'generic'
-        secretArguments: '--from-file=PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/config/appsettings.qa.json' 
+        secretArguments: '--from-file=PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/appsettings.QA.json' 
         secretName: 'sharedutilities-qa-secret-appsettings'
