@@ -22,11 +22,9 @@ variables:
   # Container registry service connection established during pipeline creation
   dockerRegistryServiceConnection: 'c789fcf2-0f5c-47c7-9610-e0148479b574'
   imageRepository: 'sharedutilities'
-  qaimageRepository: 'sharedutilities_qa'
   containerRegistry: 'primeroedgedevacr.azurecr.io'
   dockerfilePath: './PrimeroEdge.SharedUtilities/Dockerfile'
   tag: '$(Build.BuildId)'
-  imagePullSecret: './primeroedgedevacr7322f765-auth'
   helmChartPath: './PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/deployment/sharedutilities/'
   # Agent VM image name
   vmImageNameW: 'vs2017-win2016'
@@ -83,18 +81,6 @@ stages:
         tags: |
           $(tag)
           latest
-
-    - task: Docker@2
-      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-      displayName: Image Build $ Push
-      inputs:
-        command: buildAndPush
-        repository: $(qaimageRepository)
-        dockerfile: $(dockerfilePath)
-        containerRegistry: $(dockerRegistryServiceConnection)
-        tags: |
-          $(tag)
-          latest   
   
 - stage: HelmInstall
   displayName: Helm Installs
@@ -126,24 +112,14 @@ stages:
         targetPath: '$(Pipeline.Workspace)/a/sharedutilities-0.1.0.tgz'
         artifact: 'sharedutilities-dev'
         publishLocation: 'pipeline'
-    - task: PublishPipelineArtifact@1
-      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-      inputs:
-        targetPath: '$(Pipeline.Workspace)/a/sharedutilities-0.1.0.tgz'
-        artifact: 'sharedutilities-qa'
-        publishLocation: 'pipeline'    
+        
     - task: PublishPipelineArtifact@1
       condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/Devops/fixbuild'))
       inputs:
         targetPath: 'PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/deployment/sharedutilities/values.dev.yaml'
         artifact: 'dev_values'
         publishLocation: 'pipeline' 
-    - task: PublishPipelineArtifact@1
-      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-      inputs:
-        targetPath: 'PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/deployment/sharedutilities/values.qa.yaml'
-        artifact: 'qa_values'
-        publishLocation: 'pipeline' 
+    
   
 - stage: Secret
   displayName: Generate secret
@@ -161,14 +137,3 @@ stages:
         secretArguments: '--from-file=PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/appsettings.Development.json'
         secretName: 'sharedutilities-dev-secret-appsettings'
 
-  - job: QAKubesecret
-    displayName: Kubernetes QA Secret
-    steps:
-    - task: Kubernetes@1
-      inputs:
-        connectionType: 'Kubernetes Service Connection'
-        kubernetesServiceEndpoint: 'Development-PrimeroEdgeQA-AKS-qa'
-        namespace: 'qa'
-        secretType: 'generic'
-        secretArguments: '--from-file=PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/appsettings.QA.json'
-        secretName: 'sharedutilities-qa-secret-appsettings'
