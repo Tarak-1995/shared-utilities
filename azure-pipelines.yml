@@ -3,7 +3,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
 trigger:
-- dev
+- $(Build.SourceBranch)
 
 resources:
 - repo: self
@@ -25,7 +25,6 @@ variables:
   containerRegistry: 'primeroedgedevacr.azurecr.io'
   dockerfilePath: './PrimeroEdge.SharedUtilities/Dockerfile'
   tag: '$(Build.BuildId)'
-  imagePullSecret: './primeroedgedevacr7322f765-auth'
   helmChartPath: './PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/deployment/sharedutilities/'
   # Agent VM image name
   vmImageNameW: 'vs2017-win2016'
@@ -57,25 +56,12 @@ stages:
         arguments: '/p:RunCodeAnalysis=true'
         configuration: '$(buildConfiguration)'
 
-    #- task: VSBuild@1
-    #  inputs:
-    #    solution: '$(project_sln)'
-    #    msbuildArgs: '/t:Metrics /p:MetricsOutputFile=$(Build.ArtifactStagingDirectory)/PrimeroEdgeCode.Metrics.xml'
-    #    platform: '$(buildPlatform)'
-    #    configuration: '$(buildConfiguration)'
-  
-- stage: UnitTest
-  displayName: Unit Test
-  dependsOn: BuildandAnalysis
-  jobs:
-  - job: UnitTest
-    steps:
     - task: DotNetCoreCLI@2
       inputs:
         command: test
         projects: '$(test_csproj)'
         arguments: '--configuration $(buildConfiguration)'
-  
+
 - stage: ImageBuild
   displayName: Image Build $ Push
   dependsOn: BuildandAnalysis
@@ -83,8 +69,9 @@ stages:
     vmImage: $(vmImageNameU)
   jobs:
   - job: ImageBuild
-    steps:
+    steps:  
     - task: Docker@2
+      displayName: Image Build $ Push
       inputs:
         command: buildAndPush
         repository: $(imageRepository)
@@ -116,12 +103,20 @@ stages:
         command: 'package'
         chartPath: $(helmChartPath)
         destination: $(Build.ArtifactStagingDirectory)
-        chartName: 'sharedutilities'  
+        chartName: 'sharedutilities'
+
     - task: PublishPipelineArtifact@1
       inputs:
         targetPath: '$(Pipeline.Workspace)/a/sharedutilities-0.1.0.tgz'
-        artifact: 'sharedutilities'
+        artifact: 'sharedutilities-dev'
         publishLocation: 'pipeline'
+        
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: 'PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/deployment/sharedutilities/values.dev.yaml'
+        artifact: 'dev_values'
+        publishLocation: 'pipeline' 
+    
   
 - stage: Secret
   displayName: Generate secret
@@ -139,14 +134,3 @@ stages:
         secretArguments: '--from-file=PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/appsettings.Development.json'
         secretName: 'sharedutilities-dev-secret-appsettings'
 
-  - job: QAKubesecret
-    displayName: Kubernetes QA Secret
-    steps:
-    - task: Kubernetes@1
-      inputs:
-        connectionType: 'Kubernetes Service Connection'
-        kubernetesServiceEndpoint: 'Development-PrimeroEdgeQA-AKS-qa'
-        namespace: 'qa'
-        secretType: 'generic'
-        secretArguments: '--from-file=PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/appsettings.QA.json'
-        secretName: 'sharedutilities-qa-secret-appsettings'

@@ -1,3 +1,5 @@
 host: devsharedutilitiesservice.perseusedge.com
 namespace: dev
 secretname: sharedutilities-dev-secret-appsettings
+aspnetcore: Development
+sharedutilitiesrepo: primeroedgedevacr.azurecr.io/sharedutilities:latest
