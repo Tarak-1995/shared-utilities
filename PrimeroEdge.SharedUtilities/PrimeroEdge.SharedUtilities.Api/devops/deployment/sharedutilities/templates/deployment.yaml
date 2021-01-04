@@ -16,7 +16,7 @@ spec:
     spec:     
       containers:
         - name: sharedutilities 
-          image: primeroedgedevacr.azurecr.io/sharedutilities:latest
+          image: {{ .Values.sharedutilities }}
           imagePullPolicy: Always
           ports:
           - containerPort: 5000
