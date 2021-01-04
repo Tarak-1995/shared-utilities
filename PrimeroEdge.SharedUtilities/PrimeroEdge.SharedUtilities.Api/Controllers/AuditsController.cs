@@ -10,6 +10,10 @@ using PrimeroEdge.SharedUtilities.Components;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Cybersoft.Platform.Utilities.Extensions;
+using Cybersoft.Platform.Utilities.ResponseModels;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 
 namespace PrimeroEdge.SharedUtilities.Api.Controllers
 {
@@ -51,7 +55,9 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
         [HttpPost("Read")]
         public async Task<List<Audit>> GetAuditDataAsync(AuditRequest request)
         {
-            return  await _auditManager.GetAuditDataAsync(request);
+            var data  = await _auditManager.GetAuditDataAsync(request);
+            HttpContext.Items[APIConstants.RESPONSE_PAGINATION] = _auditManager.GetPaginationEnvelope();
+            return data;
         }
     }
 }

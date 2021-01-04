@@ -4,6 +4,7 @@
  * Unauthorized copying of this file is strictly prohibited.
  ***********************************************************************
  */
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -19,7 +20,7 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        Task<List<Audit>> GetAuditDataAsync(AuditRequest request);
+        Task<Tuple<List<Audit>, long>> GetAuditDataAsync(AuditRequest request);
 
 
         /// <summary>
