@@ -155,7 +155,6 @@ stages:
 
   - job: QAKubesecret
     displayName: Kubernetes QA Secret
-    dependsOn: HelmPackage
     steps:
     - task: Kubernetes@1
       inputs:
