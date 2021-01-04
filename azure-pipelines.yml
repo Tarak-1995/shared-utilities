@@ -3,7 +3,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
 trigger:
-- dev
+- $(Build.SourceBranch)
 
 resources:
 - repo: self
@@ -71,7 +71,7 @@ stages:
         projects: '$(test_csproj)'
         arguments: '--configuration $(buildConfiguration)'
   
-- task: Docker@2
+    - task: Docker@2
       condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/Devops/fixbuild'))
       displayName: Image Build $ Push
       inputs:
