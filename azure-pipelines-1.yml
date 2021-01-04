@@ -111,7 +111,7 @@ stages:
         
     - task: PublishPipelineArtifact@1
       inputs:
-        targetPath: 'PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/deployment/sharedutilities/values.dev.yaml'
+        targetPath: 'PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/deployment/sharedutilities/values.qa.yaml'
         artifact: 'qa_values'
         publishLocation: 'pipeline'
     
