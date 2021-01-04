@@ -106,14 +106,12 @@ stages:
         chartName: 'sharedutilities'
 
     - task: PublishPipelineArtifact@1
-      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/Devops/fixbuild'))
       inputs:
         targetPath: '$(Pipeline.Workspace)/a/sharedutilities-0.1.0.tgz'
         artifact: 'sharedutilities-dev'
         publishLocation: 'pipeline'
         
     - task: PublishPipelineArtifact@1
-      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/Devops/fixbuild'))
       inputs:
         targetPath: 'PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/deployment/sharedutilities/values.dev.yaml'
         artifact: 'dev_values'
