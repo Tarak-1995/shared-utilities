@@ -125,7 +125,7 @@ stages:
     - task: Kubernetes@1
       inputs:
         connectionType: 'Kubernetes Service Connection'
-        kubernetesServiceEndpoint: 'Development-PrimeroEdgeDev-AKS-dev-1592763342384'
+        kubernetesServiceEndpoint: 'perseus-sharedutilities-dev'
         namespace: 'dev'
         secretType: 'generic'
         secretArguments: '--from-file=PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/appsettings.Development.json'
