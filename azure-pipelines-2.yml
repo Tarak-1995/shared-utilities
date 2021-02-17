@@ -22,7 +22,7 @@ variables:
 
   # Container registry service connection established during pipeline creation
   dockerRegistryServiceConnection: '0308b8a7-8ae6-4c18-b610-58fe54dc62c4'
-  imageRepository: 'primeroedgesharedutilities'
+  imageRepository: 'sharedutilities-dev'
   containerRegistry: 'perseusnonprodacr.azurecr.io'
   dockerfilePath: '**/Dockerfile'
   tag: '$(Build.BuildId)'
