@@ -14,6 +14,12 @@ variables:
   buildConfiguration: 'Release'
   buildPlatform: 'Any CPU'
 
+  # .sln .csproj(UnitTests) relative paths
+  project_sln: "PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.sln"
+  project_csproj: "./PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/PrimeroEdge.SharedUtilities.Api.csproj"
+  test_csproj: "./PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.UnitTests/PrimeroEdge.SharedUtilities.UnitTests.csproj"
+  
+
   # Container registry service connection established during pipeline creation
   dockerRegistryServiceConnection: '0308b8a7-8ae6-4c18-b610-58fe54dc62c4'
   imageRepository: 'primeroedgesharedutilities'
