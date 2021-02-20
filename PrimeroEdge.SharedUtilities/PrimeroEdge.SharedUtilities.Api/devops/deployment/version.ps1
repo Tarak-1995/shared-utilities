@@ -1,3 +1,3 @@
-﻿$version = (Get-Content "version.json" -Raw) | ConvertFrom-Json
+﻿$versionjson = (Get-Content "version.json" -Raw) | ConvertFrom-Json
 
-$version.psobject.properties.value
+$version=$versionjson.psobject.properties.value
