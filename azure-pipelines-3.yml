@@ -13,7 +13,7 @@ variables:
   # Env vars
   buildConfiguration: 'Release'
   buildPlatform: 'Any CPU'
-  #Version: ''
+  Version: '789'
   
   # .sln .csproj(UnitTests) relative paths
   project_sln: "PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.sln"
