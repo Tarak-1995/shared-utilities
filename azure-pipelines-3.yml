@@ -87,7 +87,7 @@ stages:
         dockerfile: $(dockerfilePath)
         containerRegistry: $(dockerRegistryServiceConnection)
         tags: |
-          $($env:Version)
+          $env:Version
           latest
     
 - stage: HelmInstall
