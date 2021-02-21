@@ -65,12 +65,7 @@ stages:
         projects: '$(test_csproj)'
         arguments: '--configuration $(buildConfiguration)'
 
-    - task: AzurePowerShell@5
-      inputs:
-        azureSubscription: 'Perseus Non-Prod (b0b91233-8bb9-44e7-b548-84412ecc5c0d)'
-        ScriptType: 'FilePath'
-        ScriptPath: 'PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/deployment/version.ps1'
-        azurePowerShellVersion: 'LatestVersion'
+
     
 - stage: ImageBuild
   displayName: Image Build $ Push
@@ -80,6 +75,13 @@ stages:
   jobs:
   - job: ImageBuild
     steps:
+    - task: AzurePowerShell@5
+      inputs:
+        azureSubscription: 'Perseus Non-Prod (b0b91233-8bb9-44e7-b548-84412ecc5c0d)'
+        ScriptType: 'FilePath'
+        ScriptPath: 'PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/deployment/version.ps1'
+        azurePowerShellVersion: 'LatestVersion'
+
     - task: Docker@2
       inputs:
         command: buildAndPush
