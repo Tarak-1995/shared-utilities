@@ -13,6 +13,7 @@ variables:
   # Env vars
   buildConfiguration: 'Release'
   buildPlatform: 'Any CPU'
+  HELM_EXPERIMENTAL_OCI: 1
   imageVersion: ''
   helmChartVersion: ''  
   # .sln .csproj(UnitTests) relative paths
