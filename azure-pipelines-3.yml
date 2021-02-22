@@ -13,8 +13,8 @@ variables:
   # Env vars
   buildConfiguration: 'Release'
   buildPlatform: 'Any CPU'
-  Version: '789'
-  
+  imageVersion: ''
+  helmChartVersion: ''  
   # .sln .csproj(UnitTests) relative paths
   project_sln: "PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.sln"
   project_csproj: "./PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/PrimeroEdge.SharedUtilities.Api.csproj"
@@ -24,6 +24,7 @@ variables:
   dockerRegistryServiceConnection: '080de9e3-d7ce-498e-947e-3a9429ac3931'
   imageRepository: 'sharedutilities_qa'
   containerRegistry: 'perseusnonprodacr.azurecr.io'
+  projectName: 'sharedutilities'
   dockerfilePath: '**/Dockerfile'
   tag: '$(Build.BuildId)'
   imagePullSecret: 'perseusnonprodacr10848ea9-auth'
@@ -89,15 +90,9 @@ stages:
         dockerfile: $(dockerfilePath)
         containerRegistry: $(dockerRegistryServiceConnection)
         tags: |
-          $(Version)
+          $(imageVersion)
           latest
-    
-- stage: HelmInstall
-  displayName: Helm Installs
-  dependsOn: ImageBuild
-  jobs: 
-  - job: Init
-    steps:
+
     - task: HelmInstaller@1
       inputs:
         helmVersionToInstall: 'latest'
