@@ -101,8 +101,8 @@ stages:
         echo $(registryPassword) | helm registry login $(registryName).azurecr.io --username $(registryLogin) --password-stdin
         cd ./PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/deployment/
         helm package --app-version $(imageVersion) --version $(helmChartVersion) ./$(projectName)
-        chartPackage=$(ls $(projectName)-$(helmChartVersion).tgz)
-        helm chart push $(registryName).azurecr.io/charts/$(projectName):$(imageVersion) $chartPackage
+        cd ./PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/deployment/sharedutilities
+        helm chart push $(registryName).azurecr.io/charts/$(projectName):$(imageVersion) sharedutilities-1.0.0.100.tgz
       failOnStderr: true
       displayName: "helm package"
       
