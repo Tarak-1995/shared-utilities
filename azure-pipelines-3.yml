@@ -99,7 +99,7 @@ stages:
     - bash: |
         echo $(registryPassword) | helm registry login $(registryName).azurecr.io --username $(registryLogin) --password-stdin
         cd PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/deployment/sharedutilities/
-        helm chart save $(helm package --app-version $(imageVersion) --version $(helmChartVersion) Charts/$(projectName) | grep -o '/.*.tgz') $(registryName).azurecr.io/charts/$(projectName):$(imageVersion)
+        helm chart save $(helm package --app-version $(imageVersion) --version $(helmChartVersion) charts/$(projectName) | grep -o '/.*.tgz') $(registryName).azurecr.io/charts/$(projectName):$(imageVersion)
         helm chart push $(registryName).azurecr.io/charts/$(projectName):$(imageVersion)
       failOnStderr: true
       displayName: "helm package"
