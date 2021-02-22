@@ -106,7 +106,7 @@ stages:
   
 - stage: HelmPackage
   displayName: Helm Chart Package
-  dependsOn: HelmInstall
+  dependsOn: ImageBuild
   jobs: 
   - job: HelmPackage
     displayName: Helm Package
