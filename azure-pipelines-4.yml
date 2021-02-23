@@ -31,17 +31,17 @@ resources:
 
 
 stages:
-- stage: development
-  displayName: development
+- stage: Staging
+  displayName: Staging
   jobs:
-  - deployment: development
+  - deployment: Staging
     variables:
-      k8sNamespace: 'phippyandfriends'
+      #k8sNamespace: 'staging'
       # define 5 more variables: aks, rg, aksSpId, aksSpSecret and aksSpTenantId in the Azure pipeline UI definition
     displayName: deploy helm chart into AKS
     pool:
       vmImage: ubuntu-latest
-    environment: development-$(projectName)
+    #environment: development-$(projectName)
     strategy:
       runOnce:
         deploy:
