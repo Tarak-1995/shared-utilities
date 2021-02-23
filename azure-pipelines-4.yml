@@ -66,8 +66,9 @@ stages:
                   --namespace staging \
                   --install \
                   --wait \
-                  --version $(helmChartVersion) \
-                  --set image.repository=$(registryServerName)/charts/sharedutilies:$(helmChartVersion)
+                  --version 1.0.0 \
+                  #--set image.repository=$(registryServerName)/charts/sharedutilies:$(helmChartVersion)
+                  --set image.repository=PerseusNonProdACR.azurecr.io/charts/sharedutilies:1.0.0
                   #-f $(pipeline.workspace)/ci-pipeline/build-artifact/deploy/k8s/helm/app.yaml \
                   #-f $(pipeline.workspace)/ci-pipeline/build-artifact/deploy/k8s/helm/inf.yaml \
                   #$(projectName) \
