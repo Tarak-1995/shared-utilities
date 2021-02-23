@@ -77,7 +77,7 @@ stages:
               namespace: 'staging'
               command: 'upgrade'
               chartType: 'FilePath'
-              chartPath: '$(pipeline.workspace)/install'
+              chartPath: '$(pipeline.workspace)/install/sharedutilities/'
               chartVersion: '1.0.0'
               releaseName: 'sharedutilities-stg'
               arguments: '--install'
