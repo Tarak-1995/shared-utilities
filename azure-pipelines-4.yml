@@ -47,7 +47,7 @@ stages:
             displayName: "install helm"
             inputs:
               helmVersionToInstall: $(helmVersion)
-          - download: ci-pipeline
+          - download: Perseus_SharedUtilities_QA
             artifact: sharedutilities:$helmChartVersion
           - bash: |
               az login \
