@@ -37,7 +37,7 @@ stages:
     displayName: deploy helm chart into AKS
     pool:
       vmImage: ubuntu-latest
-    #environment: development-$(projectName)
+    environment: staging-$(projectName)
     strategy:
       runOnce:
         deploy:
