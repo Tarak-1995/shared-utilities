@@ -62,7 +62,7 @@ stages:
               echo $(registryPassword) | helm registry login $(registryServerName) --username $(registryLogin) --password-stdin
               #helmChartVersion=$(jq .helmChartVersion $(pipeline.workspace)/ci-pipeline/sharedutilities-qa/variables.json -r)
               helm chart pull $(registryServerName)/charts/$(projectName):$(helmChartVersion)
-              helm chart export $(registryServerName)/charts/$(projectName):$(helmChartVersion) --destination 
+              helm chart export $(registryServerName)/charts/$(projectName):$(helmChartVersion) --destination $(pipeline.workspace)/install
             failOnStderr: true
             displayName: "pull helm chart"
             
