@@ -16,6 +16,7 @@ variables:
     HELM_EXPERIMENTAL_OCI: 1
     registryServerName: "$(registryName).azurecr.io"
     projectName: sharedutilities
+    helmChartVersion: "1.0.0"
 
 steps:
   - checkout: none
