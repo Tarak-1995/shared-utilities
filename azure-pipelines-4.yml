@@ -68,7 +68,7 @@ stages:
                   --set image.repository=$(registryServerName)/charts/sharedutilies:$(helmChartVersion) \
                   #-f $(pipeline.workspace)/ci-pipeline/build-artifact/deploy/k8s/helm/app.yaml \
                   #-f $(pipeline.workspace)/ci-pipeline/build-artifact/deploy/k8s/helm/inf.yaml \
-                  $(projectName) \
+                  #$(projectName) \
                   $(registryName)/$(projectName)
             failOnStderr: true
             displayName: "deploy helm chart"
