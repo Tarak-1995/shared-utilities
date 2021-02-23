@@ -16,6 +16,7 @@ variables:
   registryServerName: "$(registryName).azurecr.io"
   projectName: "sharedutilities"
   helmChartVersion: "1.0.0"
+  azure.service.connection: "Perseus-Non-prod-AKS-eastus-Stg"
 
 resources: 
   pipelines:
@@ -61,17 +62,22 @@ stages:
               echo $(registryPassword) | helm registry login $(registryServerName) --username $(registryLogin) --password-stdin
               #helmChartVersion=$(jq .helmChartVersion $(pipeline.workspace)/ci-pipeline/sharedutilities-qa/variables.json -r)
               helm chart pull $(registryServerName)/charts/$(projectName):$(helmChartVersion)
-              helm chart export $(registryServerName)/charts/$(projectName):$(helmChartVersion) --destination $(pipeline.workspace)/install
-              helm upgrade \
-                  --namespace staging \
-                  --install \
-                  --wait \
-                  --version 1.0.0 \
-                  --set image.repository=$(registryServerName)/charts/sharedutilies
-                  #--set image.repository=PerseusNonProdACR.azurecr.io/charts/sharedutilies:1.0.0 \
-                  #-f $(pipeline.workspace)/ci-pipeline/build-artifact/deploy/k8s/helm/app.yaml \
-                  #-f $(pipeline.workspace)/ci-pipeline/build-artifact/deploy/k8s/helm/inf.yaml \
-                  $(projectName) \
-                  $(registryName)/install/$(projectName)
+              helm chart export $(registryServerName)/charts/$(projectName):$(helmChartVersion) --destination 
             failOnStderr: true
-            displayName: "deploy helm chart"
+            displayName: "pull helm chart"
+            
+          - task: HelmDeploy@0
+            displayName: deploy chart to aks
+            inputs:
+              connectionType: 'Azure Resource Manager'
+              azureSubscription: 'Perseus Non-Prod (b0b91233-8bb9-44e7-b548-84412ecc5c0d)'
+              azureResourceGroup: 'Perseus-nonprod-RG'
+              kubernetesCluster: 'perseusnonprod-eastus2-AKS'
+              useClusterAdmin: true
+              namespace: 'staging'
+              command: 'upgrade'
+              chartType: 'FilePath'
+              chartPath: '$(pipeline.workspace)/install'
+              chartVersion: '1.0.0'
+              releaseName: 'sharedutilities-stg'
+              arguments: '--install'
