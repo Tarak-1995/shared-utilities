@@ -65,7 +65,7 @@ stages:
               helm upgrade \
                   --namespace staging \
                   --version $helmChartVersion \
-                  --set image.repository=$(registryServerName)/sharedutilies_qa\
+                  --set image.repository=$(registryServerName)/charts/sharedutilies\
                   #-f $(pipeline.workspace)/ci-pipeline/build-artifact/deploy/k8s/helm/app.yaml \
                   #-f $(pipeline.workspace)/ci-pipeline/build-artifact/deploy/k8s/helm/inf.yaml \
                   $(projectName) \
