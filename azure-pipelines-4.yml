@@ -73,6 +73,6 @@ stages:
                   #-f $(pipeline.workspace)/ci-pipeline/build-artifact/deploy/k8s/helm/app.yaml \
                   #-f $(pipeline.workspace)/ci-pipeline/build-artifact/deploy/k8s/helm/inf.yaml \
                   $(projectName) \
-                  $(pipeline.workspace)/install/$(projectName)
+                  $(registryName)/$(projectName)
             failOnStderr: true
             displayName: "deploy helm chart"
