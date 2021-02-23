@@ -12,12 +12,11 @@ pool:
 
 variables:
   - group: acr-variable-group
-    parameters:
-      helmVersion: "3.2.3"
-      HELM_EXPERIMENTAL_OCI: 1
-      registryServerName: "$(registryName).azurecr.io"
-      projectName: sharedutilities
-      helmChartVersion: "1.0.0"
+    helmVersion: "3.2.3"
+    HELM_EXPERIMENTAL_OCI: 1
+    registryServerName: "$(registryName).azurecr.io"
+    projectName: sharedutilities
+    helmChartVersion: "1.0.0"
 
 resources: 
   pipelines:
