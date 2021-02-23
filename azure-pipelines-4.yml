@@ -63,7 +63,7 @@ stages:
               #helmChartVersion=$(jq .helmChartVersion $(pipeline.workspace)/ci-pipeline/sharedutilities-qa/variables.json -r)
               helm chart pull $(registryServerName)/charts/$(projectName):$(helmChartVersion)
               helm chart export $(registryServerName)/charts/$(projectName):$(helmChartVersion) --destination $(pipeline.workspace)/install
-            failOnStderr: true
+            failOnStderr: false
             displayName: "pull helm chart"
             
           - task: HelmDeploy@0
