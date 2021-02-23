@@ -48,7 +48,7 @@ stages:
             inputs:
               helmVersionToInstall: $(helmVersion)
           - download: Perseus_SharedUtilities_QA
-            artifact: sharedutilities:$helmChartVersion
+            artifact: sharedutilities
           - bash: |
               az login \
                   --service-principal \
