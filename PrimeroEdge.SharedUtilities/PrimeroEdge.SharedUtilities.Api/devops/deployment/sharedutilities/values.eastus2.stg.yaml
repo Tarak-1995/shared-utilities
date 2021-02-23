@@ -1,0 +1,5 @@
+host: stgsharedutilitiesservice.perseusedge.com
+namespace: staging
+secretname: sharedutilities-stg-secret-appsettings
+aspnetcore: Staging
+sharedutilitiesrepo: PerseusNonProdACR.azurecr.io/sharedutilities_qa:latest
