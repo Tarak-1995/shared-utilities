@@ -19,7 +19,7 @@ variables:
 
 resources: 
   pipelines:
-  - pipeline: Perseus_SharedUtilities_QA
+  - pipeline: ci-pipeline
     source: sharedutilities
     trigger:
       enabled: true
