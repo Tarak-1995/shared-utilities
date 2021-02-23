@@ -100,6 +100,7 @@ stages:
           cd PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/deployment
           helm chart save $(helm package --app-version $(imageVersion) --version $(helmChartVersion) ./$(projectName) | grep -o '/.*.tgz') $(registryName).azurecr.io/charts/$(projectName):$(imageVersion)
           helm chart push $(registryName).azurecr.io/charts/$(projectName):$(imageVersion)
+          echo $(jq -n --arg version "$(helmChartVersion)" '{helmChartVersion: $version}') > $(build.artifactStagingDirectory)/variables.json
       failOnStderr: true
       displayName: "helm package"
         
