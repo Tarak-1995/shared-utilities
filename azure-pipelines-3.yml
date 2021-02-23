@@ -144,3 +144,12 @@ stages:
         secretType: 'generic'
         secretArguments: '--from-file=PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/appsettings.QA.json' 
         secretName: 'sharedutilities-qa-secret-appsettings'
+
+    - task: Kubernetes@1
+      inputs:
+        connectionType: 'Kubernetes Service Connection'
+        kubernetesServiceEndpoint: 'Perseus-Non-prod-AKS-eastus-Stg'
+        namespace: 'staging'
+        secretType: 'generic'
+        secretArguments: '--from-file=PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/appsettings.Staging.json' 
+        secretName: 'sharedutilities-stg-secret-appsettings'
