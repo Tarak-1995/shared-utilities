@@ -12,11 +12,12 @@ pool:
 
 variables:
   - group: acr-variable-group
-    helmVersion: 3.2.3
-    HELM_EXPERIMENTAL_OCI: 1
-    registryServerName: "$(registryName).azurecr.io"
-    projectName: sharedutilities
-    helmChartVersion: "1.0.0"
+    parameters:
+      helmVersion: 3.2.3
+      HELM_EXPERIMENTAL_OCI: 1
+      registryServerName: "$(registryName).azurecr.io"
+      projectName: sharedutilities
+      helmChartVersion: "1.0.0"
 
 steps:
   - checkout: none
@@ -41,10 +42,8 @@ steps:
        helm chart export $(registryServerName)/charts/$(projectName):$helmChartVersion --destination $(pipeline.workspace)/install
        helm upgrade \
            --namespace staging \
-           --install \
-           --wait \
            --version $helmChartVersion \
-           --set image.repository=$(registryServerName)/$(projectName) \
+           --set image.repository=$(registryServerName)/sharedutilies_qa\
            -f $(pipeline.workspace)/ci-pipeline/build-artifact/deploy/k8s/helm/app.yaml \
            -f $(pipeline.workspace)/ci-pipeline/build-artifact/deploy/k8s/helm/inf.yaml \
            $(projectName) \
