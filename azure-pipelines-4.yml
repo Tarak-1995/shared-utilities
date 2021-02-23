@@ -60,12 +60,12 @@ stages:
                   -g $(rg)
               echo $(registryPassword) | helm registry login $(registryServerName) --username $(registryLogin) --password-stdin
               #helmChartVersion=$(jq .helmChartVersion $(pipeline.workspace)/ci-pipeline/sharedutilities-qa/variables.json -r)
-              helm chart pull $(registryServerName)/charts/$(projectName):$helmChartVersion
-              helm chart export $(registryServerName)/charts/$(projectName):$helmChartVersion --destination $(pipeline.workspace)/install
+              helm chart pull $(registryServerName)/charts/$(projectName):$(helmChartVersion)
+              helm chart export $(registryServerName)/charts/$(projectName):$(helmChartVersion) --destination $(pipeline.workspace)/install
               helm upgrade \
                   --namespace staging \
-                  --version $helmChartVersion \
-                  --set image.repository=$(registryServerName)/charts/sharedutilies:$helmChartVersion\
+                  --version $(helmChartVersion) \
+                  --set image.repository=$(registryServerName)/charts/sharedutilies:$(helmChartVersion) \
                   #-f $(pipeline.workspace)/ci-pipeline/build-artifact/deploy/k8s/helm/app.yaml \
                   #-f $(pipeline.workspace)/ci-pipeline/build-artifact/deploy/k8s/helm/inf.yaml \
                   $(projectName) \
