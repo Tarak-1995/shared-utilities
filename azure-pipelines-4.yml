@@ -64,6 +64,8 @@ stages:
               helm chart export $(registryServerName)/charts/$(projectName):$(helmChartVersion) --destination $(pipeline.workspace)/install
               helm upgrade \
                   --namespace staging \
+                  --install \
+                  --wait \
                   --version $(helmChartVersion) \
                   --set image.repository=$(registryServerName)/charts/sharedutilies:$(helmChartVersion)
                   #-f $(pipeline.workspace)/ci-pipeline/build-artifact/deploy/k8s/helm/app.yaml \
