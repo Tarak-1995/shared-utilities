@@ -20,7 +20,7 @@ variables:
 resources: 
   pipelines:
   - pipeline: ci-pipeline
-    source: sharedutilities
+    source: "Perseus_SharedUtilities_QA"
     trigger:
       enabled: true
       branches:
