@@ -6,19 +6,19 @@
 trigger:
   - master
 
-name: '1.0.0$(Rev:.r)'
+name: '1.0$(Rev:.r)'
 
 resources:
   - repo: self
   
 variables:
-  
+
   # Env vars
   buildConfiguration: 'Release'
   buildPlatform: 'Any CPU'
   HELM_EXPERIMENTAL_OCI: 1
-  imageVersion: ''
-  helmChartVersion: ''  
+  imageVersion: '1.0$(Rev:.r)'
+  helmChartVersion: '1.0$(Rev:.r)'
   # .sln .csproj(UnitTests) relative paths
   project_sln: "PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.sln"
   project_csproj: "./PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/PrimeroEdge.SharedUtilities.Api.csproj"
@@ -30,7 +30,6 @@ variables:
   containerRegistry: 'perseusnonprodacr.azurecr.io'
   projectName: 'sharedutilities'
   dockerfilePath: '**/Dockerfile'
-  tag: '$(Build.BuildId)'
   imagePullSecret: 'perseusnonprodacr10848ea9-auth'
   helmChartPath: './PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/deployment/sharedutilities/'
   # Agent VM image name
@@ -80,13 +79,6 @@ stages:
   jobs:
   - job: ImageBuild
     steps:
-    - task: AzurePowerShell@5
-      inputs:
-        azureSubscription: 'Perseus Non-Prod (b0b91233-8bb9-44e7-b548-84412ecc5c0d)'
-        ScriptType: 'FilePath'
-        ScriptPath: 'PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/deployment/version.ps1'
-        azurePowerShellVersion: 'LatestVersion'
-
     - task: Docker@2
       inputs:
         command: buildAndPush
@@ -104,7 +96,6 @@ stages:
           cd PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/deployment
           helm chart save $(helm package --app-version $(imageVersion) --version $(helmChartVersion) ./$(projectName) | grep -o '/.*.tgz') $(registryName).azurecr.io/charts/$(projectName):$(imageVersion)
           helm chart push $(registryName).azurecr.io/charts/$(projectName):$(imageVersion)
-          echo $(jq -n --arg version "$(helmChartVersion)" '{helmChartVersion: $version}') > $(build.artifactStagingDirectory)/variables.json
       failOnStderr: true
       displayName: "helm package"
         
