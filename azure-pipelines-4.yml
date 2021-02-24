@@ -82,7 +82,7 @@ stages:
               command: 'upgrade'
               chartType: 'FilePath'
               chartPath: '$(pipeline.workspace)/install/sharedutilities/'
-              valueFile: '/home/vsts/work/1/ci-pipeline/sharedutilities-qa/qa_values/values.eastus2.stg.yaml'
+              valueFile: '$(pipeline.workspace)/install/sharedutilities/values.eastus2.stg.yaml'
               chartVersion: '1.0.0'
               releaseName: 'sharedutilities-stg'
               arguments: '--install'
