@@ -15,7 +15,7 @@ variables:
   HELM_EXPERIMENTAL_OCI: 1
   registryServerName: "$(registryName).azurecr.io"
   projectName: "sharedutilities"
-  helmChartVersion: "1.0.0"
+  helmChartVersion: "1.0.10"
   azure.service.connection: "Perseus-Non-prod-AKS-eastus-Stg"
 
 resources: 
