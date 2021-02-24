@@ -17,8 +17,8 @@ variables:
   buildConfiguration: 'Release'
   buildPlatform: 'Any CPU'
   HELM_EXPERIMENTAL_OCI: 1
-  imageVersion: 1.0$(Rev:.r)
-  helmChartVersion: 1.0$(Rev:.r)
+  imageVersion: $(name)
+  helmChartVersion: $(name)
   # .sln .csproj(UnitTests) relative paths
   project_sln: "PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.sln"
   project_csproj: "./PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/PrimeroEdge.SharedUtilities.Api.csproj"
