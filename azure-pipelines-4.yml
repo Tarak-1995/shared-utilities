@@ -83,6 +83,6 @@ stages:
               chartType: 'FilePath'
               chartPath: '$(pipeline.workspace)/install/sharedutilities/'
               valueFile: '$(pipeline.workspace)/install/sharedutilities/values.eastus2.stg.yaml'
-              chartVersion: '1.0.0'
+              chartVersion: $(helmChartVersion)
               releaseName: 'sharedutilities-stg'
               arguments: '--install'
