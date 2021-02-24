@@ -5,7 +5,9 @@
 
 trigger:
   - master
-  
+
+name: '1.0.0$(Rev:.r)'
+
 resources:
   - repo: self
   
