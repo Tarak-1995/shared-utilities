@@ -16,7 +16,12 @@ spec:
     spec:     
       containers:
         - name: sharedutilities 
-          image: __imageName__
+          env:          
+          - name: "image"
+            valueFrom:
+              secretKeyRef:
+                key:  imageName
+                name: {{ .Release.Name }}-auth
           imagePullPolicy: Always
           ports:
           - containerPort: 5000
