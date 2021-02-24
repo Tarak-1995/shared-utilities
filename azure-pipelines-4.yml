@@ -65,6 +65,10 @@ stages:
               helm chart export $(registryServerName)/charts/$(projectName):$(helmChartVersion) --destination $(pipeline.workspace)/install
             failOnStderr: false
             displayName: "pull helm chart"
+             
+          - task: CmdLine@2
+            inputs:
+              script: 'ls -l $(pipeline.workspace)/install/sharedutilities/'
             
           - task: HelmDeploy@0
             displayName: deploy chart to aks
