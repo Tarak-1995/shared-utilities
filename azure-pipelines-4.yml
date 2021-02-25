@@ -34,6 +34,9 @@ stages:
   displayName: Staging
   jobs:
   - deployment: Staging
+    variables:
+    - name: image
+      value: $(registryServerName)/sharedutilities-qa:$(helmChartVersion)
       # define 5 more variables: aks, rg, aksSpId, aksSpSecret and aksSpTenantId in the Azure pipeline UI definition
     displayName: deploy helm chart into AKS
     pool:
@@ -69,7 +72,7 @@ stages:
           - task: qetza.replacetokens.replacetokens-task.replacetokens@3
             displayName: Replace tokens in **/*
             inputs:
-              rootDirectory: $(Pipeline.Workspace)/drop
+              rootDirectory: $(Pipeline.Workspace)/install
               targetFiles: '**/*.yml'
               keepToken: true
               tokenPrefix: __
