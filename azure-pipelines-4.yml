@@ -15,7 +15,7 @@ variables:
   HELM_EXPERIMENTAL_OCI: 1
   registryServerName: "$(registryName).azurecr.io"
   projectName: "sharedutilities"
-  helmChartVersion: "1.0.9"
+  helmChartVersion: "1.0.12"
   azure.service.connection: "Perseus-Non-prod-AKS-eastus-Stg"
 
 resources: 
@@ -82,4 +82,4 @@ stages:
               releaseName: 'sharedutilities-stg'
               overrideValues: 'imageName=$(registryServerName)/sharedutilities-qa:$(helmChartVersion)'
               valueFile: '$(pipeline.workspace)/install/sharedutilities/values.eastus2.stg.yaml'
-              arguments: '--install --dry-run'
+              arguments: '--install'
