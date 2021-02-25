@@ -73,7 +73,7 @@ stages:
             displayName: Replace tokens in **/*
             inputs:
               rootDirectory: $(Pipeline.Workspace)/install
-              targetFiles: '**/*.yml'
+              targetFiles: '**/*.yaml'
               keepToken: true
               tokenPrefix: __
               tokenSuffix: __
