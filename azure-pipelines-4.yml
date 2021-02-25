@@ -63,23 +63,20 @@ stages:
               #helmChartVersion=$(jq .helmChartVersion $(pipeline.workspace)/ci-pipeline/sharedutilities-qa/variables.json -r)
               helm chart pull $(registryServerName)/charts/$(projectName):$(helmChartVersion)
               helm chart export $(registryServerName)/charts/$(projectName):$(helmChartVersion) --destination $(pipeline.workspace)/install
-            failOnStderr: false
-            displayName: "pull helm chart"
-            
-          - task: HelmDeploy@0
-            displayName: deploy chart to aks
-            inputs:
-              connectionType: 'Azure Resource Manager'
-              azureSubscription: 'Perseus Non-Prod (b0b91233-8bb9-44e7-b548-84412ecc5c0d)'
-              azureResourceGroup: 'Perseus-nonprod-RG'
-              kubernetesCluster: 'perseusnonprod-eastus2-AKS'
-              useClusterAdmin: true
-              namespace: 'staging'
-              command: 'upgrade'
-              chartType: 'FilePath'
-              chartPath: '$(pipeline.workspace)/install/sharedutilities/'
-              chartVersion: '$(helmChartVersion)'
-              releaseName: 'sharedutilities-stg'
-              valueFile: '$(pipeline.workspace)/install/sharedutilities/values.eastus2.stg.yaml'
-              #overrideValues: 'imageName=$(registryServerName)/sharedutilities-qa:$(helmChartVersion)'
-              arguments: '--install'
+              helm upgrade \
+                  --namespace $(k8sNamespace) \
+                  --create-namespace \
+                  --install \
+                  --wait \
+                  --version $helmChartVersion \
+                  -f $(pipeline.workspace)/ci-pipeline/sharedutilities-qa/PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/deployment/sharedutilities/templates/ingress.yaml \
+                  -f $(pipeline.workspace)/ci-pipeline/sharedutilities-qa/PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/deployment/sharedutilities/templates/service.yaml \
+                  -f $(pipeline.workspace)/ci-pipeline/sharedutilities-qa/PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/deployment/sharedutilities/templates/deployment.yaml \
+                  -f $(pipeline.workspace)/ci-pipeline/sharedutilities-qa/PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/deployment/sharedutilities/templates/secret.yaml \
+                  -f $(pipeline.workspace)/ci-pipeline/sharedutilities-qa/PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/deployment/sharedutilities/values.eastus2.stg.yaml
+                  --set imageName=$(registryServerName)/sharedutilities-qa:$(helmChartVersion) \
+                  $(projectName) \
+                  $(pipeline.workspace)/install/$(projectName)
+            failOnStderr: true
+            displayName: "deploy helm chart"
+                    
