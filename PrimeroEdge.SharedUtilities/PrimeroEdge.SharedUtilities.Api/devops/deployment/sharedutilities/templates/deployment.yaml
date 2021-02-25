@@ -17,11 +17,7 @@ spec:
       containers:
         - name: sharedutilities 
           env:          
-          - name: "image"
-            valueFrom:
-              secretKeyRef:
-                key:  imageName
-                name: {{ .Release.Name }}-auth
+          image: {{ .Values.sharedutilitiesrepo }}
           imagePullPolicy: Always
           ports:
           - containerPort: 5000
