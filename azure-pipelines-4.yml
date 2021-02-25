@@ -66,6 +66,16 @@ stages:
             failOnStderr: false
             displayName: "pull helm chart"
             
+          - task: qetza.replacetokens.replacetokens-task.replacetokens@3
+            displayName: Replace tokens in **/*
+            inputs:
+              rootDirectory: $(Pipeline.Workspace)/drop
+              targetFiles: '**/*.yml'
+              keepToken: true
+              tokenPrefix: __
+              tokenSuffix: __
+
+            
           - task: HelmDeploy@0
             displayName: deploy chart to aks
             inputs:
