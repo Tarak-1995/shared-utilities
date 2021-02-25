@@ -82,4 +82,5 @@ stages:
               releaseName: 'sharedutilities-stg'
               overrideValues: 'image=$(registryServerName)/sharedutilities-qa:$(helmChartVersion)'
               valueFile: '$(pipeline.workspace)/install/sharedutilities/values.eastus2.stg.yaml'
+              #overrideValues: 'sharedutilitiesrepo=$(registryServerName)/sharedutilities-qa:$(helmChartVersion)'
               arguments: '--install'
