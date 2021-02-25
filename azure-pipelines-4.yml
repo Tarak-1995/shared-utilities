@@ -75,7 +75,7 @@ stages:
               kubernetesCluster: 'perseusnonprod-eastus2-AKS'
               useClusterAdmin: true
               namespace: 'staging'
-              command: 'upgrade'
+              command: 'install'
               chartType: 'FilePath'
               chartPath: '$(pipeline.workspace)/install/sharedutilities/'
               chartVersion: '$(helmChartVersion)'
