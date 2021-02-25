@@ -16,7 +16,6 @@ spec:
     spec:     
       containers:
         - name: sharedutilities 
-          env:          
           image: {{ .Values.sharedutilitiesrepo }}
           imagePullPolicy: Always
           ports:
