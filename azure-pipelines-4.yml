@@ -35,7 +35,7 @@ stages:
   jobs:
   - deployment: Staging
     variables:
-    - name: image
+    - name: imageName
       value: $(registryServerName)/sharedutilities-qa:$(helmChartVersion)
       # define 5 more variables: aks, rg, aksSpId, aksSpSecret and aksSpTenantId in the Azure pipeline UI definition
     displayName: deploy helm chart into AKS
