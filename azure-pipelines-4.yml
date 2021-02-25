@@ -80,6 +80,6 @@ stages:
               chartPath: '$(pipeline.workspace)/install/sharedutilities/'
               chartVersion: '$(helmChartVersion)'
               releaseName: 'sharedutilities-stg'
-              overrideValues: 'imageName=$(registryServerName)/sharedutilities-qa:$(helmChartVersion)'
               valueFile: '$(pipeline.workspace)/install/sharedutilities/values.eastus2.stg.yaml'
+              overrideValues: 'imageName=$(registryServerName)/sharedutilities-qa:$(helmChartVersion)'
               arguments: '--install'
