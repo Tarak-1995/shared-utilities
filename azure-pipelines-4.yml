@@ -64,8 +64,7 @@ stages:
               helm chart pull $(registryServerName)/charts/$(projectName):$(helmChartVersion)
               helm chart export $(registryServerName)/charts/$(projectName):$(helmChartVersion) --destination $(pipeline.workspace)/install
               helm upgrade \
-                  --namespace $(k8sNamespace) \
-                  --create-namespace \
+                  --namespace staging \
                   --install \
                   --wait \
                   --version $helmChartVersion \
