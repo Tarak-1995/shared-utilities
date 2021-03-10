@@ -59,7 +59,6 @@ namespace PrimeroEdge.SharedUtilities.Api
             {
                 var settings = c.Resolve<Lazy<Task<ErrorMessageSettings>>>().Value.Result;
                 settings.MongoDbSettings.ConnectionString = c.DecryptKeyVaultString(CryptoManager.CONNECTION_STRING_KEY, settings.MongoDbSettings.ConnectionString);
-                settings.MongoDbSettings.CollectionName = "Audit-Dev";
                 return new MongoDbManager<MessageData>(settings.MongoDbSettings);
             }).SingleInstance();
 
