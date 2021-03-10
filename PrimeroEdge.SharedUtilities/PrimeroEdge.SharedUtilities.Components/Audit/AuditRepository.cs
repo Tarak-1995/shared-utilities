@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Cybersoft.Platform.Utilities.Factories;
+using Cybersoft.Platform.Utilities.ResponseModels;
 using MongoDB.Driver;
 
 namespace PrimeroEdge.SharedUtilities.Components
@@ -24,15 +26,18 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// mongoDbManager
         /// </summary>
         private readonly Lazy<Task<IMongoDbManager<Audit>>> _mongoDbManager;
+        private readonly UserProfileModel _userProfile;
+
 
 
         /// <summary>
         /// AuditRepository
         /// </summary>
         /// <param name="mongoDbManager"></param>
-        public AuditRepository(Lazy<Task<IMongoDbManager<Audit>>> mongoDbManager)
+        public AuditRepository(Lazy<Task<IMongoDbManager<Audit>>> mongoDbManager, IUserSessionFactory sessionFactory)
         {
             _mongoDbManager = mongoDbManager ?? throw new ArgumentNullException(nameof(mongoDbManager));
+            _userProfile = sessionFactory.UserProfile;
         }
 
         /// <summary>
@@ -50,6 +55,8 @@ namespace PrimeroEdge.SharedUtilities.Components
             {
                 x.Id = Guid.NewGuid().ToString();
                 x.CreatedDate = utcNow;
+                x.UserId = _userProfile.UserId;
+                x.RegionId = _userProfile.RegionId;
             });
 
             if(data.Any())
@@ -65,7 +72,7 @@ namespace PrimeroEdge.SharedUtilities.Components
         {
             var mongoManager = await _mongoDbManager.Value.ConfigureAwait(false);
 
-            var filter =  Builders<Audit>.Filter.Where(x => x.EntityTypeId == request.EntityTypeId && x.EntityId == request.EntityId);
+            var filter =  Builders<Audit>.Filter.Where(x => x.EntityTypeId == request.EntityTypeId && x.EntityId == request.EntityId && x.RegionId == _userProfile.RegionId);
             
             if(!string.IsNullOrWhiteSpace(request.Field))
                filter = filter & Builders<Audit>.Filter.Where(x=> x.Field.Equals(request.Field));

@@ -7,11 +7,11 @@
 
 using System;
 using System.IO;
+using Cybersoft.Platform.Utilities.MiddleWare;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerUI;
@@ -53,6 +53,7 @@ namespace PrimeroEdge.SharedUtilities.Api
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 //c.IncludeXmlComments(xmlPath);
             });
+            services.AddSessionFactory();
         }
 
         /// <summary>
@@ -68,6 +69,7 @@ namespace PrimeroEdge.SharedUtilities.Api
             }
 
             app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            app.UseSessionMiddlware();
             app.UseMiddleware<ResponseMiddleware>();
             app.UseHttpsRedirection();
 

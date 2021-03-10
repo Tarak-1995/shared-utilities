@@ -14,13 +14,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Cybersoft.Platform.Utilities.ResponseModels;
 using MongoDB.Driver;
+using Cybersoft.Platform.Utilities.Factories;
 
 namespace PrimeroEdge.SharedUtilities.UnitTests
 {
     public class AuditManagerTests
     {
         private IAuditManager _auditManager;
+       private IUserSessionFactory _sessionFactory;
         private IAuditRepository _auditRepository;
         private IMongoDbManager<Audit> _mongoDbManager;
         private Lazy<Task<IMongoDbManager<Audit>>> _lazyMongoDbManager;
@@ -29,8 +32,10 @@ namespace PrimeroEdge.SharedUtilities.UnitTests
         public void SetUp()
         {
             _mongoDbManager = Substitute.For<IMongoDbManager<Audit>>();
+            _sessionFactory = Substitute.For<IUserSessionFactory>();
+
             _lazyMongoDbManager = new Lazy<Task<IMongoDbManager<Audit>>>(async () => await Task.FromResult(_mongoDbManager));
-            _auditRepository = new AuditRepository(_lazyMongoDbManager);
+            _auditRepository = new AuditRepository(_lazyMongoDbManager, _sessionFactory);
             _auditManager = new AuditManager(_auditRepository);
         }
 
@@ -73,14 +78,14 @@ namespace PrimeroEdge.SharedUtilities.UnitTests
         [Test]
         public void AuditRepositoryConstructor_WhenMissingSqlDbManager_ShouldThrowError()
         {
-            var exception = Assert.Throws<ArgumentNullException>(() => new AuditRepository(null));
+            var exception = Assert.Throws<ArgumentNullException>(() => new AuditRepository(null, null));
             Assert.That(exception.ParamName, Is.EqualTo("mongoDbManager"));
         }
 
         [Test]
         public void AuditRepositoryConstructor_WhenAllValidArguments_ShouldReturnInstance()
         {
-            Assert.DoesNotThrow(() => new AuditRepository(_lazyMongoDbManager));
+            Assert.DoesNotThrow(() => new AuditRepository(_lazyMongoDbManager, _sessionFactory));
         }
 
         [Test]
