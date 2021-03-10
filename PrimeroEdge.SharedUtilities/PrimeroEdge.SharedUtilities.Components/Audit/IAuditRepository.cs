@@ -20,7 +20,7 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        Task<Tuple<List<Audit>, long>> GetAuditDataAsync(AuditRequest request);
+        Task<Tuple<List<Audit>, long>> GetAuditDataAsync(AuditRequest request, int regionId);
 
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        Task SaveAuditDataAsync(List<Audit> data);
+        Task SaveAuditDataAsync(List<Audit> data, int userId, int regionId);
 
     }
 }

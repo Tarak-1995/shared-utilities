@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using Cybersoft.Platform.Utilities.ResponseModels;
 using MongoDB.Driver;
 using Cybersoft.Platform.Utilities.Factories;
+using Cybersoft.Platform.Authorization.HeaderUtilities.Factories;
 
 namespace PrimeroEdge.SharedUtilities.UnitTests
 {

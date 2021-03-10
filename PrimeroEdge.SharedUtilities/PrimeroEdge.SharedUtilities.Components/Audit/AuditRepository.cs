@@ -10,9 +10,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Cybersoft.Platform.Utilities.Factories;
-using Cybersoft.Platform.Utilities.ResponseModels;
 using MongoDB.Driver;
+using Cybersoft.Platform.Authorization.HeaderUtilities.Models;
+using Cybersoft.Platform.Authorization.HeaderUtilities.Factories;
 
 namespace PrimeroEdge.SharedUtilities.Components
 {
@@ -26,18 +26,14 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// mongoDbManager
         /// </summary>
         private readonly Lazy<Task<IMongoDbManager<Audit>>> _mongoDbManager;
-        private readonly UserProfileModel _userProfile;
-
-
 
         /// <summary>
         /// AuditRepository
         /// </summary>
         /// <param name="mongoDbManager"></param>
-        public AuditRepository(Lazy<Task<IMongoDbManager<Audit>>> mongoDbManager, IUserSessionFactory sessionFactory)
+        public AuditRepository(Lazy<Task<IMongoDbManager<Audit>>> mongoDbManager)
         {
             _mongoDbManager = mongoDbManager ?? throw new ArgumentNullException(nameof(mongoDbManager));
-            _userProfile = sessionFactory.UserProfile;
         }
 
         /// <summary>
@@ -45,7 +41,7 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        public async Task SaveAuditDataAsync(List<Audit> data)
+        public async Task SaveAuditDataAsync(List<Audit> data, int userId, int regionId)
         {
             var mongoManager = await _mongoDbManager.Value.ConfigureAwait(false);
             data = data.Where(x => x.NewValue != x.OldValue).ToList();
@@ -55,8 +51,8 @@ namespace PrimeroEdge.SharedUtilities.Components
             {
                 x.Id = Guid.NewGuid().ToString();
                 x.CreatedDate = utcNow;
-                x.UserId = _userProfile.UserId;
-                x.RegionId = _userProfile.RegionId;
+                x.UserId = userId;
+                x.RegionId = regionId;
             });
 
             if(data.Any())
@@ -68,11 +64,11 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        public async Task<Tuple<List<Audit>, long>> GetAuditDataAsync(AuditRequest request)
+        public async Task<Tuple<List<Audit>, long>> GetAuditDataAsync(AuditRequest request, int regionId)
         {
             var mongoManager = await _mongoDbManager.Value.ConfigureAwait(false);
 
-            var filter =  Builders<Audit>.Filter.Where(x => x.EntityTypeId == request.EntityTypeId && x.EntityId == request.EntityId && x.RegionId == _userProfile.RegionId);
+            var filter =  Builders<Audit>.Filter.Where(x => x.EntityTypeId == request.EntityTypeId && x.EntityId == request.EntityId && x.RegionId == regionId);
             
             if(!string.IsNullOrWhiteSpace(request.Field))
                filter = filter & Builders<Audit>.Filter.Where(x=> x.Field.Equals(request.Field));
