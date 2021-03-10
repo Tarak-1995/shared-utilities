@@ -161,7 +161,7 @@ stages:
               chartType: 'FilePath'
               chartPath: '$(pipeline.workspace)/install/sharedutilities/'
               chartVersion: '$(helmChartVersion)'
-              releaseName: 'sharedutilitiesapi-qa'
+              releaseName: 'sharedutilities-qa'
               valueFile: '$(pipeline.workspace)/install/sharedutilities/values.eastus2.qa.yaml'
               #overrideValues: 'sharedutilitiesrepo=$(registryServerName)/sharedutilities-qa:$(helmChartVersion)'
               arguments: '--install'
