@@ -93,7 +93,7 @@ stages:
               chartType: 'FilePath'
               chartPath: '$(pipeline.workspace)/install/sharedutilities/'
               chartVersion: '$(helmChartVersion)'
-              releaseName: 'sharedutilitiesapi-dev'
+              releaseName: 'perseus-sharedutilities-dev'
               valueFile: '$(pipeline.workspace)/install/sharedutilities/values.eastus2.dev.yaml'
               #overrideValues: 'sharedutilitiesrepo=$(registryServerName)/sharedutilities-qa:$(helmChartVersion)'
               arguments: '--install'
