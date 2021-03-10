@@ -5,6 +5,7 @@
  ***********************************************************************
  */
 
+using System;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;

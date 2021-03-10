@@ -38,9 +38,9 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        public async Task<List<Audit>> GetAuditDataAsync(AuditRequest request)
+        public async Task<List<Audit>> GetAuditDataAsync(AuditRequest request, int regionId)
         {
-            var data = await _auditRepository.GetAuditDataAsync(request).ConfigureAwait(false);
+            var data = await _auditRepository.GetAuditDataAsync(request, regionId).ConfigureAwait(false);
             PaginationEnvelope = new Pagination(request.PageNumber, request.PageSize, (int)data.Item2);
             return data.Item1;
         }
@@ -50,9 +50,9 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        public async Task SaveAuditDataAsync(List<Audit> data)
+        public async Task SaveAuditDataAsync(List<Audit> data, int userId, int regionId)
         {
-            await _auditRepository.SaveAuditDataAsync(data).ConfigureAwait(false);
+            await _auditRepository.SaveAuditDataAsync(data, userId, regionId).ConfigureAwait(false);
         }
     }
 }

@@ -5,11 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Cybersoft.Platform.Data.MongDb" Version="1.1.0.12291" />
-    <PackageReference Include="Cybersoft.Platform.DocumentStorage" Version="1.1.0.12291" />
-    <PackageReference Include="Cybersoft.Platform.Swashbuckle.AspNetCore" Version="1.1.0.12291" />
-    <PackageReference Include="Cybersoft.Platform.Logging" Version="1.1.0.12291" />
-    <PackageReference Include="Cybersoft.Platform.Utilities" Version="1.1.0.12291" />
+    <PackageReference Include="Cybersoft.Platform.Authorization.HeaderUtilities" Version="1.1.0.2221" />
+    <PackageReference Include="Cybersoft.Platform.Data.MongDb" Version="1.1.0.2221" />
+    <PackageReference Include="Cybersoft.Platform.DocumentStorage" Version="1.1.0.2221" />
+    <PackageReference Include="Cybersoft.Platform.Swashbuckle.AspNetCore" Version="1.1.0.2221" />
+    <PackageReference Include="Cybersoft.Platform.Logging" Version="1.1.0.2221" />
+    <PackageReference Include="Cybersoft.Platform.Utilities" Version="1.1.0.2221" />
   </ItemGroup>
  
 </Project>
