@@ -7,12 +7,15 @@
 
 using System;
 using System.IO;
+using Cybersoft.Platform.Authorization.HeaderUtilities.Extensions;
+using Cybersoft.Platform.Authorization.HeaderUtilities.Factories;
+using Cybersoft.Platform.Utilities.MiddleWare;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
@@ -53,6 +56,8 @@ namespace PrimeroEdge.SharedUtilities.Api
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 //c.IncludeXmlComments(xmlPath);
             });
+            var bypassAuthSettings = Options.Create(Configuration.GetSection("BypassAuthenticationSettings").Get<BypassAuthenticationSettings>());
+            services.AddSessionFactory(bypassAuthSettings.Value);
         }
 
         /// <summary>
@@ -68,6 +73,7 @@ namespace PrimeroEdge.SharedUtilities.Api
             }
 
             app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            app.UseSessionMiddleware();
             app.UseMiddleware<ResponseMiddleware>();
             app.UseHttpsRedirection();
 

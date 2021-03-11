@@ -26,7 +26,7 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// <summary>
         /// Get or set RegionId
         /// </summary>
-        public int? RegionId { get; set; }
+        public int RegionId { get; set; }
 
         /// <summary>
         /// Get or set EntityTypeId
@@ -38,11 +38,6 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// </summary>
         [Required]
         public int EntityId { get; set; }
-
-        /// <summary>
-        /// Get or set DataSourceId
-        /// </summary>
-        public int? DataSourceId { get; set; }
 
         /// <summary>
         /// Get or set UserId
@@ -58,11 +53,6 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// Get or set CreatedDate
         /// </summary>
         public DateTime CreatedDate { get; set; }
-
-        /// <summary>
-        /// Get or set ChangeFromLocation
-        /// </summary>
-        public string ChangeFromLocation { get; set; }
 
 
         /// <summary>
