@@ -7,6 +7,7 @@
 using Cybersoft.Platform.Data.MongDb;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace PrimeroEdge.SharedUtilities.Components
@@ -26,6 +27,7 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// <summary>
         /// Get or set RegionId
         /// </summary>
+        [System.Text.Json.Serialization.JsonIgnore]
         public int RegionId { get; set; }
 
         /// <summary>
@@ -42,6 +44,7 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// <summary>
         /// Get or set UserId
         /// </summary>
+        [System.Text.Json.Serialization.JsonIgnore]
         public int UserId { get; set; }
 
         /// <summary>
@@ -78,5 +81,48 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// Get or set Comment
         /// </summary>
         public string Comment { get; set; }
+    }
+
+
+    public class AuditGroup
+    {
+        /// <summary>
+        /// Get or set EntityTypeId
+        /// </summary>
+        public int EntityTypeId { get; set; }
+
+        /// <summary>
+        /// Get or set EntityId
+        /// </summary>
+        [Required]
+        public int EntityId { get; set; }
+
+        /// <summary>
+        /// Get or set UserId
+        /// </summary>
+        public string UserName { get; set; }
+
+        /// <summary>
+        /// Get or set OldValue
+        /// </summary>
+        public List<string> OldValues { get; set; }
+
+
+        /// <summary>
+        /// Get or set NewValues
+        /// </summary>
+        public List<string> NewValues { get; set; }
+
+
+        /// <summary>
+        /// Get or set Comment
+        /// </summary>
+        public string Comment { get; set; }
+
+        /// <summary>
+        /// Get or set CreatedDate
+        /// </summary>
+        public DateTime CreatedDate { get; set; }
+
     }
 }
