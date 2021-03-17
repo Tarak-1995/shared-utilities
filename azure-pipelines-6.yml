@@ -1,0 +1,99 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- none
+
+pool:
+  vmImage: ubuntu-latest
+
+
+variables:
+  helmVersion: "3.2.3"
+  HELM_EXPERIMENTAL_OCI: 1
+  registryServerName: "$(registryName).azurecr.io"
+  projectName: "sharedutilities"
+  helmChartVersion: "1.0.16"
+  azure.service.connection: "Perseus-Non-prod-AKS-eastus-Stg"
+
+resources: 
+  pipelines:
+  - pipeline: ci-pipeline
+    source: Perseus_SharedUtilities_QA
+    trigger:
+      enabled: true
+      branches:
+        include:
+          - Devops/nonprod
+
+
+stages:
+- stage: Development
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/Devops/nonprod'))
+  displayName: Development
+  jobs:
+  - deployment: Development
+    variables:
+    - name: imageName
+      value: $(registryServerName)/sharedutilities-dev:latest
+      # define 5 more variables: aks, rg, aksSpId, aksSpSecret and aksSpTenantId in the Azure pipeline UI definition
+    displayName: deploy helm chart into AKS
+    pool:
+      vmImage: ubuntu-latest
+    environment: Development-$(projectName)
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - checkout: none
+          - task: HelmInstaller@1
+            displayName: "install helm"
+            inputs:
+              helmVersionToInstall: $(helmVersion)
+          - download: ci-pipeline
+            artifact: sharedutilities-qa
+          - bash: |
+              az login \
+                  --service-principal \
+                  -u $(aksSpId) \
+                  -p '$(aksSpSecret)' \
+                  --tenant $(aksSpTenantId)
+              az aks get-credentials \
+                  -n $(aks) \
+                  -g $(rg)
+              echo $(registryPassword) | helm registry login $(registryServerName) --username $(registryLogin) --password-stdin
+              helmChartVersion=$(jq .helmChartVersion $(pipeline.workspace)/ci-pipeline/build-artifact/variables.json -r)
+              helm chart pull $(registryServerName)/charts/$(projectName):$(helmChartVersion)
+              helm chart export $(registryServerName)/charts/$(projectName):$(helmChartVersion) --destination $(pipeline.workspace)/install
+            failOnStderr: false
+            displayName: "pull helm chart"
+            
+          - task: qetza.replacetokens.replacetokens-task.replacetokens@3
+            displayName: Replace tokens in **/*
+            inputs:
+              rootDirectory: $(Pipeline.Workspace)/install
+              targetFiles: '**/*.yaml'
+              keepToken: true
+              tokenPrefix: __
+              tokenSuffix: __
+
+            
+          - task: HelmDeploy@0
+            displayName: deploy chart to aks
+            inputs:
+              connectionType: 'Azure Resource Manager'
+              azureSubscription: 'Perseus Non-Prod (b0b91233-8bb9-44e7-b548-84412ecc5c0d)'
+              azureResourceGroup: 'Perseus-nonprod-RG'
+              kubernetesCluster: 'perseusnonprod-eastus2-AKS'
+              useClusterAdmin: true
+              namespace: 'dev'
+              command: 'upgrade'
+              chartType: 'FilePath'
+              chartPath: '$(pipeline.workspace)/install/sharedutilities/'
+              chartVersion: '$(helmChartVersion)'
+              releaseName: 'perseus-sharedutilities-dev'
+              valueFile: '$(pipeline.workspace)/install/sharedutilities/values.eastus2.dev.yaml'
+              #overrideValues: 'sharedutilitiesrepo=$(registryServerName)/sharedutilities-qa:$(helmChartVersion)'
+              arguments: '--install'
