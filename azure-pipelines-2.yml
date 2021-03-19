@@ -5,6 +5,8 @@
 trigger:
 - $(Build.SourceBranch)
 
+name: '1.0$(Rev:.r)'
+
 resources:
 - repo: self
 
@@ -13,7 +15,10 @@ variables:
   # Env vars
   buildConfiguration: 'Release'
   buildPlatform: 'Any CPU'
-
+  HELM_EXPERIMENTAL_OCI: 1
+  imageVersion: $(Build.BuildNumber)
+  helmChartVersion: $(Build.BuildNumber)
+  imageName: PerseusNonProdACR.azurecr.io/sharedutilities-dev:$(Build.BuildNumber)
   # .sln .csproj(UnitTests) relative paths
   project_sln: "PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.sln"
   project_csproj: "./PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/PrimeroEdge.SharedUtilities.Api.csproj"
@@ -23,6 +28,8 @@ variables:
   # Container registry service connection established during pipeline creation
   dockerRegistryServiceConnection: '0308b8a7-8ae6-4c18-b610-58fe54dc62c4'
   imageRepository: 'sharedutilities-dev'
+  projectName: 'sharedutilities'
+  helmchartdev: 'sharedutilities-dev'
   containerRegistry: 'perseusnonprodacr.azurecr.io'
   dockerfilePath: '**/Dockerfile'
   tag: '$(Build.BuildId)'
@@ -92,7 +99,15 @@ stages:
     steps:
     - task: HelmInstaller@1
       inputs:
-        helmVersionToInstall: 'latest'
+        helmVersionToInstall: '3.2.3'
+    - bash: |
+          echo $(registryPassword) | helm registry login $(registryName).azurecr.io --username $(registryLogin) --password-stdin
+          cd PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/deployment
+          helm chart save $(helm package --app-version $(imageVersion) --version $(helmChartVersion) ./$(projectName) | grep -o '/.*.tgz') $(registryName).azurecr.io/charts/$(helmchartdev):$(imageVersion)
+          helm chart push $(registryName).azurecr.io/charts/$(helmchartdev):$(imageVersion)
+          echo $(jq -n --arg version "$(helmChartVersion)" '{helmChartVersion: $version}') > $(build.artifactStagingDirectory)/variables.json
+      failOnStderr: true
+      displayName: "helm package"
 
 - stage: HelmPackage
   displayName: Helm Chart Package
