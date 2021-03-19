@@ -15,7 +15,8 @@ variables:
   HELM_EXPERIMENTAL_OCI: 1
   registryServerName: "$(registryName).azurecr.io"
   projectName: "sharedutilities"
-  helmChartVersion: "1.0.16"
+  helmchartdev: "sharedutilities-dev"
+  helmChartVersion: "1.0.1"
   azure.service.connection: "Perseus-Non-prod-AKS-eastus-Stg"
 
 resources: 
@@ -65,8 +66,8 @@ stages:
                   -g $(rg)
               echo $(registryPassword) | helm registry login $(registryServerName) --username $(registryLogin) --password-stdin
               helmChartVersion=$(jq .helmChartVersion $(pipeline.workspace)/ci-pipeline/build-artifact/variables.json -r)
-              helm chart pull $(registryServerName)/charts/$(projectName):$(helmChartVersion)
-              helm chart export $(registryServerName)/charts/$(projectName):$(helmChartVersion) --destination $(pipeline.workspace)/install
+              helm chart pull $(registryServerName)/charts/$(helmchartdev):$(helmChartVersion)
+              helm chart export $(registryServerName)/charts/$(helmchartdev):$(helmChartVersion) --destination $(pipeline.workspace)/install
             failOnStderr: false
             displayName: "pull helm chart"
             
