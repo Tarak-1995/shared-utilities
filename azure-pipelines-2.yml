@@ -10,6 +10,7 @@ name: '1.0$(Rev:.r)'
 resources:
 - repo: self
 
+
 variables:
 
   # Env vars
