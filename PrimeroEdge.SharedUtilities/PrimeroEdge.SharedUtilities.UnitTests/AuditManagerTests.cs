@@ -14,13 +14,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Cybersoft.Platform.Utilities.ResponseModels;
 using MongoDB.Driver;
+using Cybersoft.Platform.Utilities.Factories;
+using Cybersoft.Platform.Authorization.HeaderUtilities.Factories;
 
 namespace PrimeroEdge.SharedUtilities.UnitTests
 {
     public class AuditManagerTests
     {
         private IAuditManager _auditManager;
+       private IUserSessionFactory _sessionFactory;
         private IAuditRepository _auditRepository;
         private IMongoDbManager<Audit> _mongoDbManager;
         private Lazy<Task<IMongoDbManager<Audit>>> _lazyMongoDbManager;
@@ -29,6 +33,8 @@ namespace PrimeroEdge.SharedUtilities.UnitTests
         public void SetUp()
         {
             _mongoDbManager = Substitute.For<IMongoDbManager<Audit>>();
+            _sessionFactory = Substitute.For<IUserSessionFactory>();
+
             _lazyMongoDbManager = new Lazy<Task<IMongoDbManager<Audit>>>(async () => await Task.FromResult(_mongoDbManager));
             _auditRepository = new AuditRepository(_lazyMongoDbManager);
             _auditManager = new AuditManager(_auditRepository);
@@ -87,7 +93,7 @@ namespace PrimeroEdge.SharedUtilities.UnitTests
         public async Task GetAuditDataAsyncTest()
         {
             _mongoDbManager.QueryAsync(Arg.Any<FilterDefinition<Audit>>(), Arg.Any<SortDefinition<Audit>>(), Arg.Any<int>(), Arg.Any<int>()).Returns(Task.FromResult(_audits));
-            var data = await _auditManager.GetAuditDataAsync(new AuditRequest()).ConfigureAwait(false);
+            var data = await _auditManager.GetAuditDataAsync(new AuditRequest(), 1).ConfigureAwait(false);
             Assert.IsTrue(data.Count == _audits.Count);
         }
     }
