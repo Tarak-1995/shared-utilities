@@ -26,12 +26,12 @@ resources:
       enabled: true
       branches:
         include:
-          - Devops/nonprod
+          - master
 
 
 stages:
 - stage: QA
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/Devops/nonprod'))
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   displayName: QA
   jobs:
   - deployment: QA
