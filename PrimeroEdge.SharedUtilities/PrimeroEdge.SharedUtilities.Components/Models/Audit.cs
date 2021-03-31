@@ -8,7 +8,6 @@ using Cybersoft.Platform.Data.MongDb;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
 namespace PrimeroEdge.SharedUtilities.Components
 {
@@ -21,8 +20,8 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// Get or set Id
         /// </summary>
         [JsonProperty("_id")]
+        [System.Text.Json.Serialization.JsonIgnore]
         public string Id { get; set; }
-
 
         /// <summary>
         /// Get or set RegionId
@@ -31,14 +30,21 @@ namespace PrimeroEdge.SharedUtilities.Components
         public int RegionId { get; set; }
 
         /// <summary>
+        /// Get or set ModuleId
+        /// </summary>
+        [System.Text.Json.Serialization.JsonIgnore]
+        public string ModuleId { get; set; }
+
+        /// <summary>
         /// Get or set EntityTypeId
         /// </summary>
-        public int EntityTypeId { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public string EntityTypeId { get; set; }
 
         /// <summary>
         /// Get or set EntityId
         /// </summary>
-        [Required]
+        [System.Text.Json.Serialization.JsonIgnore]
         public int EntityId { get; set; }
 
         /// <summary>
@@ -61,7 +67,6 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// <summary>
         /// Get or set Field
         /// </summary>
-        [Required]
         public string Field { get; set; }
 
 
@@ -86,17 +91,7 @@ namespace PrimeroEdge.SharedUtilities.Components
 
     public class AuditGroup
     {
-        /// <summary>
-        /// Get or set EntityTypeId
-        /// </summary>
-        public int EntityTypeId { get; set; }
-
-        /// <summary>
-        /// Get or set EntityId
-        /// </summary>
-        [Required]
-        public int EntityId { get; set; }
-
+        
         /// <summary>
         /// Get or set UserId
         /// </summary>
