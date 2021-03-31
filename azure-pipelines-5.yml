@@ -23,7 +23,7 @@ resources:
   - pipeline: ci-pipeline
     source: Perseus_SharedUtilities_QA
     trigger:
-      enabled: true
+      enabled: false
       branches:
         include:
           - master
