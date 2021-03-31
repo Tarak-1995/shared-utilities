@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: primeroedgesharedutilities 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: primeroedgesharedutilities
+  template:
+    metadata:
+      labels:
+        app: primeroedgesharedutilities 
+    spec:
+      containers:
+        - name: primeroedgesharedutilities 
+          image: perseusnonprodacr.azurecr.io/primeroedgesharedutilities
+          ports:
+          - containerPort: 5000
