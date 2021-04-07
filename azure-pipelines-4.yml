@@ -24,15 +24,7 @@ variables:
   helmChartVersion: ${{ parameters.helmversion }}
   azure.service.connection: "Perseus-Non-prod-AKS-eastus-Stg"
 
-resources: 
-  pipelines:
-  - pipeline: ci-pipeline
-    source: Perseus_SharedUtilities_QA
-    trigger:
-      enabled: true
-      branches:
-        include:
-          - Devops/nonprod
+
 
 
 stages:
@@ -57,8 +49,7 @@ stages:
             displayName: "install helm"
             inputs:
               helmVersionToInstall: $(helmVersion)
-          - download: ci-pipeline
-            artifact: sharedutilities-qa
+
           - bash: |
               az login \
                   --service-principal \
