@@ -3,3 +3,4 @@ namespace: dev
 secretname: sharedutilities-dev-secret-appsettings
 aspnetcore: Development
 ##sharedutilitiesrepo: PerseusNonProdACR.azurecr.io/sharedutilities-dev:latest
+replicas: 1
