@@ -1,0 +1,6 @@
+host: sharedutilitiesservice.perseusedge.com
+namespace: prod
+secretname: sharedutilities-prod-secret-appsettings
+aspnetcore: Production
+#sharedutilitiesrepo: PerseusNonProdACR.azurecr.io/sharedutilities_qa:latest
+replicas: 1
