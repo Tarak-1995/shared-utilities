@@ -4,3 +4,4 @@ secretname: sharedutilities-qa-secret-appsettings
 aspnetcore: QA
 #sharedutilitiesrepo: PerseusNonProdACR.azurecr.io/sharedutilities_qa:latest
 replicas: 1
+sslcert: perseusedgesslcert
