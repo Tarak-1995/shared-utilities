@@ -1,4 +1,4 @@
-host: sharedutilitiesservice.perseusedge.com
+host: sharedutilitiesservice.schoolcafe.com
 namespace: prod
 secretname: sharedutilities-prod-secret-appsettings
 aspnetcore: Production
