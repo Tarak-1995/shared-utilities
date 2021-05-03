@@ -51,7 +51,7 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
         /// <param name="entityId"></param>
         /// <returns></returns>
         [HttpPost("Create")]
-        public async Task SaveAuditDataAsync(List<Audit> data, string moduleId, string entityTypeId, int entityId)
+        public async Task SaveAuditDataAsync(List<Audit> data, string moduleId, string entityTypeId, string entityId)
         {
 
             CheckValidations(moduleId, entityTypeId);
@@ -64,7 +64,7 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
                 x.RegionId = _authContext.RegionId;
                 x.ModuleId = moduleId?.Trim().ToUpper();
                 x.EntityTypeId = entityTypeId?.Trim().ToUpper();
-                x.EntityId = entityId;
+                x.EntityId = entityId?.Trim().ToUpper();
             });
 
             await _auditManager.SaveAuditDataAsync(data);
@@ -79,7 +79,7 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
         /// <param name="entityId"></param>
         /// <returns></returns>
         [HttpPost("GroupCreate")]
-        public async Task SaveAuditGroupDataAsync(List<AuditGroup> data, string moduleId, string entityTypeId, int entityId)
+        public async Task SaveAuditGroupDataAsync(List<AuditGroup> data, string moduleId, string entityTypeId, string entityId)
         {
             CheckValidations(moduleId, entityTypeId);
             var req = new List<Audit>();
@@ -92,7 +92,7 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
                     CreatedDate = DateTime.UtcNow,
                     UserId = _authContext.UserId,
                     RegionId = _authContext.RegionId,
-                    EntityId = entityId,
+                    EntityId = entityId?.Trim().ToUpper(),
                     EntityTypeId = entityTypeId?.Trim().ToUpper(),
                     ModuleId = moduleId?.Trim().ToUpper(),
                     UserName = item.UserName,
@@ -115,7 +115,7 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
         /// <param name="pageNumber"></param>
         /// <returns></returns>
         [HttpGet("Read")]
-        public async Task<List<Audit>> GetAuditDataAsync(string moduleId, string entityTypeId, int entityId, int pageSize, int pageNumber)
+        public async Task<List<Audit>> GetAuditDataAsync(string moduleId, string entityTypeId, string entityId, int pageSize, int pageNumber)
         {
             var request = new AuditRequest
             {
@@ -144,7 +144,7 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
         /// <param name="pageNumber"></param>
         /// <returns></returns>
         [HttpGet("GroupRead")]
-        public async Task<List<AuditGroup>> GetAuditGroupDataAsync(string moduleId, string entityTypeId, int entityId, int pageSize, int pageNumber)
+        public async Task<List<AuditGroup>> GetAuditGroupDataAsync(string moduleId, string entityTypeId, string entityId, int pageSize, int pageNumber)
         {
             var request = new AuditRequest
             {

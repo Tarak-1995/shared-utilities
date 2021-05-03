@@ -55,7 +55,7 @@ namespace PrimeroEdge.SharedUtilities.UnitTests
             {
                 ModuleId = "SySTEM",
                 EntityTypeId = "USER",
-                EntityId = 1,
+                EntityId = "1",
                 Field ="Test Filed",
                 OldValue = "Test Old Value",
                 NewValue ="Test new value",
@@ -94,7 +94,7 @@ namespace PrimeroEdge.SharedUtilities.UnitTests
         public async Task GetAuditDataAsyncTest()
         {
             _mongoDbManager.QueryAsync(Arg.Any<FilterDefinition<Audit>>(), Arg.Any<SortDefinition<Audit>>(), Arg.Any<int>(), Arg.Any<int>()).Returns(Task.FromResult(_audits));
-            var data = await _auditManager.GetAuditDataAsync(new AuditRequest(){ModuleId = "1", EntityTypeId ="1"}, 1).ConfigureAwait(false);
+            var data = await _auditManager.GetAuditDataAsync(new AuditRequest(){ModuleId = "1", EntityTypeId ="1", EntityId = "1"}, 1).ConfigureAwait(false);
             Assert.IsTrue(data.Count == _audits.Count);
         }
     }
