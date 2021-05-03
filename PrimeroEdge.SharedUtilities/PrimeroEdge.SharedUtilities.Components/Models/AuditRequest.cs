@@ -30,7 +30,7 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// EntityId
         /// </summary>
         [JsonIgnore]
-        public int EntityId { get; set; }
+        public string EntityId { get; set; }
 
         /// <summary>
         /// Field

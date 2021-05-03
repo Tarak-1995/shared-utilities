@@ -59,6 +59,8 @@ namespace PrimeroEdge.SharedUtilities.Components
 
             request.ModuleId = request.ModuleId.Trim().ToUpper();
             request.EntityTypeId = request.EntityTypeId.Trim().ToUpper();
+            request.EntityId = request.EntityId.Trim().ToUpper();
+
             var filter =  Builders<Audit>.Filter.Where(x => x.EntityTypeId == request.EntityTypeId 
                                                             && x.EntityId == request.EntityId
                                                             && x.ModuleId == request.ModuleId

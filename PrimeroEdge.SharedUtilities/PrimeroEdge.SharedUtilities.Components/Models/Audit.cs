@@ -45,7 +45,7 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// Get or set EntityId
         /// </summary>
         [System.Text.Json.Serialization.JsonIgnore]
-        public int EntityId { get; set; }
+        public string EntityId { get; set; }
 
         /// <summary>
         /// Get or set UserId
