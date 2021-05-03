@@ -50,9 +50,9 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        public async Task SaveAuditDataAsync(List<Audit> data, int userId, int regionId)
+        public async Task SaveAuditDataAsync(List<Audit> data)
         {
-            await _auditRepository.SaveAuditDataAsync(data, userId, regionId).ConfigureAwait(false);
+            await _auditRepository.SaveAuditDataAsync(data).ConfigureAwait(false);
         }
     }
 }

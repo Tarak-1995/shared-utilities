@@ -5,6 +5,8 @@
  ***********************************************************************
  */
 
+using System.Text.Json.Serialization;
+
 namespace PrimeroEdge.SharedUtilities.Components
 {
     /// <summary>
@@ -13,13 +15,21 @@ namespace PrimeroEdge.SharedUtilities.Components
     public class AuditRequest 
     {
         /// <summary>
+        /// Get or set ModuleId
+        /// </summary>
+       [JsonIgnore]
+        public string ModuleId { get; set; }
+
+        /// <summary>
         /// Get or set EntityTypeId
         /// </summary>
-        public int EntityTypeId { get; set; }
+        [JsonIgnore]
+        public string EntityTypeId { get; set; }
 
         /// <summary>
         /// EntityId
         /// </summary>
+        [JsonIgnore]
         public int EntityId { get; set; }
 
         /// <summary>

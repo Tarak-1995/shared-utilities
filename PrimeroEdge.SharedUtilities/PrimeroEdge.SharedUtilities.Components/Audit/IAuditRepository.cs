@@ -28,7 +28,7 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        Task SaveAuditDataAsync(List<Audit> data, int userId, int regionId);
+        Task SaveAuditDataAsync(List<Audit> data);
 
     }
 }

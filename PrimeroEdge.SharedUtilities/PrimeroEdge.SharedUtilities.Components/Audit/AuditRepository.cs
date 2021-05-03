@@ -11,8 +11,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MongoDB.Driver;
-using Cybersoft.Platform.Authorization.HeaderUtilities.Models;
-using Cybersoft.Platform.Authorization.HeaderUtilities.Factories;
 
 namespace PrimeroEdge.SharedUtilities.Components
 {
@@ -41,20 +39,10 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        public async Task SaveAuditDataAsync(List<Audit> data, int userId, int regionId)
+        public async Task SaveAuditDataAsync(List<Audit> data)
         {
             var mongoManager = await _mongoDbManager.Value.ConfigureAwait(false);
             data = data.Where(x => x.NewValue != x.OldValue).ToList();
-
-            var utcNow = DateTime.UtcNow;
-            data.ForEach(x =>
-            {
-                x.Id = Guid.NewGuid().ToString();
-                x.CreatedDate = utcNow;
-                x.UserId = userId;
-                x.RegionId = regionId;
-            });
-
             if(data.Any())
              await mongoManager.CreateAsync(data).ConfigureAwait(false);
         }
@@ -63,12 +51,18 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// Get audit data
         /// </summary>
         /// <param name="request"></param>
+        /// <param name="regionId"></param>
         /// <returns></returns>
         public async Task<Tuple<List<Audit>, long>> GetAuditDataAsync(AuditRequest request, int regionId)
         {
             var mongoManager = await _mongoDbManager.Value.ConfigureAwait(false);
 
-            var filter =  Builders<Audit>.Filter.Where(x => x.EntityTypeId == request.EntityTypeId && x.EntityId == request.EntityId && x.RegionId == regionId);
+            request.ModuleId = request.ModuleId.Trim().ToUpper();
+            request.EntityTypeId = request.EntityTypeId.Trim().ToUpper();
+            var filter =  Builders<Audit>.Filter.Where(x => x.EntityTypeId == request.EntityTypeId 
+                                                            && x.EntityId == request.EntityId
+                                                            && x.ModuleId == request.ModuleId
+                                                            && x.RegionId == regionId);
             
             if(!string.IsNullOrWhiteSpace(request.Field))
                filter = filter & Builders<Audit>.Filter.Where(x=> x.Field.Equals(request.Field));
