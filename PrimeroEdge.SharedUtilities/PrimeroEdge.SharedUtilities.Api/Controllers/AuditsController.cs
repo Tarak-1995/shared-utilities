@@ -43,66 +43,58 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
         }
 
         /// <summary>
-        /// Save audit data
+        ///  Save audit data
         /// </summary>
         /// <param name="data"></param>
+        /// <param name="moduleId"></param>
+        /// <param name="entityTypeId"></param>
+        /// <param name="entityId"></param>
         /// <returns></returns>
         [HttpPost("Create")]
-        public async Task SaveAuditDataAsync(List<Audit> data)
+        public async Task SaveAuditDataAsync(List<Audit> data, string moduleId, string entityTypeId, string entityId)
         {
-            var validations = new List<ValidationInfo>();
 
-            if (_authContext == null || _authContext.RegionId <= 0)
+            CheckValidations(moduleId, entityTypeId);
+
+            data.ForEach(x =>
             {
-                validations.Add(new ValidationInfo("RegionId should be greater than zero."));
-            }
+                x.Id = Guid.NewGuid().ToString();
+                x.CreatedDate = DateTime.UtcNow;
+                x.UserId = _authContext.UserId;
+                x.RegionId = _authContext.RegionId;
+                x.ModuleId = moduleId?.Trim().ToUpper();
+                x.EntityTypeId = entityTypeId?.Trim().ToUpper();
+                x.EntityId = entityId?.Trim().ToUpper();
+            });
 
-            if (_authContext == null || _authContext.UserId <= 0)
-            {
-                validations.Add(new ValidationInfo("UserId should be greater than zero."));
-            }
-
-            if (validations.Any())
-            {
-                throw new ValidationException("Missing required data", validations);
-            }
-
-            await _auditManager.SaveAuditDataAsync(data, _authContext.UserId, _authContext.RegionId);
+            await _auditManager.SaveAuditDataAsync(data);
         }
 
         /// <summary>
         /// Save audit data
         /// </summary>
         /// <param name="data"></param>
+        /// <param name="moduleId"></param>
+        /// <param name="entityTypeId"></param>
+        /// <param name="entityId"></param>
         /// <returns></returns>
         [HttpPost("GroupCreate")]
-        public async Task SaveAuditGroupDataAsync(List<AuditGroup> data)
+        public async Task SaveAuditGroupDataAsync(List<AuditGroup> data, string moduleId, string entityTypeId, string entityId)
         {
-            var validations = new List<ValidationInfo>();
-
-            if (_authContext == null || _authContext.RegionId <= 0)
-            {
-                validations.Add(new ValidationInfo("RegionId should be greater than zero."));
-            }
-
-            if (_authContext == null || _authContext.UserId <= 0)
-            {
-                validations.Add(new ValidationInfo("UserId should be greater than zero."));
-            }
-
-            if (validations.Any())
-            {
-                throw new ValidationException("Missing required data", validations);
-            }
-
+            CheckValidations(moduleId, entityTypeId);
             var req = new List<Audit>();
 
             foreach (var item in data)
             {
                 req.Add(new Audit()
                 {
-                    EntityId = item.EntityId,
-                    EntityTypeId = item.EntityTypeId,
+                    Id = Guid.NewGuid().ToString(),
+                    CreatedDate = DateTime.UtcNow,
+                    UserId = _authContext.UserId,
+                    RegionId = _authContext.RegionId,
+                    EntityId = entityId?.Trim().ToUpper(),
+                    EntityTypeId = entityTypeId?.Trim().ToUpper(),
+                    ModuleId = moduleId?.Trim().ToUpper(),
                     UserName = item.UserName,
                     Comment = item.Comment,
                     OldValue = JsonConvert.SerializeObject(item.OldValues ?? new List<string>()),
@@ -110,23 +102,31 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
                 });
             }
 
-            await _auditManager.SaveAuditDataAsync(req, _authContext.UserId, _authContext.RegionId);
+            await _auditManager.SaveAuditDataAsync(req);
         }
 
         /// <summary>
         /// Get audit data
         /// </summary>
-        /// <param name="request"></param>
+        /// <param name="moduleId"></param>
+        /// <param name="entityTypeId"></param>
+        /// <param name="entityId"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="pageNumber"></param>
         /// <returns></returns>
-        [HttpPost("Read")]
-        public async Task<List<Audit>> GetAuditDataAsync(AuditRequest request)
+        [HttpGet("Read")]
+        public async Task<List<Audit>> GetAuditDataAsync(string moduleId, string entityTypeId, string entityId, int pageSize, int pageNumber)
         {
-            var validations = new List<ValidationInfo>();
-            if (_authContext == null || _authContext.RegionId <= 0)
+            var request = new AuditRequest
             {
-                validations.Add(new ValidationInfo("RegionId should be greater than zero."));
-                throw new ValidationException("Missing required data", validations);
-            }
+                ModuleId = moduleId,
+                EntityTypeId = entityTypeId,
+                EntityId = entityId,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
+
+            CheckValidations(request.ModuleId, request.EntityTypeId);
 
             var data = await _auditManager.GetAuditDataAsync(request, _authContext.RegionId);
             HttpContext.Items[APIConstants.RESPONSE_PAGINATION] = _auditManager.GetPaginationEnvelope();
@@ -137,17 +137,25 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
         /// <summary>
         /// Get audit data
         /// </summary>
-        /// <param name="request"></param>
+        /// <param name="moduleId"></param>
+        /// <param name="entityTypeId"></param>
+        /// <param name="entityId"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="pageNumber"></param>
         /// <returns></returns>
-        [HttpPost("GroupRead")]
-        public async Task<List<AuditGroup>> GetAuditGroupDataAsync(AuditRequest request)
+        [HttpGet("GroupRead")]
+        public async Task<List<AuditGroup>> GetAuditGroupDataAsync(string moduleId, string entityTypeId, string entityId, int pageSize, int pageNumber)
         {
-            var validations = new List<ValidationInfo>();
-            if (_authContext == null || _authContext.RegionId <= 0)
+            var request = new AuditRequest
             {
-                validations.Add(new ValidationInfo("RegionId should be greater than zero."));
-                throw new ValidationException("Missing required data", validations);
-            }
+                ModuleId = moduleId,
+                EntityTypeId = entityTypeId,
+                EntityId = entityId,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
+
+            CheckValidations(request.ModuleId, request.EntityTypeId);
 
             var data = await _auditManager.GetAuditDataAsync(request, _authContext.RegionId);
 
@@ -158,8 +166,6 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
             {
                 result.Add(new AuditGroup()
                 {
-                    EntityId = item.EntityId,
-                    EntityTypeId = item.EntityTypeId,
                     UserName = item.UserName,
                     Comment = item.Comment,
                     CreatedDate = item.CreatedDate,
@@ -169,6 +175,26 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
             }
 
             return result;
+        }
+
+        private void CheckValidations(string moduleId, string entityTypeId)
+        {
+            var validations = new List<ValidationInfo>();
+
+            if (string.IsNullOrWhiteSpace(moduleId))
+            {
+                validations.Add(new ValidationInfo("ModuleId is required"));
+            }
+
+            if (string.IsNullOrWhiteSpace(entityTypeId))
+            {
+                validations.Add(new ValidationInfo("EntityTypeId is required"));
+            }
+
+            if (validations.Any())
+            {
+                throw new ValidationException("Missing required data", validations);
+            }
         }
     }
 }
