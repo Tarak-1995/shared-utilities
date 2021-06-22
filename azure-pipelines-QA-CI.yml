@@ -28,6 +28,7 @@ variables:
   # Container registry service connection established during pipeline creation
   dockerRegistryServiceConnection: '080de9e3-d7ce-498e-947e-3a9429ac3931'
   imageRepository: 'sharedutilities_qa'
+  stgimageRepository: 'sharedutilities_stg'
   containerRegistry: 'perseusnonprodacr.azurecr.io'
   projectName: 'sharedutilities'
   dockerfilePath: '**/Dockerfile'
@@ -81,6 +82,7 @@ stages:
   - job: ImageBuild
     steps:
     - task: Docker@2
+      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
       inputs:
         command: buildAndPush
         repository: $(imageRepository)
@@ -89,7 +91,20 @@ stages:
         tags: |
           $(imageVersion)
           latest
+
+    - task: Docker@2
+      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/Release2.0-Pilot'))
+      inputs:
+        command: buildAndPush
+        repository: $(stgimageRepository)
+        dockerfile: $(dockerfilePath)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        tags: |
+          $(imageVersion)
+          latest
+
     - task: HelmInstaller@1
+      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
       inputs:
         helmVersionToInstall: '3.2.3'
     - bash: |
@@ -100,6 +115,21 @@ stages:
           echo $(jq -n --arg version "$(helmChartVersion)" '{helmChartVersion: $version}') > $(build.artifactStagingDirectory)/variables.json
       failOnStderr: true
       displayName: "helm package"
+        
+
+    - task: HelmInstaller@1
+      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/Release2.0-Pilot'))
+      inputs:
+        helmVersionToInstall: '3.2.3'
+    - bash: |
+          echo $(registryPassword) | helm registry login $(registryName).azurecr.io --username $(registryLogin) --password-stdin
+          cd PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/deployment
+          helm chart save $(helm package --app-version $(imageVersion) --version $(helmChartVersion) ./$(projectName) | grep -o '/.*.tgz') $(registryName).azurecr.io/charts/$(projectName):$(imageVersion)
+          helm chart push $(registryName).azurecr.io/charts/$(projectName):$(imageVersion)
+          echo $(jq -n --arg version "$(helmChartVersion)" '{helmChartVersion: $version}') > $(build.artifactStagingDirectory)/variables.json
+      failOnStderr: true
+      displayName: "helm package"
+
         
       
   
@@ -116,17 +146,7 @@ stages:
         chartPath: $(helmChartPath)
         destination: $(Build.ArtifactStagingDirectory)
         chartName: 'sharedutilities'  
-    - task: PublishPipelineArtifact@1
-      inputs:
-        targetPath: '$(Pipeline.Workspace)/a/sharedutilities-0.1.0.tgz'
-        artifact: 'sharedutilities-qa'
-        publishLocation: 'pipeline'
-        
-    - task: PublishPipelineArtifact@1
-      inputs:
-        targetPath: 'PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/deployment/sharedutilities'
-        artifact: 'qa_values'
-        publishLocation: 'pipeline'
+
     
 - stage: Secret
   displayName: Generate secret
