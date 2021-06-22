@@ -1,16 +1,16 @@
 # Deploy to Azure Kubernetes Service
 # Build and push image to Azure Container Registry; Deploy to Azure Kubernetes Service
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
-#
 
 trigger:
-  - master
+- $(Build.SourceBranch)
 
 name: '1.0$(Rev:.r)'
 
 resources:
-  - repo: self
-  
+- repo: self
+
+
 variables:
 
   # Env vars
@@ -19,24 +19,27 @@ variables:
   HELM_EXPERIMENTAL_OCI: 1
   imageVersion: $(Build.BuildNumber)
   helmChartVersion: $(Build.BuildNumber)
-  imageName: PerseusNonProdACR.azurecr.io/sharedutilities_qa:$(Build.BuildNumber)
+  imageName: PerseusNonProdACR.azurecr.io/sharedutilities-dev:$(Build.BuildNumber)
   # .sln .csproj(UnitTests) relative paths
   project_sln: "PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.sln"
   project_csproj: "./PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/PrimeroEdge.SharedUtilities.Api.csproj"
   test_csproj: "./PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.UnitTests/PrimeroEdge.SharedUtilities.UnitTests.csproj"
   
+
   # Container registry service connection established during pipeline creation
-  dockerRegistryServiceConnection: '080de9e3-d7ce-498e-947e-3a9429ac3931'
-  imageRepository: 'sharedutilities_qa'
-  containerRegistry: 'perseusnonprodacr.azurecr.io'
+  dockerRegistryServiceConnection: '0308b8a7-8ae6-4c18-b610-58fe54dc62c4'
+  imageRepository: 'sharedutilities-dev'
   projectName: 'sharedutilities'
+  helmchartdev: 'sharedutilities-dev'
+  containerRegistry: 'perseusnonprodacr.azurecr.io'
   dockerfilePath: '**/Dockerfile'
-  imagePullSecret: 'perseusnonprodacr10848ea9-auth'
+  tag: '$(Build.BuildId)'
+  imagePullSecret: 'perseusnonprodacr206701cc-auth'
+
   helmChartPath: './PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/deployment/sharedutilities/'
   # Agent VM image name
   vmImageNameW: 'vs2017-win2016'
   vmImageNameU: 'ubuntu-latest'
-  
 
 stages:
 - stage: BuildandAnalysis
@@ -50,7 +53,7 @@ stages:
     - script: dotnet build --configuration $(buildConfiguration)
       workingDirectory: "./PrimeroEdge.SharedUtilities"
       displayName: 'dotnet build $(buildConfiguration)'
-    
+  
   - job: CodeAM
     displayName: Code Analysis and Metrics
     dependsOn: SLNBuild 
@@ -63,15 +66,13 @@ stages:
         projects: '$(project_csproj)'
         arguments: '/p:RunCodeAnalysis=true'
         configuration: '$(buildConfiguration)'
-    
+
     - task: DotNetCoreCLI@2
       inputs:
         command: test
         projects: '$(test_csproj)'
         arguments: '--configuration $(buildConfiguration)'
 
-
-    
 - stage: ImageBuild
   displayName: Image Build $ Push
   dependsOn: BuildandAnalysis
@@ -79,33 +80,39 @@ stages:
     vmImage: $(vmImageNameU)
   jobs:
   - job: ImageBuild
-    steps:
+    steps:  
     - task: Docker@2
+      displayName: Image Build $ Push
       inputs:
         command: buildAndPush
         repository: $(imageRepository)
         dockerfile: $(dockerfilePath)
         containerRegistry: $(dockerRegistryServiceConnection)
         tags: |
-          $(imageVersion)
+          $(tag)
           latest
+  
+- stage: HelmInstall
+  displayName: Helm Installs
+  dependsOn: ImageBuild
+  jobs: 
+  - job: Init
+    steps:
     - task: HelmInstaller@1
       inputs:
         helmVersionToInstall: '3.2.3'
     - bash: |
           echo $(registryPassword) | helm registry login $(registryName).azurecr.io --username $(registryLogin) --password-stdin
           cd PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/deployment
-          helm chart save $(helm package --app-version $(imageVersion) --version $(helmChartVersion) ./$(projectName) | grep -o '/.*.tgz') $(registryName).azurecr.io/charts/$(projectName):$(imageVersion)
-          helm chart push $(registryName).azurecr.io/charts/$(projectName):$(imageVersion)
+          helm chart save $(helm package --app-version $(imageVersion) --version $(helmChartVersion) ./$(projectName) | grep -o '/.*.tgz') $(registryName).azurecr.io/charts/$(helmchartdev):$(imageVersion)
+          helm chart push $(registryName).azurecr.io/charts/$(helmchartdev):$(imageVersion)
           echo $(jq -n --arg version "$(helmChartVersion)" '{helmChartVersion: $version}') > $(build.artifactStagingDirectory)/variables.json
       failOnStderr: true
       displayName: "helm package"
-        
-      
-  
+
 - stage: HelmPackage
   displayName: Helm Chart Package
-  dependsOn: ImageBuild
+  dependsOn: HelmInstall
   jobs: 
   - job: HelmPackage
     displayName: Helm Package
@@ -115,40 +122,22 @@ stages:
         command: 'package'
         chartPath: $(helmChartPath)
         destination: $(Build.ArtifactStagingDirectory)
-        chartName: 'sharedutilities'  
-    - task: PublishPipelineArtifact@1
-      inputs:
-        targetPath: '$(Pipeline.Workspace)/a/sharedutilities-0.1.0.tgz'
-        artifact: 'sharedutilities-qa'
-        publishLocation: 'pipeline'
-        
-    - task: PublishPipelineArtifact@1
-      inputs:
-        targetPath: 'PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/deployment/sharedutilities'
-        artifact: 'qa_values'
-        publishLocation: 'pipeline'
-    
+        chartName: 'sharedutilities'
+
+
+  
 - stage: Secret
   displayName: Generate secret
   dependsOn: HelmPackage
   jobs: 
-  - job: QAKubesecret
-    displayName: Kubernetes QA Secret
+  - job: DevKubesecret
+    displayName: Kubernetes Secret
     steps:
     - task: Kubernetes@1
       inputs:
         connectionType: 'Kubernetes Service Connection'
-        kubernetesServiceEndpoint: 'Perseus-Non-prod-AKS-eastus-QA'
-        namespace: 'qa'
+        kubernetesServiceEndpoint: 'perseus-sharedutilities-dev'
+        namespace: 'dev'
         secretType: 'generic'
-        secretArguments: '--from-file=PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/appsettings.QA.json' 
-        secretName: 'sharedutilities-qa-secret-appsettings'
-
-    - task: Kubernetes@1
-      inputs:
-        connectionType: 'Kubernetes Service Connection'
-        kubernetesServiceEndpoint: 'Perseus-Non-prod-AKS-eastus-Stg'
-        namespace: 'staging'
-        secretType: 'generic'
-        secretArguments: '--from-file=PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/appsettings.Staging.json' 
-        secretName: 'sharedutilities-stg-secret-appsettings'
+        secretArguments: '--from-file=PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/appsettings.Development.json'
+        secretName: 'sharedutilities-dev-secret-appsettings'
