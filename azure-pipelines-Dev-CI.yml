@@ -124,18 +124,7 @@ stages:
         destination: $(Build.ArtifactStagingDirectory)
         chartName: 'sharedutilities'
 
-    - task: PublishPipelineArtifact@1
-      inputs:
-        targetPath: '$(Pipeline.Workspace)/a/sharedutilities-0.1.0.tgz'
-        artifact: 'sharedutilities-dev'
-        publishLocation: 'pipeline'
-        
-    - task: PublishPipelineArtifact@1
-      inputs:
-        targetPath: 'PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/deployment/sharedutilities/values.eastus2.dev.yaml'
-        artifact: 'dev_values'
-        publishLocation: 'pipeline' 
-    
+
   
 - stage: Secret
   displayName: Generate secret
