@@ -53,8 +53,7 @@ stages:
             displayName: "install helm"
             inputs:
               helmVersionToInstall: $(helmVersion)
-          - download: ci-pipeline
-            artifact: sharedutilities-qa
+
           - bash: |
               az login \
                   --service-principal \
