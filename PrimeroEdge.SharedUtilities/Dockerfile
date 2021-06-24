@@ -16,6 +16,10 @@ FROM build AS publish
 RUN dotnet publish "PrimeroEdge.SharedUtilities.Api.csproj" -c Release -o /app/publish
 
 FROM base AS final
+# Create a group and user
+RUN addgroup -g 1001 -S 1001 \
+&& adduser -S -u 1001 -G 1001 -s /bin/bash
+USER 1001
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "PrimeroEdge.SharedUtilities.Api.dll"] 
