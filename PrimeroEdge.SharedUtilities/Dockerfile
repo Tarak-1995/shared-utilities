@@ -17,8 +17,8 @@ RUN dotnet publish "PrimeroEdge.SharedUtilities.Api.csproj" -c Release -o /app/p
 
 FROM base AS final
 # Create a group and user
-RUN addgroup -g 1001 -S 1001 \
-&& adduser -S -u 1001 -G 1001 -s /bin/bash
+RUN addgroup -g 1001  1001 \
+&& adduser -r -u 1001 -G 1001 1001
 USER 1001
 WORKDIR /app
 COPY --from=publish /app/publish .
