@@ -14,7 +14,7 @@ spec:
       annotations:
         timestamp: "{{ date "20060102150405" .Release.Time }}"
     spec: 
-      SecurityContext:
+      securityContext:
              enabled: true
              runAsNonRoot: true
              runAsUser: 1001
