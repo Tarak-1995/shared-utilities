@@ -15,7 +15,6 @@ spec:
         timestamp: "{{ date "20060102150405" .Release.Time }}"
     spec: 
       securityContext:
-             enabled: true
              runAsNonRoot: true
              runAsUser: 1001
              fsGroup: 1001
