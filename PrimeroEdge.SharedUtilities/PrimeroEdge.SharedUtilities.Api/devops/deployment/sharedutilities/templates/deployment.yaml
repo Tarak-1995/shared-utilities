@@ -13,7 +13,11 @@ spec:
         app: sharedutilities 
       annotations:
         timestamp: "{{ date "20060102150405" .Release.Time }}"
-    spec:     
+    spec: 
+      securityContext:
+             runAsNonRoot: true
+             runAsUser: 1001
+             fsGroup: 1001
       containers:
         - name: sharedutilities 
           image: __imageName__
