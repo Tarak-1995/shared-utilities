@@ -22,7 +22,6 @@ spec:
         - name: sharedutilities 
           image: __imageName__
           imagePullPolicy: Always
-          imagePullPolicy: Always
           securityContext:
             capabilities:
               drop:
