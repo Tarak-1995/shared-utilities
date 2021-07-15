@@ -1,4 +1,5 @@
 host: sharedutilitiesservice.login.schoolcafe.com
+name: sharedutilities
 namespace: prod
 secretname: sharedutilities-prod-secret-appsettings
 aspnetcore: Production
