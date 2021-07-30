@@ -30,11 +30,11 @@ spec:
           - containerPort: 5000
           resources:
             limits:
-              cpu: 8m
-              memory: 400Mi
+              cpu: {{ .Values.limitcpu }}
+              memory: {{ .Values.limitmemory }}
             requests:
-              cpu: 5m
-              memory: 300Mi
+              cpu: {{ .Values.requestscpu }}
+              memory: {{ .Values.requestsmemory }}
           env:
           - name: "ASPNETCORE_ENVIRONMENT"
             value: {{ .Values.aspnetcore }}
