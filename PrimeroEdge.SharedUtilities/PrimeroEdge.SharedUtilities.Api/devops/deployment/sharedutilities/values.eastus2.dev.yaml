@@ -5,3 +5,7 @@ aspnetcore: Development
 ##sharedutilitiesrepo: PerseusNonProdACR.azurecr.io/sharedutilities-dev:latest
 replicas: 1
 sslcert: perseusedgesslcert
+limitcpu: 8m
+limitmemory: 400Mi
+requestscpu: 5m
+requestsmemory: 300Mi

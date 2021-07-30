@@ -15,15 +15,26 @@ spec:
         timestamp: "{{ date "20060102150405" .Release.Time }}"
     spec: 
       securityContext:
-             runAsNonRoot: true
-             runAsUser: 1001
-             fsGroup: 1001
+          runAsNonRoot: true
+          runAsUser: 1001
+          fsGroup: 1001
       containers:
         - name: sharedutilities 
           image: __imageName__
           imagePullPolicy: Always
+          securityContext:
+            capabilities:
+              drop:
+               - ALL
           ports:
           - containerPort: 5000
+          resources:
+            limits:
+              cpu: {{ .Values.limitcpu }}
+              memory: {{ .Values.limitmemory }}
+            requests:
+              cpu: {{ .Values.requestscpu }}
+              memory: {{ .Values.requestsmemory }}
           env:
           - name: "ASPNETCORE_ENVIRONMENT"
             value: {{ .Values.aspnetcore }}
