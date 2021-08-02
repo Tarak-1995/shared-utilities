@@ -1,0 +1,7 @@
+host: migsharedutilitiesservice.perseusedge.com
+namespace: migration
+#secretname: sharedutilities-prod-secret-appsettings
+aspnetcore: Migration
+#sharedutilitiesrepo: PerseusNonProdACR.azurecr.io/sharedutilities_qa:latest
+replicas: 1
+sslcert: perseusedgesslcert
