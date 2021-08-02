@@ -1,15 +1,15 @@
 apiVersion: autoscaling/v2beta2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{.values.name}}
-  namespace: prod
+  name: sharedutilities
+  namespace: {{ .Values.namespace }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{.values.name}}
+    name: sharedutilities
   maxReplicas: 4
-  minReplicas: 2
+  minReplicas: 1
   metrics:
   - type: Resource
     resource:
