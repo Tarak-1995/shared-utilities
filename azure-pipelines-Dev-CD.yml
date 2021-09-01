@@ -18,6 +18,10 @@ variables:
   helmchartdev: "sharedutilities-dev"
   helmChartVersion: "1.0.22"
   azure.service.connection: "Perseus-Non-prod-AKS-eastus-Stg"
+  - name: imageversion
+    value: $(jq '.helmChartVersion' $(build.artifactStagingDirectory)/variables.json -r)
+  - name: helmChartVersion
+    value: $(jq '.helmChartVersion' $(build.artifactStagingDirectory)/variables.json -r)
 
 resources: 
   pipelines:
@@ -37,8 +41,8 @@ stages:
   jobs:
   - deployment: Development
     variables:
-    - name: imageName
-      value: $(registryServerName)/sharedutilities-dev:latest
+    #- name: imageName
+    #  value: $(registryServerName)/sharedutilities-dev:latest
       # define 5 more variables: aks, rg, aksSpId, aksSpSecret and aksSpTenantId in the Azure pipeline UI definition
     displayName: deploy helm chart into AKS
     pool:
@@ -64,7 +68,7 @@ stages:
                   -n $(aks) \
                   -g $(rg)
               echo $(registryPassword) | helm registry login $(registryServerName) --username $(registryLogin) --password-stdin
-              helmChartVersion=$(jq .helmChartVersion $(pipeline.workspace)/ci-pipeline/build-artifact/variables.json -r)
+              #helmChartVersion=$(jq .helmChartVersion $(pipeline.workspace)/ci-pipeline/build-artifact/variables.json -r)
               helm chart pull $(registryServerName)/charts/$(helmchartdev):$(helmChartVersion)
               helm chart export $(registryServerName)/charts/$(helmchartdev):$(helmChartVersion) --destination $(pipeline.workspace)/install
             failOnStderr: false
