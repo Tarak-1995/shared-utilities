@@ -72,12 +72,11 @@ stages:
             failOnStderr: false
             displayName: "pull helm chart"
             
-
           - task: DownloadPipelineArtifact@2
             inputs:
               buildType: 'specific'
-              project: '3344349d-783c-4fb9-bc96-6841d70438ca'
-              definition: '299'
+              project: '53a56d2e-7e28-4303-aa5a-709c08931635'
+              definition: '335'
               buildVersionToDownload: 'latest'
               artifactName: 'check'
               targetPath: '$(build.artifactStagingDirectory)/'
