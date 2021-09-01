@@ -69,8 +69,8 @@ stages:
                   -g $(rg)
               echo $(registryPassword) | helm registry login $(registryServerName) --username $(registryLogin) --password-stdin
               #helmChartVersion=$(jq .helmChartVersion $(pipeline.workspace)/ci-pipeline/build-artifact/variables.json -r)
-              helm chart pull $(registryServerName)/charts/$(helmchartdev):$(helmChartVersion)
-              helm chart export $(registryServerName)/charts/$(helmchartdev):$(helmChartVersion) --destination $(pipeline.workspace)/install
+              #helm chart pull $(registryServerName)/charts/$(helmchartdev):$(helmChartVersion)
+              #helm chart export $(registryServerName)/charts/$(helmchartdev):$(helmChartVersion) --destination $(pipeline.workspace)/install
             failOnStderr: false
             displayName: "pull helm chart"
             
@@ -83,7 +83,30 @@ stages:
               tokenPrefix: __
               tokenSuffix: __
 
-            
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              buildType: 'specific'
+              project: '3344349d-783c-4fb9-bc96-6841d70438ca'
+              definition: '299'
+              buildVersionToDownload: 'latest'
+              artifactName: 'check'
+              targetPath: '$(build.artifactStagingDirectory)/'
+       
+          - task: CmdLine@2
+            displayName: check
+            inputs:
+              script: |
+                cat $(build.artifactStagingDirectory)/variables.json
+                pwd
+                ls -lrt
+                echo $(System.ArtifactsDirectory)
+                cd  $(build.artifactStagingDirectory)
+                ls -lrt
+                export imageversion= $(jq '.helmChartVersion' variables.json -r)
+                echo $(imageversion)
+                echo $(build.artifactStagingDirectory)
+                helm chart pull $(registryServerName)/charts/$(helmchartdev):$(helmChartVersion)
+          
           - task: HelmDeploy@0
             displayName: deploy chart to aks
             inputs:
