@@ -91,7 +91,8 @@ stages:
                 echo $(System.ArtifactsDirectory)
                 cd  $(build.artifactStagingDirectory)
                 ls -lrt
-                export imageversion= $(jq '.helmChartVersion' variables.json -r)
+                export helmChartversion= $(jq '.helmChartVersion' variables.json -r)
+                echo $(helmChartversion)
                 echo $(imageversion)
                 echo $(build.artifactStagingDirectory)
                 echo $(registryPassword) | helm registry login $(registryServerName) --username $(registryLogin) --password-stdin
