@@ -1,4 +1,4 @@
-host: devsharedutilitiesservice.perseusedge.com
+host: devsharedutilitiesservices.perseusedge.com
 namespace: test
 secretname: sharedutilities-dev-secret-appsettings
 aspnetcore: Development
