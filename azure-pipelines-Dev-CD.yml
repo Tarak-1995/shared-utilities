@@ -105,8 +105,10 @@ stages:
                 export imageversion= $(jq '.helmChartVersion' variables.json -r)
                 echo $(imageversion)
                 echo $(build.artifactStagingDirectory)
+                echo $(registryPassword) | helm registry login $(registryServerName) --username $(registryLogin) --password-stdin
                 helm chart pull $(registryServerName)/charts/$(helmchartdev):$(helmChartVersion)
-          
+                helm chart export $(registryServerName)/charts/$(helmchartdev):$(helmChartVersion) --destination $(pipeline.workspace)/install
+
           - task: HelmDeploy@0
             displayName: deploy chart to aks
             inputs:
