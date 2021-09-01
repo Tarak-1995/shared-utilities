@@ -65,10 +65,11 @@ stages:
               az aks get-credentials \
                   -n $(aks) \
                   -g $(rg)
+              echo $(helmChartVersion)
+              echo $(imageversion)
               echo $(registryPassword) | helm registry login $(registryServerName) --username $(registryLogin) --password-stdin
-              #helmChartVersion=$(jq .helmChartVersion $(pipeline.workspace)/ci-pipeline/build-artifact/variables.json -r)
-              #helm chart pull $(registryServerName)/charts/$(helmchartdev):$(helmChartVersion)
-              #helm chart export $(registryServerName)/charts/$(helmchartdev):$(helmChartVersion) --destination $(pipeline.workspace)/install
+              helm chart pull $(registryServerName)/charts/$(helmchartdev):$(helmChartVersion)
+              helm chart export $(registryServerName)/charts/$(helmchartdev):$(helmChartVersion) --destination $(pipeline.workspace)/install
             failOnStderr: false
             displayName: "pull helm chart"
             
@@ -81,23 +82,14 @@ stages:
               artifactName: 'check'
               targetPath: '$(build.artifactStagingDirectory)/'
        
-          - task: CmdLine@2
-            displayName: check
-            inputs:
-              script: |
-                cat $(build.artifactStagingDirectory)/variables.json
-                pwd
-                ls -lrt
-                echo $(System.ArtifactsDirectory)
-                cd  $(build.artifactStagingDirectory)
-                ls -lrt
-                export helmChartversion= $(jq '.helmChartVersion' variables.json -r)
-                echo $(helmChartversion)
-                echo $(imageversion)
-                echo $(build.artifactStagingDirectory)
-                echo $(registryPassword) | helm registry login $(registryServerName) --username $(registryLogin) --password-stdin
-                helm chart pull $(registryServerName)/charts/$(helmchartdev):$(helmChartVersion)
-                helm chart export $(registryServerName)/charts/$(helmchartdev):$(helmChartVersion) --destination $(pipeline.workspace)/install
+       #   - task: CmdLine@2
+       #     displayName: check
+       #     inputs:
+       #       script: |
+       #         echo $(registryPassword) | helm registry login $(registryServerName) --username $(registryLogin) --password-stdin
+       #         helm chart pull $(registryServerName)/charts/$(helmchartdev):$(helmChartVersion)
+       #         helm chart export $(registryServerName)/charts/$(helmchartdev):$(helmChartVersion) --destination $(pipeline.workspace)/install
+          
           - task: replacetokens@3
             inputs:
               rootDirectory: '$(Pipeline.Workspace)/install'
