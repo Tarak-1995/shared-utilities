@@ -18,8 +18,8 @@ variables:
   helmchartdev: "sharedutilities-dev"
   #helmChartVersion: "1.0.22"
   azure.service.connection: "Perseus-Non-prod-AKS-eastus-Stg"
-  imageversion: $(jq '.helmChartVersion' $(build.artifactStagingDirectory)/variables.json -r)
-  helmChartVersion: $(jq '.helmChartVersion' $(build.artifactStagingDirectory)/variables.json -r)
+  imageversion: "$(jq '.helmChartVersion' $(build.artifactStagingDirectory)/variables.json -r)"
+  helmChartVersion: "$(jq '.helmChartVersion' $(build.artifactStagingDirectory)/variables.json -r)"
 
 resources: 
   pipelines:
