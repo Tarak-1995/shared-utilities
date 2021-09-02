@@ -20,7 +20,7 @@ spec:
           fsGroup: 1001
       containers:
         - name: sharedutilities 
-          image: _imageName_
+          image: __imageName__
           imagePullPolicy: Always
           securityContext:
             capabilities:
