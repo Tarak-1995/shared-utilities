@@ -1,5 +1,6 @@
 host: devsharedutilitiesservices.perseusedge.com
 namespace: test
+image: 
 secretname: sharedutilities-dev-secret-appsettings
 aspnetcore: Development
 ##sharedutilitiesrepo: PerseusNonProdACR.azurecr.io/sharedutilities-dev:latest
