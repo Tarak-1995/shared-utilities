@@ -38,9 +38,9 @@ stages:
   displayName: Development
   jobs:
   - deployment: Development
-    variables:
-    - name: imageName
-      value: $(registryServerName)/sharedutilities-dev:$(imagtag)
+    #variables:
+    -# name: imageName
+      #value: $(registryServerName)/sharedutilities-dev:$(imagtag)
       # define 5 more variables: aks, rg, aksSpId, aksSpSecret and aksSpTenantId in the Azure pipeline UI definition
     displayName: deploy helm chart into AKS
     pool:
@@ -82,7 +82,7 @@ stages:
             inputs:
               script: |
                 echo $(imageversion)
-                export imagetag = $(imageversion)
+                echo imageName = $(registryServerName)/sharedutilities-dev:$(imageversion)
                 echo $(registryPassword) | helm registry login $(registryServerName) --username $(registryLogin) --password-stdin
                 helm chart pull $(registryServerName)/charts/$(helmchartdev):$(helmChartVersion)
                 helm chart export $(registryServerName)/charts/$(helmchartdev):$(helmChartVersion) --destination $(pipeline.workspace)/install
