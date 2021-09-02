@@ -81,7 +81,7 @@ stages:
             displayName: Pull Helm Charts
             inputs:
               script: |
-                echo $(imageversion)
+                echo export imagetag= $(imageversion)
                 echo imageName = $(registryServerName)/sharedutilities-dev:$(imageversion)
                 echo $(registryPassword) | helm registry login $(registryServerName) --username $(registryLogin) --password-stdin
                 helm chart pull $(registryServerName)/charts/$(helmchartdev):$(helmChartVersion)
@@ -101,7 +101,7 @@ stages:
               tokenPrefix: '__'
               tokenSuffix: '__'
               useLegacyPattern: false
-              defaultValue: '$(registryServerName)/sharedutilities-dev:$(imageversion)'
+              defaultValue: '$(registryServerName)/sharedutilities-dev:$(imagetag)'
               enableTelemetry: true
 
           - task: HelmDeploy@0
