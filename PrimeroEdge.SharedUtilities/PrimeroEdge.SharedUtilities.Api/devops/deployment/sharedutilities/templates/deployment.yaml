@@ -20,7 +20,7 @@ spec:
           fsGroup: 1001
       containers:
         - name: sharedutilities 
-          image: __imageName__
+          image: {{ .Values.image }}
           imagePullPolicy: Always
           securityContext:
             capabilities:
