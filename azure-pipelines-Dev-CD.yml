@@ -66,7 +66,7 @@ stages:
                   -n $(aks) \
                   -g $(rg)
             failOnStderr: false
-            displayName: "pull helm chart"
+            displayName: "login"
             
           - task: DownloadPipelineArtifact@2
             inputs:
@@ -78,7 +78,7 @@ stages:
               targetPath: '$(build.artifactStagingDirectory)/'
        
           - task: CmdLine@2
-            displayName: check
+            displayName: Pull Helm Charts
             inputs:
               script: |
                 echo $(imageversion)
@@ -87,7 +87,17 @@ stages:
                 helm chart pull $(registryServerName)/charts/$(helmchartdev):$(helmChartVersion)
                 helm chart export $(registryServerName)/charts/$(helmchartdev):$(helmChartVersion) --destination $(pipeline.workspace)/install
           
-          
+
+- stage: Deploy
+  jobs:
+    -  job: 
+       variables:
+       - name: imageName
+         value: $(registryServerName)/sharedutilities-dev:$(imageversion)
+       steps: 
+        
+    
+
           - task: replacetokens@3
             inputs:
               rootDirectory: '$(Pipeline.Workspace)/install'
