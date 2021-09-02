@@ -38,9 +38,9 @@ stages:
   displayName: Development
   jobs:
   - deployment: Development
-    #variables:
-    #- name: imageName
-      #value: $(registryServerName)/sharedutilities-dev:$(imageversion)
+    variables:
+    - name: imageName
+      value: $(registryServerName)/sharedutilities-dev:latest
       # define 5 more variables: aks, rg, aksSpId, aksSpSecret and aksSpTenantId in the Azure pipeline UI definition
     displayName: deploy helm chart into AKS
     pool:
@@ -81,8 +81,6 @@ stages:
             displayName: Pull Helm Charts
             inputs:
               script: |
-                echo export imagetag= $(imageversion)
-                echo imageName = $(registryServerName)/sharedutilities-dev:$(imageversion)
                 echo $(registryPassword) | helm registry login $(registryServerName) --username $(registryLogin) --password-stdin
                 helm chart pull $(registryServerName)/charts/$(helmchartdev):$(helmChartVersion)
                 helm chart export $(registryServerName)/charts/$(helmchartdev):$(helmChartVersion) --destination $(pipeline.workspace)/install
@@ -101,7 +99,6 @@ stages:
               tokenPrefix: '__'
               tokenSuffix: '__'
               useLegacyPattern: false
-              defaultValue: '$(registryServerName)/sharedutilities-dev:$(helmChartVersion)'
               enableTelemetry: true
 
           - task: HelmDeploy@0
@@ -118,6 +115,5 @@ stages:
               chartPath: '$(pipeline.workspace)/install/sharedutilities/'
               chartVersion: '$(helmChartVersion)'
               releaseName: 'perseus-sharedutilities-dev'
-              overrideValues: 'image: $(registryServerName)/sharedutilities-dev:$(helmChartVersion)'
               valueFile: '$(pipeline.workspace)/install/sharedutilities/values.eastus2.dev.yaml'
               arguments: '--install'
