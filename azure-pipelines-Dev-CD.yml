@@ -86,16 +86,6 @@ stages:
                 echo $(registryPassword) | helm registry login $(registryServerName) --username $(registryLogin) --password-stdin
                 helm chart pull $(registryServerName)/charts/$(helmchartdev):$(helmChartVersion)
                 helm chart export $(registryServerName)/charts/$(helmchartdev):$(helmChartVersion) --destination $(pipeline.workspace)/install
-          
-
-- stage: Deploy
-  jobs:
-    -  job: 
-       variables:
-       - name: imageName
-         value: $(registryServerName)/sharedutilities-dev:$(imageversion)
-       steps: 
-        
     
 
           - task: replacetokens@3
