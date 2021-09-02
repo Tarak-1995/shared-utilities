@@ -39,7 +39,7 @@ stages:
   jobs:
   - deployment: Development
     #variables:
-    -# name: imageName
+    #- name: imageName
       #value: $(registryServerName)/sharedutilities-dev:$(imagtag)
       # define 5 more variables: aks, rg, aksSpId, aksSpSecret and aksSpTenantId in the Azure pipeline UI definition
     displayName: deploy helm chart into AKS
