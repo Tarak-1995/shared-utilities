@@ -7,17 +7,10 @@ trigger:
 
 name: '1.0$(Rev:.r)'
 
-variable:
-   major:1
-   minor:1
-
-name: $(major).$(minor)$(Rev:.r)
-
 resources:
 - repo: self
 
 variables:
-
   # Env vars
   buildConfiguration: 'Release'
   buildPlatform: 'Any CPU'
