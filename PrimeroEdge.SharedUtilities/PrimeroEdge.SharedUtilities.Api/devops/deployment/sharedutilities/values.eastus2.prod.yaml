@@ -1,6 +1,6 @@
 host: sharedutilitiesservice.login.schoolcafe.com
 name: sharedutilities
-namespace: prod
+namespace: test
 secretname: sharedutilities-prod-secret-appsettings
 aspnetcore: Production
 #sharedutilitiesrepo: PerseusNonProdACR.azurecr.io/sharedutilities_qa:latest
