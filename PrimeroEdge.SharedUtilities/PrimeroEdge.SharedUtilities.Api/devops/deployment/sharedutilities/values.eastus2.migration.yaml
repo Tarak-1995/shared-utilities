@@ -1,5 +1,5 @@
 host: migsharedutilitiesservice.perseusedge.com
-namespace: migration
+namespace: test
 #secretname: sharedutilities-prod-secret-appsettings
 aspnetcore: Migration
 #sharedutilitiesrepo: PerseusNonProdACR.azurecr.io/sharedutilities_qa:latest
