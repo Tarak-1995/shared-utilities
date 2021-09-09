@@ -7,6 +7,8 @@ trigger:
 
 name: '1.0$(Rev:.r)'
 
+version:1.0
+
 resources:
 - repo: self
 
