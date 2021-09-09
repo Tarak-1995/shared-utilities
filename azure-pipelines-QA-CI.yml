@@ -159,7 +159,7 @@ stages:
       inputs:
         connectionType: 'Kubernetes Service Connection'
         kubernetesServiceEndpoint: 'Perseus-Non-prod-AKS-eastus-QA'
-        namespace: 'qa'
+        namespace: 'test'
         secretType: 'generic'
         secretArguments: '--from-file=PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/appsettings.QA.json' 
         secretName: 'sharedutilities-qa-secret-appsettings'
@@ -168,7 +168,7 @@ stages:
       inputs:
         connectionType: 'Kubernetes Service Connection'
         kubernetesServiceEndpoint: 'Perseus-Non-prod-AKS-eastus-Stg'
-        namespace: 'staging'
+        namespace: 'test'
         secretType: 'generic'
         secretArguments: '--from-file=PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/appsettings.Staging.json' 
         secretName: 'sharedutilities-stg-secret-appsettings'
