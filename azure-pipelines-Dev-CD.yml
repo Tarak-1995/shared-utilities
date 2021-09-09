@@ -9,13 +9,9 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
-variable:
-   major:1
-   minor:1
-
-name: $(major).$(minor)$(Rev:.r)
-
 variables:
+  major:1
+  minor:1
   helmVersion: "3.2.3"
   HELM_EXPERIMENTAL_OCI: 1
   registryServerName: "$(registryName).azurecr.io"
@@ -23,6 +19,8 @@ variables:
   helmchartdev: "sharedutilities-dev"
   helmChartVersion: "1.0.22"
   azure.service.connection: "Perseus-Non-prod-AKS-eastus-Stg"
+
+name: $(major).$(minor)$(Rev:.r)
 
 resources: 
   pipelines:
