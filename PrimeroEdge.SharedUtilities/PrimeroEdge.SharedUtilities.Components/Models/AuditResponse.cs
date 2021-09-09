@@ -4,51 +4,22 @@
  * Unauthorized copying of this file is strictly prohibited.
  ***********************************************************************
  */
-using Cybersoft.Platform.Couchbase.Entities;
+
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace PrimeroEdge.SharedUtilities.Components
 {
     /// <summary>
-    /// Audit
+    /// AuditResponse
     /// </summary>
-    public class Audit : BaseEntity
+    public class AuditResponse
     {
         /// <summary>
-        /// Gets key
+        /// Get or set CreatedDate
         /// </summary>
-        public override string Id => $"{this.Type}_{this.AuditId.ToString().ToLower()}";
-
-        /// <summary>
-        /// Gets or sets verificationSampleId
-        /// </summary>
-        public Guid AuditId { get; set; }
-
-        /// <summary>
-        /// Gets totalAppCount
-        /// </summary>
-        public override string Type => nameof(Audit);
-
-        /// <summary>
-        /// Get or set RegionId
-        /// </summary>
-        public int RegionId { get; set; }
-
-        /// <summary>
-        /// Get or set ModuleId
-        /// </summary>
-        public string ModuleId { get; set; }
-
-        /// <summary>
-        /// Get or set EntityTypeId
-        /// </summary>
-        public string EntityTypeId { get; set; }
-
-        /// <summary>
-        /// Get or set EntityId
-        /// </summary>
-        public string EntityId { get; set; }
+        public DateTime CreatedDate { get; set; }
 
         /// <summary>
         /// Get or set Field
@@ -69,9 +40,44 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// Get or set Comment
         /// </summary>
         public string Comment { get; set; }
+
+        /// <summary>
+        /// Get or set userName
+        /// </summary>
+        public string UserName { get; set; }
+
     }
 
-    
 
-   
+    public class AuditGroupResponse
+    {
+
+        /// <summary>
+        /// Get or set UserId
+        /// </summary>
+        public string UserName { get; set; }
+
+        /// <summary>
+        /// Get or set OldValue
+        /// </summary>
+        public List<string> OldValues { get; set; }
+
+
+        /// <summary>
+        /// Get or set NewValues
+        /// </summary>
+        public List<string> NewValues { get; set; }
+
+
+        /// <summary>
+        /// Get or set Comment
+        /// </summary>
+        public string Comment { get; set; }
+
+        /// <summary>
+        /// Get or set CreatedDate
+        /// </summary>
+        public DateTime CreatedDate { get; set; }
+
+    }
 }

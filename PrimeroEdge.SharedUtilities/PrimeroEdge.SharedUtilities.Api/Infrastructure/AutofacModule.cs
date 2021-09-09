@@ -14,11 +14,13 @@ using PrimeroEdge.SharedUtilities.Components;
 using System;
 using System.Threading.Tasks;
 using Cybersoft.Platform.Contracts;
-using Cybersoft.Platform.DocumentStorage;
 using Cybersoft.Platform.KeyVault;
 using Cybersoft.Platform.Logging;
 using Cybersoft.Platform.Utilities.ResponseModels;
 using Microsoft.Extensions.Configuration;
+using AutoMapper;
+using AutoMapper.Data;
+using Cybersoft.Platform.Data.Sql;
 
 namespace PrimeroEdge.SharedUtilities.Api
 {
@@ -35,24 +37,30 @@ namespace PrimeroEdge.SharedUtilities.Api
         /// <param name="builder"></param>
         protected override void Load(ContainerBuilder builder)
         {
+            var mapper = new MapperConfiguration(mc =>
+            {
+                mc.AddDataReaderMapping();
+            }).CreateMapper();
+
+            builder.Register<IMapper>(c => mapper).InstancePerLifetimeScope();
+
             //Configuration settings
             builder.AddConfiguration();
             builder.ConfigureKeyVault();
-            builder.ConfigureDocumentStorage(0);
 
             //Audit settings
-            builder.RegisterSettings<AuditSettings>(ConfigKeys.AuditSettings);
             builder.RegisterType<AuditManager>().As<IAuditManager>().SingleInstance();
             builder.RegisterType<AuditRepository>().As<IAuditRepository>().SingleInstance();
-            builder.Register((c) => {
-                var context = c.Resolve<IComponentContext>();
-                return new Lazy<Task<IMongoDbManager<Audit>>>(async () => {
-                    var auditSettings = await context.Resolve<Lazy<Task<AuditSettings>>>().Value.ConfigureAwait(false);
-                    auditSettings.MongoDbSettings.ConnectionString = context.DecryptKeyVaultString(CryptoManager.CONNECTION_STRING_KEY, auditSettings.MongoDbSettings.ConnectionString);
-                    return new MongoDbManager<Audit>(auditSettings.MongoDbSettings);
-                });
-            }).SingleInstance();
 
+            // Connection strings
+            builder.RegisterSettings<ConnectionStrings>(ConfigKeys.ConnectionStrings);
+            builder.Register<ISqlDbManager>((c) =>
+            {
+                var connectionStrings = c.Resolve<Lazy<Task<ConnectionStrings>>>().Value.Result;
+                var iMapper = c.Resolve<IMapper>();
+                var connString = c.DecryptKeyVaultString(CryptoManager.CONNECTION_STRING_KEY, connectionStrings.Connections[ConnectionType.ADMINISTRATION.ToString()]);
+                return new SqlDbManager(connString, iMapper);
+            }).SingleInstance();
 
             builder.RegisterSettings<ErrorMessageSettings>(ConfigKeys.ErrorMessageSettings);
             builder.Register<IMongoDbManager<MessageData>>(c =>

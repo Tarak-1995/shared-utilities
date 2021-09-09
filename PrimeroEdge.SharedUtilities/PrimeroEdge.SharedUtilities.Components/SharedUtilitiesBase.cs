@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using TimeZoneConverter;
 
 namespace PrimeroEdge.SharedUtilities.Components
 {
@@ -13,6 +14,20 @@ namespace PrimeroEdge.SharedUtilities.Components
         public ResponseEnvelope GetResponseEnvelope()
         {
             return ResponseEnvelope;
+        }
+
+        public DateTime GetDistrictDateTime(DateTime utcTime, string districtTimeZone, bool applyDayLightSaving)
+        {
+            var tzi = TZConvert.GetTimeZoneInfo(districtTimeZone);
+
+            var districtTime = TimeZoneInfo.ConvertTimeFromUtc(utcTime, tzi);
+
+            if (!applyDayLightSaving)
+            {
+                districtTime = districtTime.AddHours(-1);
+            }
+
+            return districtTime;
         }
     }
 }
