@@ -126,7 +126,7 @@ stages:
       inputs:
         connectionType: 'Kubernetes Service Connection'
         kubernetesServiceEndpoint: 'Development-PrimeroEdgeQA-AKS-qa'
-        namespace: 'qa'
+        namespace: 'test'
         secretType: 'generic'
         secretArguments: '--from-file=PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/appsettings.QA.json' 
         secretName: 'sharedutilities-qa-secret-appsettings'
