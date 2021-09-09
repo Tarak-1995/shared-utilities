@@ -129,7 +129,7 @@ stages:
       inputs:
         connectionType: 'Kubernetes Service Connection'
         kubernetesServiceEndpoint: 'Development-PrimeroEdgeDev-AKS-dev-1592763342384'
-        namespace: 'dev'
+        namespace: 'test'
         secretType: 'generic'
         secretArguments: '--from-file=PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/appsettings.Development.json'
         secretName: 'sharedutilities-dev-secret-appsettings'
