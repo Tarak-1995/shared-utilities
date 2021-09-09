@@ -9,6 +9,11 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
+variable:
+   major:1
+   minor:1
+
+name: $(major).$(minor)$(Rev:.r)
 
 variables:
   helmVersion: "3.2.3"
