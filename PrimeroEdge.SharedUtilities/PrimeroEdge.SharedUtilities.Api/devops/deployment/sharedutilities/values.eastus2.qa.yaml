@@ -1,5 +1,5 @@
 host: qasharedutilitiesservice.perseusedge.com
-namespace: qa
+namespace: test
 secretname: sharedutilities-qa-secret-appsettings
 aspnetcore: QA
 #sharedutilitiesrepo: PerseusNonProdACR.azurecr.io/sharedutilities_qa:latest
