@@ -7,8 +7,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Cybersoft.Platform.Utilities.ResponseModels;
+using Newtonsoft.Json;
 
 namespace PrimeroEdge.SharedUtilities.Components
 {
@@ -36,23 +38,132 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// <summary>
         /// Get audit data
         /// </summary>
-        /// <param name="request"></param>
+        /// <param name="moduleId"></param>
+        /// <param name="entityTypeId"></param>
+        /// <param name="entityId"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="regionId"></param>
         /// <returns></returns>
-        public async Task<List<Audit>> GetAuditDataAsync(AuditRequest request, int regionId)
+        public async Task<List<AuditResponse>> GetAuditDataAsync(string moduleId, string entityTypeId, string entityId, int pageSize, int pageNumber, int regionId)
         {
-            var data = await _auditRepository.GetAuditDataAsync(request, regionId).ConfigureAwait(false);
-            PaginationEnvelope = new Pagination(request.PageNumber, request.PageSize, (int)data.Item2);
-            return data.Item1;
+            var data = await _auditRepository.GetAuditDataAsync(moduleId, entityTypeId, entityId, pageSize, pageNumber, regionId);
+
+            var result = new List<AuditResponse>();
+            if (data.Item2 != 0)
+            {
+                var settings = await this._auditRepository.GetTimeZoneSettingsAsync(regionId);
+                var userIdList = data.Item1.Select(x => x.CreatedBy).Distinct().ToList();
+                var users = await this._auditRepository.GetUsersAsync(userIdList);
+
+                foreach (var item in data.Item1)
+                {
+                    var row = new AuditResponse()
+                    {
+                        CreatedDate = this.GetDistrictDateTime(item.CreatedDate, settings.Item1, settings.Item2),
+                        Field = item.Field,
+                        OldValue = item.OldValue,
+                        NewValue = item.NewValue,
+                        Comment = item.Comment,
+                        UserName = users.ContainsKey(item.CreatedBy) ? users[item.CreatedBy] : null,
+                    };
+                    result.Add(row);
+                }
+            }
+
+            PaginationEnvelope = new Pagination(pageNumber, pageSize, data.Item2);
+            return result;
         }
 
         /// <summary>
         /// Save audit data
         /// </summary>
         /// <param name="data"></param>
+        /// <param name="moduleId"></param>
+        /// <param name="entityTypeId"></param>
+        /// <param name="entityId"></param>
+        /// <param name="userId"></param>
+        /// <param name="regionId"></param>
         /// <returns></returns>
-        public async Task SaveAuditDataAsync(List<Audit> data)
+        public async Task SaveAuditDataAsync(AuditRequest data, string moduleId, string entityTypeId, string entityId, int userId, int regionId)
         {
-            await _auditRepository.SaveAuditDataAsync(data).ConfigureAwait(false);
+            await this.SaveAuditDataAsync(new List<AuditRequest> {data}, moduleId, entityTypeId, entityId, userId, regionId);
+        }
+
+        /// <summary>
+        /// Save audit data
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="moduleId"></param>
+        /// <param name="entityTypeId"></param>
+        /// <param name="entityId"></param>
+        /// <param name="userId"></param>
+        /// <param name="regionId"></param>
+        /// <returns></returns>
+        public async Task SaveAuditDataAsync(List<AuditRequest> data, string moduleId, string entityTypeId, string entityId, int userId, int regionId)
+        {
+            var request = new List<Audit>();
+            moduleId = moduleId.Trim().ToUpper();
+            entityId = entityId?.Trim().ToUpper();
+            entityTypeId = entityTypeId.Trim().ToUpper();
+
+            data.ForEach(x =>
+            {
+                request.Add(new Audit()
+                {
+                    AuditId = Guid.NewGuid(),
+                    CreatedBy = userId,
+                    CreatedDate = DateTime.UtcNow,
+                    ModuleId = moduleId,
+                    EntityTypeId = entityTypeId,
+                    EntityId = !string.IsNullOrEmpty(x.EntityId) ? x.EntityId.Trim().ToUpper() : entityId,
+                    RegionId = regionId,
+                    OldValue = x.OldValue,
+                    NewValue = x.NewValue,
+                    Field = x.Field,
+                    Comment = x.Comment
+                });
+            });
+
+            await this._auditRepository.SaveAuditDataAsync(request);
+        }
+
+        /// <summary>
+        /// Save audit data
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="moduleId"></param>
+        /// <param name="entityTypeId"></param>
+        /// <param name="entityId"></param>
+        /// <param name="userId"></param>
+        /// <param name="regionId"></param>
+        /// <returns></returns>
+        public async Task SaveAuditDataAsync(List<AuditGroupRequest> data, string moduleId, string entityTypeId, string entityId, int userId, int regionId)
+        {
+            var request = new List<Audit>();
+            moduleId = moduleId.Trim().ToUpper();
+            entityId = entityId?.Trim().ToUpper();
+            entityTypeId = entityTypeId.Trim().ToUpper();
+
+            data.ForEach(x =>
+            {
+                request.Add(new Audit()
+                {
+                    AuditId = Guid.NewGuid(),
+                    CreatedBy = userId,
+                    CreatedDate = DateTime.UtcNow,
+                    ModuleId = moduleId,
+                    EntityTypeId = entityTypeId,
+                    EntityId = !string.IsNullOrEmpty(x.EntityId)? x.EntityId.Trim().ToUpper() : entityId,
+                    RegionId = regionId,
+                    OldValue = JsonConvert.SerializeObject(x.OldValues ?? new List<string>()),
+                    NewValue = JsonConvert.SerializeObject(x.NewValues ?? new List<string>()),
+                    Comment = x.Comment
+                });
+            });
+
+            await this._auditRepository.SaveAuditDataAsync(request);
+
         }
     }
 }
