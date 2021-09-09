@@ -87,7 +87,7 @@ stages:
               azureResourceGroup: 'Perseus-migration-RG'
               kubernetesCluster: 'Perseus-migration-eastus2-AKS'
               useClusterAdmin: true
-              namespace: 'migration'
+              namespace: 'test'
               command: 'upgrade'
               chartType: 'FilePath'
               chartPath: '$(pipeline.workspace)/install/sharedutilities/'
