@@ -5,7 +5,7 @@
 trigger:
 - $(Build.SourceBranch)
 
-name: '1.0$(Rev:.r)'
+name: '2.0$(Rev:.r)'  #now change into 2.0 version as of now we have only previous version 1.0
 
 resources:
 - repo: self
