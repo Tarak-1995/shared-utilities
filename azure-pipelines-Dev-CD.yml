@@ -34,7 +34,7 @@ resources:
 
 stages:
 - stage: Development
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/canary-dev'))
   displayName: Development
   jobs:
   - deployment: Development
