@@ -44,11 +44,4 @@ spec:
             value: {{ .Values.aspnetcore }}
           - name: "AppEnv"
             value: {{ .Values.namespace }}
-          volumeMounts:
-          - name: secrets
-            mountPath: /app/secrets
-            readOnly: true  
-      volumes:
-        - name: secrets
-          secret:
-            secretName: {{ .Values.secretname }}
+         
