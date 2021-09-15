@@ -16,11 +16,16 @@ namespace PrimeroEdge.SharedUtilities.Components
     public interface IAuditRepository
     {
         /// <summary>
-        /// Get audit data
+        ///  Get audit data
         /// </summary>
-        /// <param name="request"></param>
+        /// <param name="moduleId"></param>
+        /// <param name="entityTypeId"></param>
+        /// <param name="entityId"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="regionId"></param>
         /// <returns></returns>
-        Task<Tuple<List<Audit>, long>> GetAuditDataAsync(AuditRequest request, int regionId);
+        Task<Tuple<List<Audit>, int>> GetAuditDataAsync(string moduleId, string entityTypeId, string entityId, int pageSize, int pageNumber, int regionId);
 
 
         /// <summary>
@@ -29,6 +34,20 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// <param name="data"></param>
         /// <returns></returns>
         Task SaveAuditDataAsync(List<Audit> data);
+
+        /// <summary>
+        /// GetUsersAsync
+        /// </summary>
+        /// <param name="users"></param>
+        /// <returns></returns>
+        Task<Dictionary<int, string>> GetUsersAsync(List<int> users);
+
+        /// <summary>
+        /// GetTimeZoneSettingsAsync
+        /// </summary>
+        /// <param name="regionId"></param>
+        /// <returns></returns>
+        Task<Tuple<string, bool>> GetTimeZoneSettingsAsync(int regionId);
 
     }
 }

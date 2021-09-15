@@ -9,6 +9,8 @@ using System;
 using System.IO;
 using Cybersoft.Platform.Authorization.HeaderUtilities.Extensions;
 using Cybersoft.Platform.Authorization.HeaderUtilities.Factories;
+using Cybersoft.Platform.Couchbase.Client;
+using Cybersoft.Platform.Couchbase.Settings;
 using Cybersoft.Platform.Utilities.MiddleWare;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -58,6 +60,11 @@ namespace PrimeroEdge.SharedUtilities.Api
             });
             var bypassAuthSettings = Options.Create(Configuration.GetSection("BypassAuthenticationSettings").Get<BypassAuthenticationSettings>());
             services.AddSessionFactory(bypassAuthSettings.Value);
+
+            services.Configure<CouchbaseSettings>(options => this.Configuration.GetSection("AuditCouchbaseSettings").Bind(options));
+            var couchbaseOptions = Options.Create(this.Configuration.GetSection("AuditCouchbaseSettings").Get<CouchbaseSettings>());
+            var couchbaseCluster = CouchbaseClusterFactory.Build(couchbaseOptions).Result;
+            services.AddSingleton<ICouchbaseCluster>(_ => couchbaseCluster);
         }
 
         /// <summary>

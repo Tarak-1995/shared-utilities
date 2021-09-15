@@ -1,7 +1,12 @@
 host: sharedutilitiesservice.login.schoolcafe.com
+name: sharedutilities
 namespace: prod
 secretname: sharedutilities-prod-secret-appsettings
 aspnetcore: Production
 #sharedutilitiesrepo: PerseusNonProdACR.azurecr.io/sharedutilities_qa:latest
-replicas: 1
+replicas: 2
 sslcert: loginschoolcafesslcert
+limitcpu: 8m
+limitmemory: 400Mi
+requestscpu: 5m
+requestsmemory: 300Mi

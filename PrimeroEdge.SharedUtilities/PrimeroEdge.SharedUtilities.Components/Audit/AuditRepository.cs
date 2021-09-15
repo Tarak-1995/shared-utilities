@@ -5,12 +5,15 @@
  ***********************************************************************
  */
 
-using Cybersoft.Platform.Data.MongDb;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MongoDB.Driver;
+using Cybersoft.Platform.Data.Sql;
+using Cybersoft.Platform.Couchbase.Client;
+using System.Dynamic;
+using System.Data;
+using System.Data.SqlClient;
 
 namespace PrimeroEdge.SharedUtilities.Components
 {
@@ -20,18 +23,39 @@ namespace PrimeroEdge.SharedUtilities.Components
     public class AuditRepository : IAuditRepository
     {
 
-        /// <summary>
-        /// mongoDbManager
-        /// </summary>
-        private readonly Lazy<Task<IMongoDbManager<Audit>>> _mongoDbManager;
+        private readonly ICouchbaseCluster _couchbaseCluster;
+        private readonly ISqlDbManager _sqlDbManager;
+        private const int CouchBatchSize = 500;
+        private const string AuditBucket = "Audit";
+        private const string TimeZoneCode = "DTTIMEZONE";
+        private const string DayLightCode = "DAYLGTSATE";
 
+        private const string GetTimeZoneSettings = @"SELECT 
+                                                        UPPER(TRIM(S.SettingCode)) AS [SettingCode],                                                        
+                                                        COALESCE(RSV.SettingValue, S.[SettingValue]) AS SettingValue
+                                                    FROM NF_Setting S WITH (NOLOCK) 
+                                                        LEFT JOIN NF_RegionSettingValue RSV WITH (NOLOCK) ON S.SettingId = RSV.SettingId AND RSV.RegionId = @RegionId
+                                                    WHERE S.SettingCode IN ( 'DTTIMEZONE', 'DAYLGTSATE')";
+
+        private const string GetUsers = @"SELECT UserId, CONCAT(TRIM(FirstName), ' ', TRIM(LastName)) AS [Name] FROM NF_User WITH(NOLOCK)
+                                           WHERE UserId IN ({0})";
+
+        private const string GetAuditPageData = @"SELECT V.* FROM Audit V
+                                                WHERE V.type ='Audit' AND  V.regionId = {0} AND V.moduleId = '{1}' AND  V.entityTypeId = '{2}' AND   V.entityId = '{3}'         
+                                                ORDER BY V.createdDate DESC
+                                                OFFSET {4} LIMIT {5}";
+
+        private const string GetAuditCountData = @"SELECT COUNT(*) AS Count FROM Audit V
+                                                 WHERE V.type ='Audit' AND  V.regionId = {0} AND V.moduleId = '{1}' AND  V.entityTypeId = '{2}' AND   V.entityId = '{3}'";
         /// <summary>
         /// AuditRepository
         /// </summary>
-        /// <param name="mongoDbManager"></param>
-        public AuditRepository(Lazy<Task<IMongoDbManager<Audit>>> mongoDbManager)
+        /// <param name="couchbaseCluster"></param>
+        /// <param name="sqlDbManager"></param>
+        public AuditRepository(ICouchbaseCluster couchbaseCluster, ISqlDbManager sqlDbManager)
         {
-            _mongoDbManager = mongoDbManager ?? throw new ArgumentNullException(nameof(mongoDbManager));
+            this._couchbaseCluster = couchbaseCluster;
+            this._sqlDbManager = sqlDbManager;
         }
 
         /// <summary>
@@ -41,50 +65,94 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// <returns></returns>
         public async Task SaveAuditDataAsync(List<Audit> data)
         {
-            var mongoManager = await _mongoDbManager.Value.ConfigureAwait(false);
             data = data.Where(x => x.NewValue != x.OldValue).ToList();
-            if(data.Any())
-             await mongoManager.CreateAsync(data).ConfigureAwait(false);
+            if (data.Any())
+            {
+                await this._couchbaseCluster.UpdateAsync(AuditBucket, data, CouchBatchSize);
+            }
         }
 
         /// <summary>
         /// Get audit data
         /// </summary>
-        /// <param name="request"></param>
+        /// <param name="moduleId"></param>
+        /// <param name="entityTypeId"></param>
+        /// <param name="entityId"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="pageNumber"></param>
         /// <param name="regionId"></param>
         /// <returns></returns>
-        public async Task<Tuple<List<Audit>, long>> GetAuditDataAsync(AuditRequest request, int regionId)
+        public async Task<Tuple<List<Audit>, int>> GetAuditDataAsync(string moduleId, string entityTypeId, string entityId, int pageSize, int pageNumber, int regionId)
         {
-            var mongoManager = await _mongoDbManager.Value.ConfigureAwait(false);
+            if (pageNumber <= 0)
+                pageNumber = 1;
 
-            request.ModuleId = request.ModuleId.Trim().ToUpper();
-            request.EntityTypeId = request.EntityTypeId.Trim().ToUpper();
-            request.EntityId = request.EntityId.Trim().ToUpper();
+            if (pageSize <= 0)
+                pageSize = 20;
 
-            var filter =  Builders<Audit>.Filter.Where(x => x.EntityTypeId == request.EntityTypeId 
-                                                            && x.EntityId == request.EntityId
-                                                            && x.ModuleId == request.ModuleId
-                                                            && x.RegionId == regionId);
-            
-            if(!string.IsNullOrWhiteSpace(request.Field))
-               filter = filter & Builders<Audit>.Filter.Where(x=> x.Field.Equals(request.Field));
+            var offset = (pageNumber - 1) * pageSize;
+            var limit = pageSize;
 
-            var sort = Builders<Audit>.Sort.Descending(x => x.CreatedDate);
+            var count = 0;
+            var pageData = new List<Audit>();
 
-            if (request.PageNumber <= 0)
-                request.PageNumber = 1;
+            var query = string.Format(GetAuditCountData, regionId, moduleId.Trim().ToUpper(), entityTypeId.Trim().ToUpper(), entityId.Trim().ToUpper());
+            var result = await this._couchbaseCluster.QueryAsync<ExpandoObject>(query);
+            await foreach (dynamic item in result)
+            {
+                count = Convert.ToInt32(item.Count);
+            }
 
-            if (request.PageSize <= 0)
-                request.PageSize = 100;
+            if (count != 0)
+            {
+                query = string.Format(GetAuditPageData, regionId, moduleId.Trim().ToUpper(), entityTypeId.Trim().ToUpper(), entityId.Trim().ToUpper(), offset, limit);
+                var data = await this._couchbaseCluster.QueryAsync<Audit>(query);
+                pageData = await data.ToListAsync();
+            }
 
-            var skip = (request.PageNumber - 1) * request.PageSize;
+            return Tuple.Create(pageData, count);
 
-            var count = await mongoManager.CountDocumentsAsync(filter).ConfigureAwait(false);
+        }
 
-            var data= await mongoManager.QueryAsync(filter, sort, skip, request.PageSize).ConfigureAwait(false);
+        /// <summary>
+        /// GetUsersAsync
+        /// </summary>
+        /// <param name="users"></param>
+        /// <returns></returns>
+        public async Task<Dictionary<int, string>> GetUsersAsync(List<int> users)
+        {
+            var query = string.Format(GetUsers, string.Join(',', users.Distinct()));
+            var table = await this._sqlDbManager.GetDataAsync(query, null, CommandType.Text);
 
-            return Tuple.Create(data, count);
+            return table.AsEnumerable()
+                .GroupBy(x => x.Field<int>(0))
+                .ToDictionary(
+                    row => row.Key,
+                    row => row.First().Field<string>(1));
+        }
 
+        /// <summary>
+        /// GetTimeZoneSettingsAsync
+        /// </summary>
+        /// <param name="regionId"></param>
+        /// <returns></returns>
+        public async Task<Tuple<string, bool>> GetTimeZoneSettingsAsync(int regionId)
+        {
+            var sqlParameters = new[]
+            {
+                new SqlParameter("@RegionId", regionId),
+            };
+
+            var table = await this._sqlDbManager.GetDataAsync(GetTimeZoneSettings, sqlParameters, CommandType.Text);
+            var result = table.AsEnumerable()
+                .GroupBy(x => x.Field<string>(0))
+                .ToDictionary(
+                    row => row.Key,
+                    row => row.First().Field<string>(1));
+
+            var timeZone = result[TimeZoneCode];
+            var isDayLight = result[DayLightCode];
+            return Tuple.Create(timeZone, isDayLight == "1");
         }
     }
 }

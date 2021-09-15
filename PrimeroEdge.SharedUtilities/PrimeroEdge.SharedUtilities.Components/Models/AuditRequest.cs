@@ -5,48 +5,70 @@
  ***********************************************************************
  */
 
-using System.Text.Json.Serialization;
+using System;
+using System.Collections.Generic;
 
 namespace PrimeroEdge.SharedUtilities.Components
 {
     /// <summary>
-    /// AuditRequest
+    /// AuditResponse
     /// </summary>
-    public class AuditRequest 
+    public class AuditRequest
     {
         /// <summary>
-        /// Get or set ModuleId
-        /// </summary>
-       [JsonIgnore]
-        public string ModuleId { get; set; }
-
-        /// <summary>
-        /// Get or set EntityTypeId
-        /// </summary>
-        [JsonIgnore]
-        public string EntityTypeId { get; set; }
-
-        /// <summary>
-        /// EntityId
-        /// </summary>
-        [JsonIgnore]
-        public string EntityId { get; set; }
-
-        /// <summary>
-        /// Field
+        /// Get or set Field
         /// </summary>
         public string Field { get; set; }
 
+        /// <summary>
+        /// Get or set OldValue
+        /// </summary>
+        public string OldValue { get; set; }
 
         /// <summary>
-        /// PageSize
+        /// Get or set NewValue
         /// </summary>
-        public int PageSize { get; set; }
+        public string NewValue { get; set; }
 
         /// <summary>
-        /// PageNumber
+        /// Get or set Comment
         /// </summary>
+        public string Comment { get; set; }
 
-        public int PageNumber { get; set; }
+        /// <summary>
+        /// Get or set EntityId
+        /// </summary>
+        public string EntityId { get; set; }
+    }
+
+
+    public class AuditGroupRequest
+    {
+        /// <summary>
+        /// Get or set Field
+        /// </summary>
+        public string Field { get; set; }
+
+        /// <summary>
+        /// Get or set OldValue
+        /// </summary>
+        public List<string> OldValues { get; set; }
+
+
+        /// <summary>
+        /// Get or set NewValues
+        /// </summary>
+        public List<string> NewValues { get; set; }
+
+        /// <summary>
+        /// Get or set Comment
+        /// </summary>
+        public string Comment { get; set; }
+
+        /// <summary>
+        /// Get or set EntityId
+        /// </summary>
+        public string EntityId { get; set; }
+
     }
 }

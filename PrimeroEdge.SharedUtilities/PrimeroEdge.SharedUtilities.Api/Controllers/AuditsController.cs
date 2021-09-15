@@ -35,6 +35,7 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
         /// AuditsController
         /// </summary>
         /// <param name="auditManager"></param>
+        /// <param name="sessionFactory"></param>
         public AuditsController(IAuditManager auditManager, IUserSessionFactory sessionFactory)
         {
             _auditManager = auditManager ?? throw new ArgumentNullException(nameof(auditManager));
@@ -51,23 +52,10 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
         /// <param name="entityId"></param>
         /// <returns></returns>
         [HttpPost("Create")]
-        public async Task SaveAuditDataAsync(List<Audit> data, string moduleId, string entityTypeId, string entityId)
+        public async Task SaveAuditDataAsync(List<AuditRequest> data, string moduleId, string entityTypeId, string entityId)
         {
-
             CheckValidations(moduleId, entityTypeId);
-
-            data.ForEach(x =>
-            {
-                x.Id = Guid.NewGuid().ToString();
-                x.CreatedDate = DateTime.UtcNow;
-                x.UserId = _authContext.UserId;
-                x.RegionId = _authContext.RegionId;
-                x.ModuleId = moduleId?.Trim().ToUpper();
-                x.EntityTypeId = entityTypeId?.Trim().ToUpper();
-                x.EntityId = entityId?.Trim().ToUpper();
-            });
-
-            await _auditManager.SaveAuditDataAsync(data);
+            await _auditManager.SaveAuditDataAsync(data, moduleId, entityTypeId, entityId, _authContext.UserId, _authContext.RegionId);
         }
 
         /// <summary>
@@ -79,30 +67,10 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
         /// <param name="entityId"></param>
         /// <returns></returns>
         [HttpPost("GroupCreate")]
-        public async Task SaveAuditGroupDataAsync(List<AuditGroup> data, string moduleId, string entityTypeId, string entityId)
+        public async Task SaveAuditGroupDataAsync(List<AuditGroupRequest> data, string moduleId, string entityTypeId, string entityId)
         {
             CheckValidations(moduleId, entityTypeId);
-            var req = new List<Audit>();
-
-            foreach (var item in data)
-            {
-                req.Add(new Audit()
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    CreatedDate = DateTime.UtcNow,
-                    UserId = _authContext.UserId,
-                    RegionId = _authContext.RegionId,
-                    EntityId = entityId?.Trim().ToUpper(),
-                    EntityTypeId = entityTypeId?.Trim().ToUpper(),
-                    ModuleId = moduleId?.Trim().ToUpper(),
-                    UserName = item.UserName,
-                    Comment = item.Comment,
-                    OldValue = JsonConvert.SerializeObject(item.OldValues ?? new List<string>()),
-                    NewValue = JsonConvert.SerializeObject(item.NewValues ?? new List<string>())
-                });
-            }
-
-            await _auditManager.SaveAuditDataAsync(req);
+            await _auditManager.SaveAuditDataAsync(data, moduleId, entityTypeId, entityId, _authContext.UserId, _authContext.RegionId);
         }
 
         /// <summary>
@@ -115,20 +83,10 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
         /// <param name="pageNumber"></param>
         /// <returns></returns>
         [HttpGet("Read")]
-        public async Task<List<Audit>> GetAuditDataAsync(string moduleId, string entityTypeId, string entityId, int pageSize, int pageNumber)
+        public async Task<List<AuditResponse>> GetAuditDataAsync(string moduleId, string entityTypeId, string entityId, int pageSize, int pageNumber)
         {
-            var request = new AuditRequest
-            {
-                ModuleId = moduleId,
-                EntityTypeId = entityTypeId,
-                EntityId = entityId,
-                PageNumber = pageNumber,
-                PageSize = pageSize
-            };
-
-            CheckValidations(request.ModuleId, request.EntityTypeId);
-
-            var data = await _auditManager.GetAuditDataAsync(request, _authContext.RegionId);
+            CheckValidations(moduleId, entityTypeId);
+            var data = await _auditManager.GetAuditDataAsync(moduleId, entityTypeId, entityId, pageSize, pageNumber, _authContext.RegionId);
             HttpContext.Items[APIConstants.RESPONSE_PAGINATION] = _auditManager.GetPaginationEnvelope();
             return data;
         }
@@ -144,27 +102,16 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
         /// <param name="pageNumber"></param>
         /// <returns></returns>
         [HttpGet("GroupRead")]
-        public async Task<List<AuditGroup>> GetAuditGroupDataAsync(string moduleId, string entityTypeId, string entityId, int pageSize, int pageNumber)
+        public async Task<List<AuditGroupResponse>> GetAuditGroupDataAsync(string moduleId, string entityTypeId, string entityId, int pageSize, int pageNumber)
         {
-            var request = new AuditRequest
-            {
-                ModuleId = moduleId,
-                EntityTypeId = entityTypeId,
-                EntityId = entityId,
-                PageNumber = pageNumber,
-                PageSize = pageSize
-            };
 
-            CheckValidations(request.ModuleId, request.EntityTypeId);
-
-            var data = await _auditManager.GetAuditDataAsync(request, _authContext.RegionId);
-
+            CheckValidations(moduleId, entityTypeId);
+            var data = await _auditManager.GetAuditDataAsync(moduleId, entityTypeId, entityId, pageSize, pageNumber, _authContext.RegionId);
             HttpContext.Items[APIConstants.RESPONSE_PAGINATION] = _auditManager.GetPaginationEnvelope();
-
-            var result = new List<AuditGroup>();
+            var result = new List<AuditGroupResponse>();
             foreach (var item in data)
             {
-                result.Add(new AuditGroup()
+                result.Add(new AuditGroupResponse()
                 {
                     UserName = item.UserName,
                     Comment = item.Comment,
