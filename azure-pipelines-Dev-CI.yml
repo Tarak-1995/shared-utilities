@@ -130,12 +130,12 @@ stages:
   jobs: 
   - job: DevKubesecret
     displayName: Kubernetes Secret
-    steps:
-    - task: Kubernetes@1
-      inputs:
-        connectionType: 'Kubernetes Service Connection'
-        kubernetesServiceEndpoint: 'perseus-sharedutilities-dev'
-        namespace: 'test'
-        secretType: 'generic'
-        secretArguments: '--from-file=PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/appsettings.Development.json'
-        secretName: 'sharedutilities-dev-secret-appsettings'
+   # steps:
+    #- task: Kubernetes@1
+     # inputs:
+      #  connectionType: 'Kubernetes Service Connection'
+       # kubernetesServiceEndpoint: 'perseus-sharedutilities-dev'
+        #namespace: 'test'
+        #secretType: 'generic'
+        #secretArguments: '--from-file=PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/appsettings.Development.json'
+        #secretName: 'sharedutilities-dev-secret-appsettings'
