@@ -40,8 +40,7 @@ spec:
             value: {{ .Values.aspnetcore }}
           - name: "AppEnv"
             value: {{ .Values.namespace }}
-          - name: "ASPNETCORE_ENVIRONMENT"
-            value: {{ .Values.aspnetcore }}
-          - name: "AppEnv"
-            value: {{ .Values.namespace }}
-         
+      volumes:
+        - name: secrets
+          secret:
+            secretName: {{ .Values.secretname }}
