@@ -11,6 +11,7 @@ spec:
     metadata:
       labels:
         app: sharedutilities 
+        version: "1.0"
       annotations:
         timestamp: "{{ date "20060102150405" .Release.Time }}"
     spec:     
