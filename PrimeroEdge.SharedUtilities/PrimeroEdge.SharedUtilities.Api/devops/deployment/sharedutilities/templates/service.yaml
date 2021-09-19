@@ -4,11 +4,11 @@ metadata:
   name: sharedutilitiesservice
   labels:
     app: sharedutilitiesservice
-    #version: "v1"
+    version: "v1"
     spec:
   ports:
   - port: 80
     targetPort: 5000
   selector:
     app: sharedutilities
-    #version: "v1"
+    version: "v1"
