@@ -10,7 +10,8 @@ spec:
   template:
     metadata:
       labels:
-        app: sharedutilities 
+        app: sharedutilities
+        version: "v1"
       annotations:
         timestamp: "{{ date "20060102150405" .Release.Time }}"
     spec: 
