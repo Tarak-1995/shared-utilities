@@ -1,7 +1,7 @@
 apiVersion : apps/v1
 kind: Deployment
 metadata:
-  name: sharedutilities
+  name: sharedutilities -v1
 spec:
   replicas: {{ .Values.replicas }}
   selector:
