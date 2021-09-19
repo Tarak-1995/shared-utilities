@@ -14,5 +14,5 @@ spec:
         paths:
           - path: /
             backend:
-              serviceName: sharedutilitiesservice
+              serviceName: sharedutilitiesservice -v1
               servicePort: 80
