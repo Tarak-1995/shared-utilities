@@ -11,3 +11,4 @@ metadata:
     targetPort: 5000
   selector:
     app: sharedutilities
+    version: "v1"
