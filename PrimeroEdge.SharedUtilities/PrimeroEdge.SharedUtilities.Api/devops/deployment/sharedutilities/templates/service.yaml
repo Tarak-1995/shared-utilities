@@ -3,12 +3,12 @@ kind: Service
 metadata:
   name: sharedutilitiesservice -v2
   labels:
-    app: sharedutilitiesservice
+    app: sharedutilitiesservice -v2
     version: "v2"
     spec:
   ports:
   - port: 80
     targetPort: 5000
   selector:
-    app: sharedutilities
+    app: sharedutilities -v2
     version: "v2"
