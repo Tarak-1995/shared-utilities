@@ -4,6 +4,7 @@ metadata:
   name: sharedutilitiesservice
   labels:
     app: sharedutilitiesservice
+    version: "v1"
     spec:
   ports:
   - port: 80
