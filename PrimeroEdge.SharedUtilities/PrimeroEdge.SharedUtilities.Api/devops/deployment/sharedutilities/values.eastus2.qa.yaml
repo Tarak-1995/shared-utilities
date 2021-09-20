@@ -5,7 +5,7 @@ aspnetcore: QA
 #sharedutilitiesrepo: PerseusNonProdACR.azurecr.io/sharedutilities_qa:latest
 replicas: 1
 sslcert: perseusedgesslcert
-limitcpu: 8m
+limitcpu: 100m
 limitmemory: 400Mi
-requestscpu: 5m
+requestscpu: 100m
 requestsmemory: 300Mi
