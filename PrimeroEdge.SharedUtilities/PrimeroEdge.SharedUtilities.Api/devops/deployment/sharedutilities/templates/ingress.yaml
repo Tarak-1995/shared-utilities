@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: sharedutilities -v2
+  name: sharedutilitiesv1
   namespace: {{ .Values.namespace }}
   annotations:
     kubernetes.io/ingress.class: azure/application-gateway
