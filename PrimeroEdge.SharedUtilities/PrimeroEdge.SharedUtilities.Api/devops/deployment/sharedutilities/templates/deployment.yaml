@@ -28,13 +28,13 @@ spec:
                - ALL
           ports:
           - containerPort: 5000
-          resources:
-            limits:
-              cpu: {{ .Values.limitcpu }}
-              memory: {{ .Values.limitmemory }}
-            requests:
-              cpu: {{ .Values.requestscpu }}
-              memory: {{ .Values.requestsmemory }}
+          #resources:
+          #  limits:
+          #    cpu: {{ .Values.limitcpu }}
+          #    memory: {{ .Values.limitmemory }}
+          #  requests:
+          #    cpu: {{ .Values.requestscpu }}
+          #    memory: {{ .Values.requestsmemory }}
           env:
           - name: "ASPNETCORE_ENVIRONMENT"
             value: {{ .Values.aspnetcore }}
