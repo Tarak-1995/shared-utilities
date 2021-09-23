@@ -5,7 +5,9 @@ aspnetcore: Staging
 #sharedutilitiesrepo: PerseusNonProdACR.azurecr.io/sharedutilities_qa:latest
 replicas: 1
 sslcert: perseusedgesslcert
-limitcpu: 8m
-limitmemory: 400Mi
-requestscpu: 5m
-requestsmemory: 300Mi
+limitcpu: 500m
+limitmemory: 800Mi
+requestscpu: 400m
+requestsmemory: 600Mi
+autoscaling:
+  enabled: false
