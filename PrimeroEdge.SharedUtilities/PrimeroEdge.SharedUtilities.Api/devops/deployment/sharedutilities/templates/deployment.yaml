@@ -1,4 +1,4 @@
-apiVersion : apps/v1
+apiVersion : apps/v2
 kind: Deployment
 metadata:
   name: sharedutilitiesv1
@@ -7,12 +7,12 @@ spec:
   selector:
     matchLabels:
       app: sharedutilities
-      version: "v1"
+      version: "v2"
   template:
     metadata:
       labels:
         app: sharedutilitiesv1
-        version: "v1"
+        version: "v2"
       annotations:
         timestamp: "{{ date "20060102150405" .Release.Time }}"
     spec: 
