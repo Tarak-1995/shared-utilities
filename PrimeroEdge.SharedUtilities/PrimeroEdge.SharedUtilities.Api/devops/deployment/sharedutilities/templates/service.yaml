@@ -9,6 +9,7 @@ metadata:
   ports:
   - port: 80
     targetPort: 5000
+ initialDelaySeconds: 120    
   selector:
     app: sharedutilitiesv1
     version: "v1"
