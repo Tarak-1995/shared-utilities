@@ -116,7 +116,7 @@ stages:
           latest
 
     - task: HelmInstaller@1
-      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+      #condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
       inputs:
         helmVersionToInstall: '3.2.3'
     - bash: |
