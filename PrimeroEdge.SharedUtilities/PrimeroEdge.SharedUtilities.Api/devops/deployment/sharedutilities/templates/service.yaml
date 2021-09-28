@@ -1,10 +1,10 @@
-apiVersion: v1
+apiVersion: v2
 kind: Service
 metadata:
-  name: sharedutilitiesservicev1
+  name: sharedutilitiesservicev2
   labels:
     app: sharedutilitiesservicev1
-    version: "v1"
+    version: "v2"
     spec:
   ports:
   - port: 80
@@ -12,4 +12,4 @@ metadata:
 initialDelaySeconds: 120    
   selector:
     app: sharedutilitiesv1
-    version: "v1"
+    version: "v2"
