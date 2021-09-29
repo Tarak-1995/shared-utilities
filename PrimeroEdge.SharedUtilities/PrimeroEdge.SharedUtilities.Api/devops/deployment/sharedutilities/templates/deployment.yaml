@@ -23,7 +23,7 @@ spec:
           fsGroup: 1001
       containers:
         - name: sharedutilities 
-          image: __imageName__
+          image: perseusnonprodacr.azurecr.io/sharedutilities-dev:46188
           imagePullPolicy: Always
           securityContext:
             capabilities:
