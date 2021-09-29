@@ -8,10 +8,11 @@ spec:
     matchLabels:
       app: sharedutilities
       version: "v2"
+      track: stable
   template:
     metadata:
       labels:
-        app: sharedutilitiesv1
+        app: sharedutilities
         version: "v2"
       annotations:
         timestamp: "{{ date "20060102150405" .Release.Time }}"
