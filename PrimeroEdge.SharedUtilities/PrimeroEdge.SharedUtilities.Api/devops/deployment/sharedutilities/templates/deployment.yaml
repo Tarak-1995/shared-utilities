@@ -1,20 +1,20 @@
 apiVersion : apps/v2
 kind: Deployment
 metadata:
-  name: sharedutilitiesv1
+  name: sharedutilitiesv2
 spec:
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       app: sharedutilities
-      version: "v1"
-      track: stable
+      version: "v2"
+      track: canary
   template:
     metadata:
       labels:
         app: sharedutilities
-        version: "v1"
-        track: stable
+        version: "v2"
+        track: canary
       annotations:
         timestamp: "{{ date "20060102150405" .Release.Time }}"
     spec: 
@@ -24,7 +24,7 @@ spec:
           fsGroup: 1001
       containers:
         - name: sharedutilities 
-          image: perseusnonprodacr.azurecr.io/sharedutilities-dev:46008
+          image: perseusnonprodacr.azurecr.io/sharedutilities-dev:44281
           imagePullPolicy: Always
           securityContext:
             capabilities:
