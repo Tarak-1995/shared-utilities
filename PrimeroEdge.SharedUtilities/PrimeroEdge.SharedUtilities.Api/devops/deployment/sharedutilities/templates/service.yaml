@@ -1,9 +1,9 @@
 apiVersion: v2
 kind: Service
 metadata:
-  name: sharedutilitiesservicev2
+  name: sharedutilitiesservice
   labels:
-    app: sharedutilitiesservicev1
+    app: sharedutilitiesservice
     version: "v2"
     spec:
   ports:
@@ -11,5 +11,5 @@ metadata:
     targetPort: 5000
 initialDelaySeconds: 120    
   selector:
-    app: sharedutilitiesv1
+    app: sharedutilities
     version: "v2"
