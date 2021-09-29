@@ -1,14 +1,14 @@
 apiVersion : apps/v2
 kind: Deployment
 metadata:
-  name: sharedutilitiesv1
+  name: sharedutilitiesv2
 spec:
   replicas: {{ .Values.replicas }}
   selector:
     matchLabels:
       app: sharedutilities
       version: "v2"
-      track: stable
+      track: canary
   template:
     metadata:
       labels:
