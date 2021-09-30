@@ -9,3 +9,4 @@ limitcpu: 8m
 limitmemory: 400Mi
 requestscpu: 5m
 requestsmemory: 300Mi
+metadataname: api-deployment
