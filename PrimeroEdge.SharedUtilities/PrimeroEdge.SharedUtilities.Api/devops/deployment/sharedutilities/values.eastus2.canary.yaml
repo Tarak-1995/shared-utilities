@@ -10,3 +10,6 @@ limitmemory: 400Mi
 requestscpu: 5m
 requestsmemory: 300Mi
 metadataname: api-canary
+tmpmetadataname = sharedutilitieservice
+track = canary
+image = perseusnonprodacr.azurecr.io/sharedutilities-dev:46008
