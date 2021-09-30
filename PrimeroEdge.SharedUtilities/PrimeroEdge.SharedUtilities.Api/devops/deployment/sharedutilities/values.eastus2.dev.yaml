@@ -2,7 +2,7 @@ host: testsharedutilitiesservice.perseusedge.com
 namespace: test
 secretname: sharedutilities-dev-secret-appsettings
 aspnetcore: Development
-sharedutilitiesrepo: PerseusNonProdACR.azurecr.io/sharedutilities-dev:44281
+sharedutilitiesrepo: PerseusNonProdACR.azurecr.io/sharedutilities-dev:2.0.6
 replicas: 1
 sslcert: perseusedgesslcert
 limitcpu: 8m
@@ -12,4 +12,4 @@ requestsmemory: 300Mi
 metadataname: api-deployment
 tmpmetadataname = sharedutilitieservice
 track = stable
-image = perseusnonprodacr.azurecr.io/sharedutilities-dev:44281
+image = PerseusNonProdACR.azurecr.io/charts/sharedutilities-dev:2.0.6
