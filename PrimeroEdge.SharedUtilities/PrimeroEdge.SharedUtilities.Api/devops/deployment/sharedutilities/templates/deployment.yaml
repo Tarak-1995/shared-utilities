@@ -8,13 +8,13 @@ spec:
     matchLabels:
       app: sharedutilities
       version: "v2"
-      track: canary
+      track: {{ .Values.track }}
   template:
     metadata:
       labels:
-        app: sharedutilities
+        app: {{ .Values.tmpmetadataname }}
         version: "v2"
-        track: canary
+        track: {{ .Values.track }}
       annotations:
         timestamp: "{{ date "20060102150405" .Release.Time }}"
     spec: 
@@ -24,7 +24,7 @@ spec:
           fsGroup: 1001
       containers:
         - name: sharedutilities 
-          image: perseusnonprodacr.azurecr.io/sharedutilities-dev:44281
+          image: {{ .Values.image }}
           imagePullPolicy: Always
           securityContext:
             capabilities:
