@@ -1,18 +1,16 @@
 apiVersion : apps/v1
 kind: Deployment
 metadata:
-  name: sharedutilitiesservice-v1
+  name: sharedutilities
 spec:
   replicas: {{ .Values.replicas }}
   selector:
     matchLabels:
-      app: sharedutilitiesservice
-	  version: v1.0.0
+      app: sharedutilities
   template:
     metadata:
       labels:
-        app: sharedutilitiesservice
-        version: v1.0.0		
+        app: sharedutilities 
       annotations:
         timestamp: "{{ date "20060102150405" .Release.Time }}"
     spec: 
@@ -21,7 +19,7 @@ spec:
           runAsUser: 1001
           fsGroup: 1001
       containers:
-        - name: sharedutilitiesservice 
+        - name: sharedutilities 
           image: __imageName__
           imagePullPolicy: Always
           securityContext:
@@ -39,24 +37,10 @@ spec:
               memory: {{ .Values.requestsmemory }}
           env:
           - name: "ASPNETCORE_ENVIRONMENT"
+            value: {{ .Values.aspnetcore }}
+          - name: "AppEnv"
             value: {{ .Values.namespace }}
-		      - name: VERSION
-            value: v1.0.0
-		      livenessProbe:
-            httpGet:
-              path: /live
-              port: probe
-                  initialDelaySeconds: 5
-                  periodSeconds: 5
-                readinessProbe:
-                  httpGet:
-                    path: /ready
-                    port: probe
-                  periodSeconds: 5	
       volumes:
         - name: secrets
           secret:
             secretName: {{ .Values.secretname }}
-
-          
-
