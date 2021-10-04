@@ -22,6 +22,6 @@ spec:
   ports:
   - name: http
     port: 80
-    targetPort: http
+    targetPort: 5000
   selector:
     app: sharedutilitiesservice
