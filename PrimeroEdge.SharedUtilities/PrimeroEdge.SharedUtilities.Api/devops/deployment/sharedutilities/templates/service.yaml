@@ -18,7 +18,7 @@ metadata:
   labels:
     app: sharedutilitiesservice
 spec:
-  type: NodePort
+  #type: NodePort
   ports:
   - name: http
     port: 80
