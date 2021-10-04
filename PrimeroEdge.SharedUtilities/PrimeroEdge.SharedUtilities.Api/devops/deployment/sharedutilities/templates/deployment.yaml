@@ -1,40 +1,62 @@
-apiVersion: apps/v2
+apiVersion : apps/v1
 kind: Deployment
 metadata:
   name: sharedutilitiesservice-v1
-  labels:
-    app: sharedutilitiesservice
 spec:
-  replicas: 5
+  replicas: {{ .Values.replicas }}
   selector:
     matchLabels:
       app: sharedutilitiesservice
-      version: v1.0.0
+	  version: v1.0.0
   template:
     metadata:
       labels:
         app: sharedutilitiesservice
-        version: v1.0.0
-    spec:
+        version: v1.0.0		
+      annotations:
+        timestamp: "{{ date "20060102150405" .Release.Time }}"
+    spec: 
+      securityContext:
+          runAsNonRoot: true
+          runAsUser: 1001
+          fsGroup: 1001
       containers:
-      - name: sharedutilitiesservice
-        image: __imageName__
-        ports:
-        - name: http
-          containerPort: 8080
-        - name: probe
-          containerPort: 8086
-        env:
-        - name: VERSION
-          value: v1.0.0
-        livenessProbe:
-          httpGet:
-            path: /live
-            port: probe
-          initialDelaySeconds: 5
-          periodSeconds: 5
-        readinessProbe:
-          httpGet:
-            path: /ready
-            port: probe
-          periodSeconds: 5
+        - name: sharedutilitiesservice 
+          image: __imageName__
+          imagePullPolicy: Always
+          securityContext:
+            capabilities:
+              drop:
+               - ALL
+          ports:
+          - containerPort: 5000
+          resources:
+            limits:
+              cpu: {{ .Values.limitcpu }}
+              memory: {{ .Values.limitmemory }}
+            requests:
+              cpu: {{ .Values.requestscpu }}
+              memory: {{ .Values.requestsmemory }}
+          env:
+          - name: "ASPNETCORE_ENVIRONMENT"
+            value: {{ .Values.namespace }}
+		      - name: VERSION
+            value: v1.0.0
+		      livenessProbe:
+            httpGet:
+              path: /live
+              port: probe
+                  initialDelaySeconds: 5
+                  periodSeconds: 5
+                readinessProbe:
+                  httpGet:
+                    path: /ready
+                    port: probe
+                  periodSeconds: 5	
+      volumes:
+        - name: secrets
+          secret:
+            secretName: {{ .Values.secretname }}
+
+          
+
