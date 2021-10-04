@@ -5,8 +5,10 @@ metadata:
   labels:
     app: sharedutilitiesservice
 spec:
+  type: NodePort
   ports:
-  - port: 80
+  - name: http
+    port: 80
     targetPort: 5000
   selector:
-    app: sharedutilities
+    app: sharedutilitiesservice
