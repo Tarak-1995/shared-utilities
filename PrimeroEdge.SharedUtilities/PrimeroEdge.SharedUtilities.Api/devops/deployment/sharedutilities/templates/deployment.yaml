@@ -1,50 +1,40 @@
-apiVersion : apps/v2
+apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.metadataname }}
+  name: my-app-v1
+  labels:
+    app: my-app
 spec:
-  replicas: 0
+  replicas: 5
   selector:
     matchLabels:
-      app: sharedutilities
-      version: "v2"
-      track: {{ .Values.track }}
+      app: my-app
+      version: v1.0.0
   template:
     metadata:
       labels:
-        app: {{ .Values.tmpmetadataname }}
-        version: "v2"
-        track: {{ .Values.track }}
-      annotations:
-        timestamp: "{{ date "20060102150405" .Release.Time }}"
-    spec: 
-      securityContext:
-          runAsNonRoot: true
-          runAsUser: 1001
-          fsGroup: 1001
+        app: my-app
+        version: v1.0.0
+    spec:
       containers:
-        - name: sharedutilities 
-          image: {{ .Values.image }}
-          imagePullPolicy: Always
-          securityContext:
-            capabilities:
-              drop:
-               - ALL
-          ports:
-          - containerPort: 5000
-          resources:
-            limits:
-              cpu: {{ .Values.limitcpu }}
-              memory: {{ .Values.limitmemory }}
-            requests:
-              cpu: {{ .Values.requestscpu }}
-              memory: {{ .Values.requestsmemory }}
-          env:
-          - name: "ASPNETCORE_ENVIRONMENT"
-            value: {{ .Values.aspnetcore }}
-          - name: "AppEnv"
-            value: {{ .Values.namespace }}
-      volumes:
-        - name: secrets
-          secret:
-            secretName: {{ .Values.secretname }}
+      - name: my-app
+        image: PerseusNonProdACR.azurecr.io/sharedutilities-dev:2.0.7
+        ports:
+        - name: http
+          containerPort: 8080
+        - name: probe
+          containerPort: 8086
+        env:
+        - name: VERSION
+          value: v1.0.0
+        livenessProbe:
+          httpGet:
+            path: /live
+            port: probe
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: probe
+          periodSeconds: 5
