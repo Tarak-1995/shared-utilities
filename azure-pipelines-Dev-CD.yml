@@ -16,13 +16,13 @@ variables:
   registryServerName: "$(registryName).azurecr.io"
   projectName: "sharedutilities"
   helmchartdev: "sharedutilities-dev"
-  helmChartVersion: "1.0.22"
+  helmChartVersion: "1.0.33"
   azure.service.connection: "Perseus-Non-prod-AKS-eastus-Stg"
 
 resources: 
   pipelines:
   - pipeline: ci-pipeline
-    source: Perseus_SharedUtilities_QA
+    source: Perseus_SharedUtilities_dev
     trigger:
       enabled: true
       branches:
