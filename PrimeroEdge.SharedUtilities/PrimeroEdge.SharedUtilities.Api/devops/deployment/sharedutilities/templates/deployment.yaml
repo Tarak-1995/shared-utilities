@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: sharedutilitiesservice-v1
 spec:
-  replicas: {{ .Values.replicas }}
+  replicas: 4
   selector:
     matchLabels:
       app: sharedutilitiesservice
