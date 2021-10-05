@@ -37,7 +37,7 @@ stages:
   - deployment: Migration
     variables:
     - name: imageName
-      value: $(registryServerName)/sharedutilities_mig:$(helmChartVersion)
+      value: $(registryServerName)/sharedutilities_stg:$(helmChartVersion)
       # define 5 more variables: aks, rg, aksSpId, aksSpSecret and aksSpTenantId in the Azure pipeline UI definition
     displayName: deploy helm chart into AKS
     pool:
