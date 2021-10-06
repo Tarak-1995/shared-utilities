@@ -2,7 +2,7 @@
 # Build and push image to Azure Container Registry; Deploy to Azure Kubernetes Service
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
-trigger:none
+trigger: none
 #- $(Build.SourceBranch)
 
 name: '2.0$(Rev:.r)'  #now change into 2.0 version as of now we have only previous version 1.0
