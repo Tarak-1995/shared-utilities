@@ -2,13 +2,16 @@
 # Build and push image to Azure Container Registry; Deploy to Azure Kubernetes Service
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
-trigger: none
-#- $(Build.SourceBranch)
-
-name: '2.0$(Rev:.r)'  #now change into 2.0 version as of now we have only previous version 1.0
-
+trigger:
+  - $(sourceBranch)
+  
 resources:
-- repo: self
+  - repo: self
+
+name: '1.0$(Rev:.r)'
+
+pool:
+  vmImage: 'ubuntu-latest'
 
 variables:
   # Env vars
@@ -17,27 +20,24 @@ variables:
   HELM_EXPERIMENTAL_OCI: 1
   imageVersion: $(Build.BuildNumber)
   helmChartVersion: $(Build.BuildNumber)
-  imageName: PerseusNonProdACR.azurecr.io/sharedutilities-dev:$(Build.BuildNumber)
-  # .sln .csproj(UnitTests) relative paths
-  project_sln: "PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.sln"
-  project_csproj: "./PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/PrimeroEdge.SharedUtilities.Api.csproj"
-  test_csproj: "./PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.UnitTests/PrimeroEdge.SharedUtilities.UnitTests.csproj"
   
+  # .sln .csproj(UnitTests) relative paths
+  project_sln: "./*.sln"
+  project_csproj: "./PrimeroEdge.AccountManagement.WebAPI/PrimeroEdge.AccountManagement.WebAPI.csproj"
+  test_csproj: "./PrimeroEdge.AccountManagement.UnitTests/PrimeroEdge.AccountManagement.UnitTests.csproj"
 
   # Container registry service connection established during pipeline creation
-  dockerRegistryServiceConnection: '0308b8a7-8ae6-4c18-b610-58fe54dc62c4'
-  imageRepository: 'sharedutilities-dev'
-  projectName: 'sharedutilities'
-  helmchartdev: 'sharedutilities-dev'
+  dockerRegistryServiceConnection: '00b5803d-7838-4b83-9bcf-0252a1fa70cf'
+  imageRepository: 'primeroedgeaccountmanagement'
+  qaimageRepository: 'primeroedgeaccountmanagement_qa'
+  stgimageRepository: 'primeroedgeaccountmanagement_stg'
+  projectName: 'accountmanagement'
+  helmchartdev: 'accountmanagement-dev'
   containerRegistry: 'perseusnonprodacr.azurecr.io'
-  dockerfilePath: '**/Dockerfile'
-  tag: '$(Build.BuildId)'
-  imagePullSecret: 'perseusnonprodacr206701cc-auth'
-
-  helmChartPath: './PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/deployment/sharedutilities/'
-  # Agent VM image name
-  vmImageNameW: 'vs2017-win2016'
-  vmImageNameU: 'ubuntu-latest'
+  dockerfilePath: 'Dockerfile'
+  tag:  '$(Build.BuildId)'
+  helmChartPath: './PrimeroEdge.AccountManagement.WebAPI/devops/deployment/accountmanagement/'
+  
 
 stages:
 - stage: BuildandAnalysis
@@ -45,24 +45,27 @@ stages:
   jobs:
   - job: SLNBuild
     steps:
-    - task: NuGetCommand@2
-      inputs:  
-        restoreSolution:  '--configfile NuGet.Config $(project_sln)'
-    - script: dotnet build --configuration $(buildConfiguration)
-      workingDirectory: "./PrimeroEdge.SharedUtilities"
-      displayName: 'dotnet build $(buildConfiguration)'
-  
-  - job: CodeAM
-    displayName: Code Analysis and Metrics
-    dependsOn: SLNBuild 
-    #pool:
-      #vmImage: $(vmImageNameW)
-    pool:
-      vmImage: 'ubuntu-latest'
 
+    - task: SonarQubePrepare@4
+      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev')) 
+      displayName: 'Prepare Sonarqube analysis'
+      continueOnError: true
+      inputs:
+        SonarQube: 'Perseus SonarQube New'
+        scannerMode: 'MSBuild'
+        projectKey: 'PrimeroEdge.AccountManagement'
+        projectName: 'PrimeroEdge.AccountManagement'
 
-    steps:
     - task: DotNetCoreCLI@2
+      displayName: 'Restore nuget packages'
+      inputs:
+        command: restore
+        projects: '**/*.csproj'
+        feedsToUse: 'config'
+        nugetConfigPath: './NuGet.Config'
+  
+    - task: DotNetCoreCLI@2
+      displayName: 'Build Solution'
       inputs:
         command: build
         projects: '$(project_csproj)'
@@ -70,7 +73,45 @@ stages:
         configuration: '$(buildConfiguration)'
 
     - task: DotNetCoreCLI@2
+      displayName: 'Execute Unit Tests - Opencover report'
       inputs:
         command: test
         projects: '$(test_csproj)'
-        arguments: '--configuration $(buildConfiguration)'
+        arguments: '--configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/Coverage/'
+    
+    - task: DotNetCoreCLI@2
+      displayName: 'Install ReportGenerator tool'
+      inputs:
+        command: custom
+        custom: tool
+        arguments: install --tool-path . dotnet-reportgenerator-globaltool
+    
+    - task: PublishCodeCoverageResults@1
+      displayName: 'Publish code coverage report'
+      inputs:
+        codeCoverageTool: 'Cobertura'
+        summaryFileLocation: '$(Build.SourcesDirectory)/**/*.xml'
+
+    - task: BuildQualityChecks@7
+      displayName: 'Check build quality'
+      inputs:
+        checkWarnings: true
+        warningFailOption: 'fixed'
+        warningThreshold: '10000'
+        checkCoverage: true
+        coverageFailOption: 'fixed'
+        coverageType: 'lines'
+        coverageThreshold: '0'
+
+    - task: SonarQubeAnalyze@4
+      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev')) 
+      displayName: 'Run Sonarqube analysis'
+      continueOnError: true
+    
+    - task: SonarQubePublish@4
+      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev')) 
+      displayName: 'Publish Sonarqube results'
+      continueOnError: true
+      inputs:
+        pollingTimeoutSec: '300'
+  
