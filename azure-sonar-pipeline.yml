@@ -55,11 +55,11 @@ stages:
   - job: CodeAM
     displayName: Code Analysis and Metrics
     dependsOn: SLNBuild 
-    pool:
+    #pool:
       #vmImage: $(vmImageNameW)
-      name: "Private Pool Docker"
-      demands:
-        - docker
+    pool:
+      vmImage: 'ubuntu-20.04'
+
 
     steps:
     - task: DotNetCoreCLI@2
