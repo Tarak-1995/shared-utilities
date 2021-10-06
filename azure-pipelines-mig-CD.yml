@@ -93,5 +93,5 @@ stages:
               chartPath: '$(pipeline.workspace)/install/sharedutilities/'
               chartVersion: '$(helmChartVersion)'
               releaseName: 'sharedutilities-migration'
-              valueFile: '$(pipeline.workspace)/install/sharedutilities/values.eastus.migration.yaml'
+              valueFile: '$(pipeline.workspace)/install/sharedutilities/values.eastus2.migration.yaml'
               arguments: '--install'
