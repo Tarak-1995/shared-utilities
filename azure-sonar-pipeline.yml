@@ -56,13 +56,13 @@ stages:
         projectKey: 'PrimeroEdge.AccountManagement'
         projectName: 'PrimeroEdge.AccountManagement'
 
-    - task: DotNetCoreCLI@2
-      displayName: 'Restore nuget packages'
-      inputs:
-        command: restore
-        projects: '**/*.csproj'
-        feedsToUse: 'config'
-        nugetConfigPath: './NuGet.Config'
+   # - task: DotNetCoreCLI@2
+   #   displayName: 'Restore nuget packages'
+   #   inputs:
+   #     command: restore
+   #     projects: '**/*.csproj'
+   #     feedsToUse: 'config'
+   #     nugetConfigPath: './NuGet.Config'
   
     - task: DotNetCoreCLI@2
       displayName: 'Build Solution'
