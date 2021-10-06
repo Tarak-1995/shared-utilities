@@ -56,7 +56,11 @@ stages:
     displayName: Code Analysis and Metrics
     dependsOn: SLNBuild 
     pool:
-      vmImage: $(vmImageNameW)
+      #vmImage: $(vmImageNameW)
+      name: "Private Pool Docker"
+      demands:
+        - docker
+
     steps:
     - task: DotNetCoreCLI@2
       inputs:
