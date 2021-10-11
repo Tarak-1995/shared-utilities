@@ -1,18 +1,18 @@
 apiVersion : apps/v1
 kind: Deployment
 metadata:
-  name: sharedutilitiesservice-v2
+  name: sharedutilitiesservice-v1
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: sharedutilitiesservice
-	  version: v2.0.0
+	  version: v1.0.0
   template:
     metadata:
       labels:
         app: sharedutilitiesservice
-        version: v2.0.0		
+        version: v1.0.0		
       annotations:
         timestamp: "{{ date "20060102150405" .Release.Time }}"
     spec: 
@@ -41,7 +41,7 @@ spec:
           - name: "ASPNETCORE_ENVIRONMENT"
             value: {{ .Values.namespace }}
 		      - name: VERSION
-            value: v2.0.0
+            value: v1.0.0
 		      livenessProbe:
             httpGet:
               path: /live
