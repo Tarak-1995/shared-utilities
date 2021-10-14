@@ -2,14 +2,14 @@ host: testsharedutilitiesservice.perseusedge.com
 namespace: dev
 secretname: sharedutilities-dev-secret-appsettings
 aspnetcore: Development
-sharedutilitiesrepo: PerseusNonProdACR.azurecr.io/sharedutilities-dev:2.0.7
+sharedutilitiesrepo: PerseusNonProdACR.azurecr.io/sharedutilities-dev:2.0.2
 replicas: 3
 sslcert: perseusedgesslcert
 limitcpu: 8m
 limitmemory: 400Mi
 requestscpu: 5m
 requestsmemory: 300Mi
-metadataname: api-canary
+metadataname: api-stable
 tmpmetadataname = sharedutilitieservice
-track = canary
-image = PerseusNonProdACR.azurecr.io/sharedutilities-dev:2.0.7
+track = stable
+image = PerseusNonProdACR.azurecr.io/sharedutilities-dev:2.0.2
