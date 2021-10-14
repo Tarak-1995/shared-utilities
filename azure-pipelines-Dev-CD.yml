@@ -17,7 +17,7 @@ variables:
   registryServerName: "$(registryName).azurecr.io"
   projectName: "sharedutilities"
   helmchartdev: "sharedutilities-dev"
-  helmChartVersion: "2.0.6"
+  helmChartVersion: "2.0.2"
   azure.service.connection: "Perseus-Non-prod-AKS-eastus-Stg"
   name: $(major).$(minor)$(Rev:.r)
 
@@ -29,12 +29,12 @@ resources:
       enabled: true
       branches:
         include:
-          - canary-dev
+          - stable-dev
 
 
 stages:
 - stage: Development
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/canary-dev'))
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/stable-dev'))
   displayName: Development
   jobs:
   - deployment: Development
