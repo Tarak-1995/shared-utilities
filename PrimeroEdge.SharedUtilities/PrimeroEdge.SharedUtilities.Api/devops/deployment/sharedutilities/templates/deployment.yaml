@@ -6,12 +6,12 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: sharedutilitiesservice
+      app: sharedutilitiesservicev2
 	  version: v2.0.0
   template:
     metadata:
       labels:
-        app: sharedutilitiesservice
+        app: sharedutilitiesservicev2
         version: v2.0.0		
       annotations:
         timestamp: "{{ date "20060102150405" .Release.Time }}"
@@ -21,7 +21,7 @@ spec:
           runAsUser: 1001
           fsGroup: 1001
       containers:
-        - name: sharedutilitiesservice 
+        - name: sharedutilitiesservicev2 
           image: __imageName__
           imagePullPolicy: Always
           securityContext:
