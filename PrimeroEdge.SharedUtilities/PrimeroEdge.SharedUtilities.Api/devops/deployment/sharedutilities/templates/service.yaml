@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: sharedutilitiesservice
+  name: sharedutilitiesservicev1
   labels:
-    app: sharedutilitiesservice
+    app: sharedutilitiesservicev1
 spec:
   type: NodePort
   ports:
@@ -11,4 +11,4 @@ spec:
     port: 80
     targetPort: 5000
   selector:
-    app: sharedutilitiesservice
+    app: sharedutilitiesservicev1
