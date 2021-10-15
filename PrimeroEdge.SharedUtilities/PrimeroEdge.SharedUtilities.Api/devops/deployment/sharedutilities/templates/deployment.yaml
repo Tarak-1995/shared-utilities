@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: sharedutilitiesservice-v2
 spec:
-  replicas: 25
+  replicas: 4
   selector:
     matchLabels:
       app: sharedutilitiesservicev2
