@@ -10,8 +10,6 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-  major: 2
-  minor: 1
   helmVersion: "3.2.3"
   HELM_EXPERIMENTAL_OCI: 1
   registryServerName: "$(registryName).azurecr.io"
