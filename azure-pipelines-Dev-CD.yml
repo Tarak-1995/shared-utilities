@@ -90,7 +90,7 @@ stages:
               azureResourceGroup: 'Perseus-nonprod-RG'
               kubernetesCluster: 'perseusnonprod-eastus2-AKS'
               useClusterAdmin: true
-              namespace: 'test'
+              namespace: 'dev'
               command: 'upgrade'
               chartType: 'FilePath'
               chartPath: '$(pipeline.workspace)/install/sharedutilities/'
