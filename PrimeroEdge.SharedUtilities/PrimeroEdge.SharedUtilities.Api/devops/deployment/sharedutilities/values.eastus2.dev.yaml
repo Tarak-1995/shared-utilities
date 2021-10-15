@@ -3,7 +3,7 @@ namespace: test
 secretname: sharedutilities-dev-secret-appsettings
 aspnetcore: Development
 sharedutilitiesrepo: PerseusNonProdACR.azurecr.io/sharedutilities-dev:2.0.2
-replicas: 25
+replicas: 4
 sslcert: perseusedgesslcert
 limitcpu: 8m
 limitmemory: 400Mi
