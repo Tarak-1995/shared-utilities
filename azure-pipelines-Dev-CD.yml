@@ -40,7 +40,7 @@ stages:
   - deployment: Development
     variables:
     - name: imageName
-      value: $(registryServerName)/sharedutilities-dev:2.0.2
+      value: $(registryServerName)/sharedutilities-dev:latest
       # define 5 more variables: aks, rg, aksSpId, aksSpSecret and aksSpTenantId in the Azure pipeline UI definition
     displayName: deploy helm chart into AKS
     pool:
