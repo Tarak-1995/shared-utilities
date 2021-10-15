@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: sharedutilitiesv1
+  name: sharedutilitiesv2
   namespace: {{ .Values.namespace }}
   annotations:
     kubernetes.io/ingress.class: azure/application-gateway
@@ -14,5 +14,5 @@ spec:
         paths:
           - path: /
             backend:
-              serviceName: sharedutilitiesservice 
+              serviceName: sharedutilitiesservicev2 
               servicePort: 80
