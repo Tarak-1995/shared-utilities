@@ -6,7 +6,7 @@ spec:
   replicas: 4
   selector:
     matchLabels:
-      app: sharedutilitiesservicev2
+      app: sharedutilitiesservice
 	  version: v2.0.0
   template:
     metadata:
