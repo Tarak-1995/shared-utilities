@@ -1,0 +1,96 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+parameters:
+- name: helmversion
+  displayName: helm Version
+  type: string
+  default: 
+
+trigger:
+- none
+
+pool:
+  vmImage: ubuntu-latest
+
+
+variables:
+  helmVersion: "3.2.3"
+  HELM_EXPERIMENTAL_OCI: 1
+  registryServerName: "$(registryName).azurecr.io"
+  projectName: "sharedutilities"
+  helmChartVersion: ${{ parameters.helmversion }}
+  azure.service.connection: "Perseus-Demo-AKS"
+
+
+
+
+stages:
+- stage: Demo
+  displayName: Demo
+  jobs:
+  - deployment: Demo
+    variables:
+    - name: imageName
+      value: $(registryServerName)/sharedutilities_stg:$(helmChartVersion)
+      # define 5 more variables: aks, rg, aksSpId, aksSpSecret and aksSpTenantId in the Azure pipeline UI definition
+    displayName: deploy helm chart into AKS
+    pool:
+      vmImage: ubuntu-latest
+    environment: demo-$(projectName)
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - checkout: none
+          - task: HelmInstaller@1
+            displayName: "install helm"
+            inputs:
+              helmVersionToInstall: $(helmVersion)
+
+          - bash: |
+              az login \
+                  --service-principal \
+                  -u $(aksSpId) \
+                  -p '$(aksSpSecret)' \
+                  --tenant $(aksSpTenantId)
+              az aks get-credentials \
+                  -n $(aks) \
+                  -g $(rg)
+              echo $(registryPassword) | helm registry login $(registryServerName) --username $(registryLogin) --password-stdin
+              #helmChartVersion=$(jq .helmChartVersion $(pipeline.workspace)/ci-pipeline/sharedutilities-qa/variables.json -r)
+              helm chart pull $(registryServerName)/charts/$(projectName):$(helmChartVersion)
+              helm chart export $(registryServerName)/charts/$(projectName):$(helmChartVersion) --destination $(pipeline.workspace)/install
+            failOnStderr: false
+            displayName: "pull helm chart"
+            
+          - task: qetza.replacetokens.replacetokens-task.replacetokens@3
+            displayName: Replace tokens in **/*
+            inputs:
+              rootDirectory: $(Pipeline.Workspace)/install
+              targetFiles: '**/*.yaml'
+              keepToken: true
+              tokenPrefix: __
+              tokenSuffix: __
+
+            
+          - task: HelmDeploy@0
+            displayName: deploy chart to aks
+            inputs:
+              connectionType: 'Azure Resource Manager'
+              azureSubscription: 'Perseus Non-Prod (b0b91233-8bb9-44e7-b548-84412ecc5c0d)'
+              azureResourceGroup: 'Perseus-demoenv-RG'
+              kubernetesCluster: 'Perseudemo-eastus2-AKS'
+              useClusterAdmin: true
+              namespace: 'demo'
+              command: 'upgrade'
+              chartType: 'FilePath'
+              chartPath: '$(pipeline.workspace)/install/sharedutilities/'
+              chartVersion: '$(helmChartVersion)'
+              releaseName: 'sharedutilities-demo'
+              #overrideValues: 'image=$(registryServerName)/sharedutilities-qa:$(helmChartVersion)'
+              valueFile: '$(pipeline.workspace)/install/sharedutilities/values.eastus2.demo.yaml'
+              #overrideValues: 'sharedutilitiesrepo=$(registryServerName)/sharedutilities-qa:$(helmChartVersion)'
+              arguments: '--install'
