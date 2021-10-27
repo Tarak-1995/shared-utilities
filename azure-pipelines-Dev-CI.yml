@@ -47,39 +47,12 @@ stages:
   jobs:
   - job: SLNBuild
     steps:
-    - task: NuGetCommand@2
-      inputs:  
-        restoreSolution:  '--configfile NuGet.Config $(project_sln)'
-    - script: dotnet build --configuration $(buildConfiguration)
-      workingDirectory: "./PrimeroEdge.SharedUtilities"
-      displayName: 'dotnet build $(buildConfiguration)'
-  
-  - job: CodeAM
-    displayName: Code Analysis and Metrics
-    dependsOn: SLNBuild 
-    pool:
-      vmImage: $(vmImageNameW)
-    steps:
-    - task: DotNetCoreCLI@2
-      inputs:
-        command: build
-        projects: '$(project_csproj)'
-        arguments: '/p:RunCodeAnalysis=true'
-        configuration: '$(buildConfiguration)'
-
     - task: DotNetCoreCLI@2
       inputs:
         command: test
         projects: '$(test_csproj)'
         arguments: '--configuration $(buildConfiguration)'
 
-- stage: ImageBuild
-  displayName: Image Build $ Push
-  dependsOn: BuildandAnalysis
-  pool:
-    vmImage: $(vmImageNameU)
-  jobs:
-  - job: ImageBuild
     steps:  
     - task: Docker@2
       displayName: Image Build $ Push
