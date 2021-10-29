@@ -129,7 +129,7 @@ stages:
           helm chart push $(registryName).azurecr.io/charts/$(projectName):$(imageVersion)
           echo $(jq -n --arg version "$(helmChartVersion)" '{helmChartVersion: $version}') > $(build.artifactStagingDirectory)/variables.json
       failOnStderr: true
-      displayName: "helm package preview"
+      displayName: "helm package QA"
         
 
     - task: HelmInstaller@1
@@ -157,7 +157,7 @@ stages:
           helm chart push $(registryName).azurecr.io/charts/$(projectName):$(imageVersion)
           echo $(jq -n --arg version "$(helmChartVersion)" '{helmChartVersion: $version}') > $(build.artifactStagingDirectory)/variables.json
       failOnStderr: true
-      displayName: "helm package demo"      
+      displayName: "helm package preview"      
   
 - stage: HelmPackage
   displayName: Helm Chart Package
