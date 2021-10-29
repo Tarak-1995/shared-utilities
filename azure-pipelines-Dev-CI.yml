@@ -49,16 +49,15 @@ stages:
     steps:
     - task: DotNetCoreCLI@2
       inputs:
-        command: test
-        projects: '$(test_csproj)'
-        arguments: '--configuration $(buildConfiguration)'
-    - task: DotNetCoreCLI@2
-      inputs:
         command: build
         projects: '$(project_csproj)'
         arguments: '/p:RunCodeAnalysis=true'
         configuration: '$(buildConfiguration)'
-
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: test
+        projects: '$(test_csproj)'
+        arguments: '--configuration $(buildConfiguration)'
     steps:  
     - task: Docker@2
       displayName: Image Build $ Push
