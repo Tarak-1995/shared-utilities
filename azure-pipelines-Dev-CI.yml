@@ -47,6 +47,19 @@ stages:
   jobs:
   - job: SLNBuild
     steps:
+     - task: NuGetCommand@2
+      inputs:  
+        restoreSolution:  '--configfile NuGet.Config $(project_sln)'
+    - script: dotnet build --configuration $(buildConfiguration)
+      workingDirectory: "./PrimeroEdge.SharedUtilities"
+      displayName: 'dotnet build $(buildConfiguration)'
+  
+  - job: CodeAM
+    displayName: Code Analysis and Metrics
+    dependsOn: SLNBuild 
+    pool:
+      vmImage: $(vmImageNameW)
+    steps:
     - task: DotNetCoreCLI@2
       inputs:
         command: build
