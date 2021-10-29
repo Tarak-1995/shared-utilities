@@ -1,4 +1,4 @@
-host: demosharedutilitiesservice.schoolcafe.com
+host: previewsharedutilitiesservice.schoolcafe.com
 namespace: preview
 secretname: sharedutilities-preview-secret-appsettings
 aspnetcore: Preview
