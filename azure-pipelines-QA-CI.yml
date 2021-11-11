@@ -10,6 +10,9 @@ name: '1.0$(Rev:.r)'
 
 resources:
   - repo: self
+
+pool:
+  vmImage: 'ubuntu-latest'
   
 variables:
 
@@ -36,7 +39,7 @@ variables:
   imagePullSecret: 'perseusnonprodacr10848ea9-auth'
   helmChartPath: './PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/deployment/sharedutilities/'
   # Agent VM image name
-  vmImageNameW: 'vs2017-win2016'
+  vmImageNameW: 'windows-latest'
   vmImageNameU: 'ubuntu-latest'
   
 
