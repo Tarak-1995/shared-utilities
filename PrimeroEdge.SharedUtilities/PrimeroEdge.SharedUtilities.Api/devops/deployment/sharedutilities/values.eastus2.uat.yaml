@@ -1,0 +1,11 @@
+host: uatsharedutilitiesservice.perseusedge.com
+namespace: uat
+secretname: sharedutilities-uat-secret-appsettings
+aspnetcore: Uat
+#sharedutilitiesrepo: PerseusNonProdACR.azurecr.io/sharedutilities_qa:latest
+replicas: 1
+sslcert: perseusedgesslcert
+limitcpu: 500m
+limitmemory: 800Mi
+requestscpu: 300m
+requestsmemory: 500Mi
