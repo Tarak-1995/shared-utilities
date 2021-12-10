@@ -2,6 +2,8 @@ host: uatsharedutilitiesservice.perseusedge.com
 namespace: uat
 secretname: sharedutilities-uat-secret-appsettings
 aspnetcore: Uat
+secretProviderClass: aks-secret-nf-uat
+secretSPName: perseus-secret-sp-uat
 #sharedutilitiesrepo: PerseusNonProdACR.azurecr.io/sharedutilities_qa:latest
 replicas: 1
 sslcert: perseusedgesslcert
