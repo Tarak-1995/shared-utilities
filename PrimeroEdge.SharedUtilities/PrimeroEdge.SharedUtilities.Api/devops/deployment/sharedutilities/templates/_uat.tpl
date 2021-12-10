@@ -1,0 +1,3 @@
+{{- define "uat.env" }}
+
+{{- end }}
