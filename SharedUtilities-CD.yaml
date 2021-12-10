@@ -20,9 +20,9 @@ pool:
 
 variables:
   - name: application
-    value: "administration"
+    value: "sharedutilities"
   - name: chartName
-    value: "administration"
+    value: "sharedutilities"
   - name: registryServerName
     value: "$(registryName).azurecr.io"
   - name: applicationName
