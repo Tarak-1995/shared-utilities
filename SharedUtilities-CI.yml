@@ -54,7 +54,7 @@ stages:
         command: restore
         projects: '**/*.csproj'
         feedsToUse: 'config'
-        nugetConfigPath: './NuGet.Config'
+        nugetConfigPath: './PrimeroEdge.SharedUtilities/NuGet.Config'
   
     - task: DotNetCoreCLI@2
       displayName: 'Build solution'
