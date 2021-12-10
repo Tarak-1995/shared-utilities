@@ -35,12 +35,24 @@ spec:
             requests:
               cpu: {{ .Values.requestscpu }}
               memory: {{ .Values.requestsmemory }}
+          volumeMounts:
+          - name: secrets
+            mountPath: "/mnt/secrets"
           env:
+          {{- if eq .Values.namespace "uat" }}
+          {{- template "uat.env" . }}
+          {{- else }}
           - name: "ASPNETCORE_ENVIRONMENT"
             value: {{ .Values.aspnetcore }}
           - name: "AppEnv"
             value: {{ .Values.namespace }}
+          {{- end }}
       volumes:
         - name: secrets
-          secret:
-            secretName: {{ .Values.secretname }}
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ .Values.secretProviderClass }}
+            nodePublishSecretRef:
+              name: {{ .Values.secretSPName }}
