@@ -37,7 +37,7 @@ variables:
   - name: tag
     value: $(Build.BuildNumber)
   - name: dockerfilePath
-    value: 'Dockerfile'
+    value: 'PrimeroEdge.SharedUtilities/Dockerfile'
   - name: helmChartPath
     value: './PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/deployment'
  
