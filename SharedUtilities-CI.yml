@@ -15,9 +15,9 @@ pool:
 
 variables:
   - name: application
-    value: "administration"
+    value: "sharedutilities"
   - name: chartName
-    value: "administration"
+    value: "sharedutilities"
   - name: buildConfiguration
     value: 'Release'
   - name: buildPlatform
@@ -31,7 +31,7 @@ variables:
   - name: project_sln
     value: "./*.sln"
   - name: project_csproj
-    value: "./PrimeroEdge.Administration.WebAPI/PrimeroEdge.Administration.WebAPI.csproj"
+    value: "./PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/PrimeroEdge.SharedUtilities.Api.csproj"
   - name: applicationName
     value: "$(application)-$(environment)"
   - name: tag
@@ -39,7 +39,7 @@ variables:
   - name: dockerfilePath
     value: 'Dockerfile'
   - name: helmChartPath
-    value: './PrimeroEdge.Administration.WebAPI/devops/deployment'
+    value: './PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/deployment'
  
 
 stages:
