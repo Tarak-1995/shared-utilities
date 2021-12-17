@@ -1,0 +1,162 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+parameters:
+- name: buildId
+  displayName: Build Id
+  type: string
+  default: 0
+
+
+trigger:
+- none
+
+
+pool:
+  vmImage: ubuntu-latest
+
+
+variables:
+  - name: application
+    value: "sharedutilities"
+  - name: chartName
+    value: "sharedutilities"
+  - name: registryServerName
+    value: "$(registryName).azurecr.io"
+  - name: applicationName
+    value: "$(application)-$(environment)"
+  - name: HELM_EXPERIMENTAL_OCI
+    value: 1
+  - name: helmValuesFile
+    value: "values.eastus.$(environment).yaml"
+
+
+stages:
+- stage: Deployment
+  displayName: Code Deployment
+  jobs:
+  - deployment: HelmChartDeployment
+    displayName: Deploy Helm Chart into AKS
+    pool:
+      vmImage: ubuntu-latest
+    environment: $(applicationName)
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - checkout: none
+
+          - task: Bash@3
+            inputs:
+              targetType: 'inline'
+              script: |
+                echo "##vso[task.setvariable variable=aksNamespace;]dev"
+                echo "##vso[task.setvariable variable=definitionId;]483"
+            condition: and(succeeded(), eq(variables['environment'], 'dev'))
+
+          - task: Bash@3
+            inputs:
+              targetType: 'inline'
+              script: |
+                echo "##vso[task.setvariable variable=aksNamespace;]qa"
+                echo "##vso[task.setvariable variable=definitionId;]484"
+            condition: and(succeeded(), eq(variables['environment'], 'qa'))
+
+          - task: Bash@3
+            inputs:
+              targetType: 'inline'
+              script: |
+                echo "##vso[task.setvariable variable=aksNamespace;]staging"
+                echo "##vso[task.setvariable variable=definitionId;]485"
+            condition: and(succeeded(), eq(variables['environment'], 'stg'))
+
+          - task: Bash@3
+            inputs:
+              targetType: 'inline'
+              script: |
+                echo "##vso[task.setvariable variable=aksNamespace;]uat"
+                echo "##vso[task.setvariable variable=definitionId;]635"
+            condition: and(succeeded(), eq(variables['environment'], 'uat'))
+
+          - task: Bash@3
+            inputs:
+              targetType: 'inline'
+              script: |
+                echo "##vso[task.setvariable variable=aksNamespace;]prod"
+            condition: and(succeeded(), eq(variables['environment'], 'prod'))
+
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              buildType: 'specific'
+              project: '53a56d2e-7e28-4303-aa5a-709c08931635'
+              definition: '$(definitionId)'
+              buildVersionToDownload: 'latestFromBranch'
+              branchName: '$(Build.SourceBranch)'
+              allowPartiallySucceededBuilds: true
+              artifactName: 'helmDockerVersion'
+              targetPath: '$(Pipeline.Workspace)'
+            condition: and(succeeded(), in(variables['environment'], 'dev', 'qa', 'stg', 'uat'))
+
+          - task: Bash@3
+            inputs:
+              targetType: 'inline'
+              script: |
+                docker_version=$(cat $(Pipeline.Workspace)/dockerImageVersion.txt)
+                helm_version=$(cat $(Pipeline.Workspace)/helmChartVersion.txt)
+                echo "##vso[task.setvariable variable=imageName;]$(registryServerName)/$(applicationName):$docker_version"
+                echo "##vso[task.setvariable variable=helmChartVersion;]$helm_version"
+            condition: and(succeeded(), in(variables['environment'], 'dev', 'qa', 'stg', 'uat'))
+
+          - task: Bash@3
+            inputs:
+              targetType: 'inline'
+              script: |
+                echo "##vso[task.setvariable variable=imageName;]$(registryServerName)/$(applicationName):${{ parameters.buildId }}"
+                echo "##vso[task.setvariable variable=helmChartVersion;]${{ parameters.buildId }}"
+            condition: and(succeeded(), in(variables['environment'], 'stg', 'prod'))
+
+          - bash: |
+              echo $(imageName)
+              echo $(helmChartVersion)
+              echo $(aksNamespace)
+          
+          - task: HelmInstaller@1
+            displayName: "install helm"
+            inputs:
+              helmVersionToInstall: $(helmVersion)
+
+          - bash: |
+              echo $(registryPassword) | helm registry login $(registryServerName) --username $(registryLogin) --password-stdin
+              helm chart pull $(registryServerName)/charts/$(applicationName):$(helmChartVersion)
+              helm chart export $(registryServerName)/charts/$(applicationName):$(helmChartVersion) --destination $(pipeline.workspace)/install
+            failOnStderr: false
+            displayName: "pull helm chart"
+            
+          - task: qetza.replacetokens.replacetokens-task.replacetokens@3
+            displayName: Replace tokens in **/*
+            inputs:
+              rootDirectory: $(Pipeline.Workspace)/install
+              targetFiles: '**/*.yaml'
+              keepToken: true
+              tokenPrefix: __
+              tokenSuffix: __
+
+            
+          - task: HelmDeploy@0
+            displayName: Deploy Helm Chart to AKS
+            inputs:
+              connectionType: 'Azure Resource Manager'
+              azureSubscription: '$(aksAzureSubscription)'
+              azureResourceGroup: '$(aksAzureResourceGroup)'
+              kubernetesCluster: '$(aksCluster)'
+              useClusterAdmin: true
+              namespace: '$(aksNamespace)'
+              command: 'upgrade'
+              chartType: 'FilePath'
+              chartPath: '$(pipeline.workspace)/install/$(chartName)/'
+              chartVersion: '$(helmChartVersion)'
+              releaseName: '$(applicationName)'
+              valueFile: '$(pipeline.workspace)/install/$(chartName)/$(helmValuesFile)'
+              arguments: '--install'
