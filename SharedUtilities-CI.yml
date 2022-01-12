@@ -1,0 +1,110 @@
+# Deploy to Azure Kubernetes Service
+# Build and push image to Azure Container Registry; Deploy to Azure Kubernetes Service
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger:
+- $(Build.SourceBranch)
+
+resources:
+- repo: self
+
+name: '1.0$(Rev:.r)'
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  - name: application
+    value: "sharedutilities"
+  - name: chartName
+    value: "sharedutilities"
+  - name: buildConfiguration
+    value: 'Release'
+  - name: buildPlatform
+    value: 'Any CPU'
+  - name: HELM_EXPERIMENTAL_OCI
+    value: 1
+  - name: imageVersion
+    value: $(Build.BuildNumber)
+  - name: helmChartVersion
+    value: $(Build.BuildNumber)
+  - name: project_sln
+    value: "./*.sln"
+  - name: project_csproj
+    value: "./PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/PrimeroEdge.SharedUtilities.Api.csproj"
+  - name: applicationName
+    value: "$(application)-$(environment)"
+  - name: tag
+    value: $(Build.BuildNumber)
+  - name: dockerfilePath
+    value: 'PrimeroEdge.SharedUtilities/Dockerfile'
+  - name: helmChartPath
+    value: './PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/deployment'
+ 
+
+stages:
+- stage: BuildandPush
+  displayName: Build and Push
+  jobs:
+  - job: Build 
+    steps:
+    - task: DotNetCoreCLI@2
+      displayName: 'Restore Nugget Packages - $(buildConfiguration)'
+      inputs:
+        command: restore
+        projects: '**/*.csproj'
+        feedsToUse: 'config'
+        nugetConfigPath: './PrimeroEdge.SharedUtilities/NuGet.Config'
+  
+    - task: DotNetCoreCLI@2
+      displayName: 'Build solution'
+      inputs:
+        command: build
+        projects: '$(project_csproj)'
+        arguments: '/p:RunCodeAnalysis=true'
+        configuration: '$(buildConfiguration)'
+
+    - task: Docker@2
+      displayName: Image Build $ Push
+      inputs:
+        command: buildAndPush
+        repository: $(applicationName)
+        dockerfile: $(dockerfilePath)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        tags: |
+          $(tag)
+          latest
+
+
+- stage: HelmInstall
+  displayName: Helm Install
+  dependsOn: BuildandPush
+  jobs: 
+  - job: Init
+    steps:
+    - task: HelmInstaller@1
+      displayName: "Install Helm Package"
+      inputs:
+        helmVersionToInstall: '$(helmVersion)'
+
+    - bash: |
+          echo $(registryPassword) | helm registry login $(registryName).azurecr.io --username $(registryLogin) --password-stdin
+          cd $(helmChartPath)
+          helm chart save $(helm package --app-version $(imageVersion) --version $(helmChartVersion) ./$(chartName) | grep -o '/.*.tgz') $(registryName).azurecr.io/charts/$(applicationName):$(imageVersion)
+          helm chart push $(registryName).azurecr.io/charts/$(applicationName):$(imageVersion)
+          echo $(jq -n --arg version "$(helmChartVersion)" '{helmChartVersion: $version}') > $(build.artifactStagingDirectory)/variables.json
+      failOnStderr: true
+      
+    - bash: |
+          echo $(helmChartVersion) > $(Build.ArtifactStagingDirectory)/helmChartVersion.txt
+      failOnStderr: true
+
+    - bash: |
+          echo $(tag) > $(Build.ArtifactStagingDirectory)/dockerImageVersion.txt
+      failOnStderr: true
+
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: '$(Build.ArtifactStagingDirectory)'
+        artifact: 'helmDockerVersion'
+        publishLocation: 'pipeline'
