@@ -41,6 +41,8 @@ spec:
           env:
           {{- if eq .Values.namespace "uat" }}
           {{- template "uat.env" . }}
+          {{- else if eq .Values.namespace "demo" }}
+          {{- template "demo.env" . }}
           {{- else }}
           - name: "ASPNETCORE_ENVIRONMENT"
             value: {{ .Values.aspnetcore }}
