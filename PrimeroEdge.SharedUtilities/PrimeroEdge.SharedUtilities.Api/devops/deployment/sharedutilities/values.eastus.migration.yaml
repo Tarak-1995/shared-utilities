@@ -1,6 +1,6 @@
 host: migsharedutilitiesservice.perseusedge.com
 namespace: migration
-secretname: sharedutilities-prod-secret-appsettings
+secretname: sharedutilities-uat-secret-appsettings
 secretProviderClass: aks-secret-nf-migration
 secretSPName: perseus-secret-sp-migration
 aspnetcore: Migration
