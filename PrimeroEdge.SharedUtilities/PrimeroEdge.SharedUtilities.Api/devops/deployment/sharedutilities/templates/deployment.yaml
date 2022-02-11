@@ -45,6 +45,8 @@ spec:
           {{- template "demo.env" . }}
           {{- else if eq .Values.namespace "migration" }}
           {{- template "migration.env" . }}
+          {{- else if eq .Values.namespace "prod" }}
+          {{- template "prod.env" . }}
           {{- else }}
           - name: "ASPNETCORE_ENVIRONMENT"
             value: {{ .Values.aspnetcore }}
