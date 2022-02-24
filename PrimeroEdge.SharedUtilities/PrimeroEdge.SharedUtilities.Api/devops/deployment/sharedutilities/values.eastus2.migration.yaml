@@ -7,5 +7,5 @@ replicas: 1
 sslcert: perseusedgesslcert
 limitcpu: 500m
 limitmemory: 800Mi
-requestscpu: 300m
-requestsmemory: 500Mi
+requestscpu: 400m
+requestsmemory: 600Mi
