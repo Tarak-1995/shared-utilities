@@ -8,5 +8,5 @@ replicas: 2
 sslcert: loginschoolcafesslcert
 limitcpu: 500m
 limitmemory: 800Mi
-requestscpu: 300m
-requestsmemory: 500Mi
+requestscpu: 400m
+requestsmemory: 600Mi
