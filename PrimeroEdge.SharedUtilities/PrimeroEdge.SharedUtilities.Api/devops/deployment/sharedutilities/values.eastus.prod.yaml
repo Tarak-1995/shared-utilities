@@ -3,10 +3,12 @@ name: sharedutilities
 namespace: prod
 secretname: sharedutilities-prod-secret-appsettings
 aspnetcore: Production
+secretProviderClass: aks-secret-nf-prod
+secretSPName: perseus-secret-sp-prod
 #sharedutilitiesrepo: PerseusNonProdACR.azurecr.io/sharedutilities_qa:latest
 replicas: 2
 sslcert: loginschoolcafesslcert
-limitcpu: 8m
-limitmemory: 400Mi
-requestscpu: 5m
-requestsmemory: 300Mi
+limitcpu: 500m
+limitmemory: 800Mi
+requestscpu: 300m
+requestsmemory: 500Mi
