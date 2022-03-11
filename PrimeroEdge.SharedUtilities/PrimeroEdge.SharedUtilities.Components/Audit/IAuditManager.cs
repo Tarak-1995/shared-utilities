@@ -41,7 +41,7 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// <param name="updatedOn">updatedOn.</param>
         /// <returns></returns>
         Task<List<AuditResponse>> GetAuditDataSearchAsync(string moduleId, string entityTypeId, string entityId, 
-	        int pageSize, int pageNumber, int regionId, string fieldName, string updatedBy, DateTime updatedOn);
+	        int pageSize, int pageNumber, int regionId, string fieldName, string updatedBy, DateTime? updatedOn);
 
         /// <summary>
         /// Save audit data

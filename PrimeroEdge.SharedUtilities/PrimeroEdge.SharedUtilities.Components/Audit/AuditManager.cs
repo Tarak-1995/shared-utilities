@@ -89,10 +89,10 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// <param name="updatedOn">updatedOn.</param>
         /// <returns></returns>
         public async Task<List<AuditResponse>> GetAuditDataSearchAsync(string moduleId, string entityTypeId, string entityId, int pageSize, 
-	        int pageNumber, int regionId, string fieldName, string updatedBy, DateTime updatedOn)
+	        int pageNumber, int regionId, string fieldName, string updatedBy, DateTime? updatedOn)
         {
             var data = await _auditRepository.GetAuditSearchDataAsync(moduleId, entityTypeId, entityId, pageSize, pageNumber, 
-	            regionId, fieldName, updatedOn.ToString("yyyy-MM-dd"));
+	            regionId, fieldName, updatedOn?.ToString("yyyy-MM-dd"));
 
             var result = new List<AuditResponse>();
             if (data.Item2 != 0)
@@ -115,9 +115,12 @@ namespace PrimeroEdge.SharedUtilities.Components
                     result.Add(row);
                 }
             }
-
+            
             PaginationEnvelope = new Pagination(pageNumber, pageSize, data.Item2);
-			result = result.Where(s => !string.IsNullOrEmpty(s.UserName) && s.UserName.ToLower().Contains(updatedBy.ToLower())).ToList();
+
+            if(!string.IsNullOrEmpty(updatedBy))
+			    result = result.Where(s => !string.IsNullOrEmpty(s.UserName) && s.UserName.ToLower().Contains(updatedBy.ToLower())).ToList();
+
 			return result;
         }
 

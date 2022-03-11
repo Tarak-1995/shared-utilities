@@ -87,7 +87,7 @@ namespace PrimeroEdge.SharedUtilities.UnitTests
 		}
 
 		[Test]
-		public async Task GetAuditSearchDataAsyncTest()
+		public async Task GetAuditSearchDataAsyncWithFiltersTest()
 		{
 
 			var pageData = BuildMockAuditData();
@@ -103,6 +103,34 @@ namespace PrimeroEdge.SharedUtilities.UnitTests
 
 			var result = await _auditManager.GetAuditDataSearchAsync(moduleId,entityTypeId,entityId, 10, 1, regionId,field, userName, createDate);
 
+			Assert.IsNotNull(result);
+			Assert.AreEqual(1, result.Count);
+			Assert.AreEqual(field, result.FirstOrDefault()?.Field);
+			Assert.AreEqual(userName, result.FirstOrDefault()?.UserName);
+			Assert.AreEqual(oldValue, result.FirstOrDefault()?.OldValue);
+			Assert.AreEqual(newValue, result.FirstOrDefault()?.NewValue);
+		}
+
+
+		[Test]
+		public async Task GetAuditSearchDataAsyncWithoutFiltersTest()
+		{
+			//Arrange
+			var pageData = BuildMockAuditData();
+			var timeZoneSettings = BuildMockTimeZoneSettings();
+			var users = BuildMockUsers();
+
+			_auditRepository.GetAuditSearchDataAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(),
+				Arg.Any<int>(), Arg.Any<int>(),
+				Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>()).ReturnsForAnyArgs(pageData);
+
+			_auditRepository.GetTimeZoneSettingsAsync(Arg.Any<int>()).ReturnsForAnyArgs(timeZoneSettings);
+			_auditRepository.GetUsersAsync(Arg.Any<List<int>>()).ReturnsForAnyArgs(users);
+
+			//Act
+			var result = await _auditManager.GetAuditDataSearchAsync(moduleId, entityTypeId, entityId, 10, 1, regionId, null, null, null);
+
+			//Assert
 			Assert.IsNotNull(result);
 			Assert.AreEqual(1, result.Count);
 			Assert.AreEqual(field, result.FirstOrDefault()?.Field);

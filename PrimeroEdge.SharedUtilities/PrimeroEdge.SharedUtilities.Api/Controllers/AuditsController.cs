@@ -92,7 +92,7 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
         }
 
         /// <summary>
-        ///     Gets audit data based on field search.
+        ///     Gets all audit data results if no optional filters given or matching data based on given filters.
         /// </summary>
         /// <param name="moduleId">moduleId.</param>
         /// <param name="entityTypeId">entityTypeId.</param>
@@ -102,10 +102,10 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
         /// <param name="fieldName">fieldName.</param>
         /// <param name="updatedBy">updatedBy.</param>
         /// <param name="updatedOn">updatedOn.</param>
-        /// <returns>List of audit results based on given matching fields</returns>
+        /// <returns>List of audit data results.</returns>
         [HttpGet("ReadSearch")]
         public async Task<List<AuditResponse>> GetAuditDataFieldSearchAsync(string moduleId, string entityTypeId, string entityId, int pageSize, int pageNumber, 
-	        string fieldName, string updatedBy, DateTime updatedOn)
+	        string fieldName = null, string updatedBy = null, DateTime? updatedOn = null)
         {
 	        CheckValidations(moduleId, entityTypeId);
 	        var data = await _auditManager.GetAuditDataSearchAsync(moduleId, entityTypeId, entityId, pageSize, pageNumber, _authContext.RegionId, fieldName, updatedBy, updatedOn);
