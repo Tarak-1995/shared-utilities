@@ -214,7 +214,7 @@ namespace PrimeroEdge.SharedUtilities.Components
             return Tuple.Create(timeZone, isDayLight == "1");
         }
 
-        private async Task<IQueryResult<ExpandoObject>> GetAuditSearchCountData(string moduleId, string entityTypeId, string entityId, int regionId, string field, string updatedOn)
+        private async Task<IQueryResult<ExpandoObject>> GetAuditSearchCountData(string moduleId, string entityTypeId, string entityId, int regionId, string fieldName, string updatedOn)
         {
 
             var countData = await _couchbaseCluster.QueryAsync<ExpandoObject>(GetAuditSearchCountQuery, parameters =>
@@ -224,14 +224,14 @@ namespace PrimeroEdge.SharedUtilities.Components
                 parameters.Parameter("entityTypeId", entityTypeId);
                 parameters.Parameter("entityId", entityId);
                 parameters.Parameter("regionId", regionId);
-                parameters.Parameter("field", field);
+                parameters.Parameter("field", fieldName);
                 parameters.Parameter("updatedOn", updatedOn);
             });
 
             return countData;
         }
 
-        private async Task<IQueryResult<Audit>> GetAuditSearchPageResult(string moduleId, string entityTypeId, string entityId, int regionId, string field, string updatedOn, int offset, int limit)
+        private async Task<IQueryResult<Audit>> GetAuditSearchPageResult(string moduleId, string entityTypeId, string entityId, int regionId, string fieldName, string updatedOn, int offset, int limit)
         {
 
             var pageData = await _couchbaseCluster.QueryAsync<Audit>(GetAuditSearchPageQuery, parameters =>
@@ -241,7 +241,7 @@ namespace PrimeroEdge.SharedUtilities.Components
                 parameters.Parameter("entityTypeId", entityTypeId);
                 parameters.Parameter("entityId", entityId);
                 parameters.Parameter("regionId", regionId);
-                parameters.Parameter("field", field);
+                parameters.Parameter("field", fieldName);
                 parameters.Parameter("updatedOn", updatedOn);
                 parameters.Parameter("offset", offset);
                 parameters.Parameter("limit", limit);
