@@ -91,6 +91,27 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
             return data;
         }
 
+        /// <summary>
+        ///     Gets audit data based on field search.
+        /// </summary>
+        /// <param name="moduleId">moduleId.</param>
+        /// <param name="entityTypeId">entityTypeId.</param>
+        /// <param name="entityId">entityId.</param>
+        /// <param name="pageSize">pageSize.</param>
+        /// <param name="pageNumber">pageNumber.</param>
+        /// <param name="fieldName">fieldName.</param>
+        /// <param name="updatedBy">updatedBy.</param>
+        /// <param name="updatedOn">updatedOn.</param>
+        /// <returns>List of audit results based on given matching fields</returns>
+        [HttpGet("ReadSearch")]
+        public async Task<List<AuditResponse>> GetAuditDataFieldSearchAsync(string moduleId, string entityTypeId, string entityId, int pageSize, int pageNumber, 
+	        string fieldName, string updatedBy, DateTime updatedOn)
+        {
+	        CheckValidations(moduleId, entityTypeId);
+	        var data = await _auditManager.GetAuditDataSearchAsync(moduleId, entityTypeId, entityId, pageSize, pageNumber, _authContext.RegionId, fieldName, updatedBy, updatedOn);
+	        HttpContext.Items[APIConstants.RESPONSE_PAGINATION] = _auditManager.GetPaginationEnvelope();
+	        return data;
+        }
 
         /// <summary>
         /// Get audit data

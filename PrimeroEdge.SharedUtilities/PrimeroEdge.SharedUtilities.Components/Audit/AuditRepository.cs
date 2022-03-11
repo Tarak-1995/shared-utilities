@@ -47,6 +47,18 @@ namespace PrimeroEdge.SharedUtilities.Components
 
         private const string GetAuditCountData = @"SELECT COUNT(*) AS Count FROM Audit V
                                                  WHERE V.type ='Audit' AND  V.regionId = {0} AND V.moduleId = '{1}' AND  V.entityTypeId = '{2}' AND   V.entityId = '{3}'";
+
+        private const string GetAuditSearchPageData = @"SELECT V.* FROM Audit V
+			                                            WHERE V.type ='Audit'  AND V.regionId = {0}  AND V.moduleId = '{1}' 
+														AND V.entityTypeId = '{2}' AND V.entityId = '{3}' AND CONTAINS (UPPER(V.field),'{4}') 
+														AND DATE_FORMAT_STR(V.createdDate, '1111-11-11') = '{5}' ORDER BY V.createdDate DESC
+			                                            OFFSET {6} LIMIT {7}";
+
+        private const string GetAuditSearchCountData = @"SELECT COUNT(*) AS Count FROM Audit V
+														 WHERE V.type ='Audit' AND V.regionId = {0} AND V.moduleId = '{1}' 
+														 AND V.entityTypeId = '{2}' AND V.entityId = '{3}' 
+														 AND CONTAINS (UPPER(V.field),'{4}') AND DATE_FORMAT_STR(V.createdDate, '1111-11-11') = '{5}'";
+
         /// <summary>
         /// AuditRepository
         /// </summary>
@@ -112,6 +124,50 @@ namespace PrimeroEdge.SharedUtilities.Components
 
             return Tuple.Create(pageData, count);
 
+        }
+
+        /// <summary>
+        /// Gets audit data based on matching field search.
+        /// </summary>
+        /// <param name="moduleId">moduleId.</param>
+        /// <param name="entityTypeId">entityTypeId.</param>
+        /// <param name="entityId">entityId.</param>
+        /// <param name="pageSize">pageSize.</param>
+        /// <param name="pageNumber">pageNumber.</param>
+        /// <param name="regionId">regionId.</param>
+        /// <param name="fieldName">fieldName.</param>
+        /// <param name="updatedOn">updatedOn.</param>
+        /// <returns></returns>
+        public async Task<Tuple<List<Audit>, int>> GetAuditSearchDataAsync(string moduleId, string entityTypeId, string entityId, int pageSize, 
+																			int pageNumber, int regionId, string fieldName, string updatedOn)
+        {
+	        if (pageNumber <= 0)
+		        pageNumber = 1;
+
+	        if (pageSize <= 0)
+		        pageSize = 20;
+
+	        var offset = (pageNumber - 1) * pageSize;
+	        var limit = pageSize;
+
+	        var count = 0;
+	        var pageData = new List<Audit>();
+
+	        var query = string.Format(GetAuditSearchCountData, regionId, moduleId.Trim().ToUpper(), entityTypeId.Trim().ToUpper(), entityId.Trim().ToUpper(), fieldName.Trim().ToUpper(), updatedOn);
+	        var result = await this._couchbaseCluster.QueryAsync<ExpandoObject>(query);
+	        await foreach (dynamic item in result)
+	        {
+		        count = Convert.ToInt32(item.Count);
+	        }
+
+	        if (count != 0)
+	        {
+		        query = string.Format(GetAuditSearchPageData, regionId, moduleId.Trim().ToUpper(), entityTypeId.Trim().ToUpper(), entityId.Trim().ToUpper(), fieldName.Trim().ToUpper(), updatedOn, offset, limit);
+		        var data = await this._couchbaseCluster.QueryAsync<Audit>(query);
+		        pageData = await data.ToListAsync();
+	        }
+
+	        return Tuple.Create(pageData, count);
         }
 
         /// <summary>

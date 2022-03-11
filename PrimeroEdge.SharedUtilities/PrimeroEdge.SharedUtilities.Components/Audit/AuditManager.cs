@@ -47,7 +47,52 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// <returns></returns>
         public async Task<List<AuditResponse>> GetAuditDataAsync(string moduleId, string entityTypeId, string entityId, int pageSize, int pageNumber, int regionId)
         {
-            var data = await _auditRepository.GetAuditDataAsync(moduleId, entityTypeId, entityId, pageSize, pageNumber, regionId);
+	        var data = await _auditRepository.GetAuditDataAsync(moduleId, entityTypeId, entityId, pageSize, pageNumber, regionId);
+
+	        var result = new List<AuditResponse>();
+	        if (data.Item2 != 0)
+	        {
+		        var settings = await this._auditRepository.GetTimeZoneSettingsAsync(regionId);
+		        var userIdList = data.Item1.Select(x => x.CreatedBy).Distinct().ToList();
+		        var users = await this._auditRepository.GetUsersAsync(userIdList);
+
+		        foreach (var item in data.Item1)
+		        {
+			        var row = new AuditResponse()
+			        {
+				        CreatedDate = this.GetDistrictDateTime(item.CreatedDate, settings.Item1, settings.Item2),
+				        Field = item.Field,
+				        OldValue = item.OldValue,
+				        NewValue = item.NewValue,
+				        Comment = item.Comment,
+				        UserName = users.ContainsKey(item.CreatedBy) ? users[item.CreatedBy] : null,
+			        };
+			        result.Add(row);
+		        }
+	        }
+
+	        PaginationEnvelope = new Pagination(pageNumber, pageSize, data.Item2);
+	        return result;
+        }
+
+        /// <summary>
+        /// Gets audit data based on matching field search.
+        /// </summary>
+        /// <param name="moduleId">moduleId.</param>
+        /// <param name="entityTypeId">entityTypeId.</param>
+        /// <param name="entityId">entityId.</param>
+        /// <param name="pageSize">pageSize.</param>
+        /// <param name="pageNumber">pageNumber.</param>
+        /// <param name="regionId">regionId.</param>
+        /// <param name="fieldName">fieldName.</param>
+        /// <param name="updatedBy">updatedBy.</param>
+        /// <param name="updatedOn">updatedOn.</param>
+        /// <returns></returns>
+        public async Task<List<AuditResponse>> GetAuditDataSearchAsync(string moduleId, string entityTypeId, string entityId, int pageSize, 
+	        int pageNumber, int regionId, string fieldName, string updatedBy, DateTime updatedOn)
+        {
+            var data = await _auditRepository.GetAuditSearchDataAsync(moduleId, entityTypeId, entityId, pageSize, pageNumber, 
+	            regionId, fieldName, updatedOn.ToString("yyyy-MM-dd"));
 
             var result = new List<AuditResponse>();
             if (data.Item2 != 0)
@@ -72,7 +117,8 @@ namespace PrimeroEdge.SharedUtilities.Components
             }
 
             PaginationEnvelope = new Pagination(pageNumber, pageSize, data.Item2);
-            return result;
+			result = result.Where(s => !string.IsNullOrEmpty(s.UserName) && s.UserName.ToLower().Contains(updatedBy.ToLower())).ToList();
+			return result;
         }
 
         /// <summary>
