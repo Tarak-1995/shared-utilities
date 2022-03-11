@@ -27,6 +27,21 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// <returns></returns>
         Task<Tuple<List<Audit>, int>> GetAuditDataAsync(string moduleId, string entityTypeId, string entityId, int pageSize, int pageNumber, int regionId);
 
+        /// <summary>
+        /// Gets audit data based on matching field search.
+        /// </summary>
+        /// <param name="moduleId">moduleId.</param>
+        /// <param name="entityTypeId">entityTypeId.</param>
+        /// <param name="entityId">entityId.</param>
+        /// <param name="pageSize">pageSize.</param>
+        /// <param name="pageNumber">pageNumber.</param>
+        /// <param name="regionId">regionId.</param>
+        /// <param name="fieldName">fieldName.</param>
+        /// <param name="updatedOn">updatedOn.</param>
+        /// <returns></returns>
+        Task<Tuple<List<Audit>, int>> GetAuditSearchDataAsync(string moduleId, string entityTypeId, string entityId,
+	        int pageSize, int pageNumber, int regionId, string fieldName, string updatedOn);
+
 
         /// <summary>
         /// Save audit data
