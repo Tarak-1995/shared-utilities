@@ -157,7 +157,6 @@ namespace PrimeroEdge.SharedUtilities.Components
 	        var count = 0;
 	        var pageData = new List<Audit>();
 
-            regionId = 1483;
             var auditSearchCountData = await GetAuditSearchCountData(moduleId.Trim().ToUpper(), entityTypeId.Trim().ToUpper(), entityId.Trim().ToUpper(), regionId, fieldName?.Trim().ToUpper(), updatedOn);
 
 			await foreach (dynamic item in auditSearchCountData)

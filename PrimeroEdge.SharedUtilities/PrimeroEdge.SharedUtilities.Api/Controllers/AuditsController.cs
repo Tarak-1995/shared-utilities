@@ -55,7 +55,7 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
         public async Task SaveAuditDataAsync(List<AuditRequest> data, string moduleId, string entityTypeId, string entityId)
         {
             CheckValidations(moduleId, entityTypeId);
-            await _auditManager.SaveAuditDataAsync(data, moduleId, entityTypeId, entityId, 1, 1);
+            await _auditManager.SaveAuditDataAsync(data, moduleId, entityTypeId, entityId, _authContext.UserId, _authContext.RegionId);
         }
 
         /// <summary>

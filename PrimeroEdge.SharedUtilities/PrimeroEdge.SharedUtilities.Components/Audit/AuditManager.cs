@@ -164,7 +164,6 @@ namespace PrimeroEdge.SharedUtilities.Components
             moduleId = moduleId.Trim().ToUpper();
             entityId = entityId?.Trim().ToUpper();
             entityTypeId = entityTypeId.Trim().ToUpper();
-            var settings = await this._auditRepository.GetTimeZoneSettingsAsync(regionId);
 
             data.ForEach(x =>
             {
