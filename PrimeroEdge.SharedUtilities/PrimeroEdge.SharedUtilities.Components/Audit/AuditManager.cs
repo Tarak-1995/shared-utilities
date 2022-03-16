@@ -91,12 +91,14 @@ namespace PrimeroEdge.SharedUtilities.Components
         public async Task<List<AuditResponse>> GetAuditDataSearchAsync(string moduleId, string entityTypeId, string entityId, int pageSize, 
 	        int pageNumber, int regionId, string fieldName, string updatedBy, DateTime? updatedOn)
         {
-
             string utcUpdatedDate = null;
+            var settings = await this._auditRepository.GetTimeZoneSettingsAsync(regionId);
+            
 			if (updatedOn != null)
 			{
 				var updatedDate = (DateTime) updatedOn;
-                utcUpdatedDate = TimeZoneInfo.ConvertTimeToUtc(updatedDate).ToString("yyyy-MM-dd");
+                updatedDate = this.GetUTCTime(updatedDate, settings.Item1, settings.Item2);
+                utcUpdatedDate = updatedDate.ToString("yyyy-MM-dd");
             }
 
 			var data = await _auditRepository.GetAuditSearchDataAsync(moduleId, entityTypeId, entityId, pageSize, pageNumber, 
@@ -105,7 +107,6 @@ namespace PrimeroEdge.SharedUtilities.Components
             var result = new List<AuditResponse>();
             if (data.Item2 != 0)
             {
-                var settings = await this._auditRepository.GetTimeZoneSettingsAsync(regionId);
                 var userIdList = data.Item1.Select(x => x.CreatedBy).Distinct().ToList();
                 var users = await this._auditRepository.GetUsersAsync(userIdList);
 
