@@ -29,5 +29,19 @@ namespace PrimeroEdge.SharedUtilities.Components
 
             return districtTime;
         }
+
+        public DateTime GetUTCTime(DateTime districtTime, string districtTimeZone, bool applyDayLightSaving)
+        {
+            var tzi = TZConvert.GetTimeZoneInfo(districtTimeZone);
+
+            var utcTime = TimeZoneInfo.ConvertTimeToUtc(districtTime, tzi);
+
+            if (!applyDayLightSaving)
+            {
+                utcTime = utcTime.AddHours(-1);
+            }
+
+            return utcTime;
+        }
     }
 }

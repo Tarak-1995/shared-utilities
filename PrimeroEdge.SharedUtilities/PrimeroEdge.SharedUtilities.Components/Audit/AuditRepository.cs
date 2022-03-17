@@ -14,6 +14,7 @@ using Cybersoft.Platform.Couchbase.Client;
 using System.Dynamic;
 using System.Data;
 using System.Data.SqlClient;
+using Couchbase.Query;
 
 namespace PrimeroEdge.SharedUtilities.Components
 {
@@ -47,6 +48,21 @@ namespace PrimeroEdge.SharedUtilities.Components
 
         private const string GetAuditCountData = @"SELECT COUNT(*) AS Count FROM Audit V
                                                  WHERE V.type ='Audit' AND  V.regionId = {0} AND V.moduleId = '{1}' AND  V.entityTypeId = '{2}' AND   V.entityId = '{3}'";
+
+		private const string GetAuditSearchCountQuery = @"SELECT COUNT(*) AS Count FROM Audit V
+														 WHERE V.type = $type AND V.regionId = $regionId AND V.moduleId = $moduleId 
+														 AND V.entityTypeId = $entityTypeId AND V.entityId = $entityId
+														 AND (IS_NULL($field) OR CONTAINS (UPPER(V.field), $field)) 
+	                                                     AND (IS_NULL($updatedOn) OR DATE_FORMAT_STR(V.createdDate, '1111-11-11') = $updatedOn)";
+
+        private const string GetAuditSearchPageQuery = @"SELECT V.* FROM Audit V
+			                                            WHERE V.type = $type AND V.regionId = $regionId  AND V.moduleId = $moduleId 
+														AND V.entityTypeId = $entityTypeId AND V.entityId = $entityId 
+														AND (IS_NULL($field) OR CONTAINS (UPPER(V.field), $field)) 
+														AND (IS_NULL($updatedOn) OR DATE_FORMAT_STR(V.createdDate, '1111-11-11') = $updatedOn)
+														ORDER BY V.createdDate DESC
+			                                            OFFSET $offset LIMIT $limit";
+
         /// <summary>
         /// AuditRepository
         /// </summary>
@@ -115,6 +131,49 @@ namespace PrimeroEdge.SharedUtilities.Components
         }
 
         /// <summary>
+        /// Gets audit data based on matching field search.
+        /// </summary>
+        /// <param name="moduleId">moduleId.</param>
+        /// <param name="entityTypeId">entityTypeId.</param>
+        /// <param name="entityId">entityId.</param>
+        /// <param name="pageSize">pageSize.</param>
+        /// <param name="pageNumber">pageNumber.</param>
+        /// <param name="regionId">regionId.</param>
+        /// <param name="fieldName">fieldName.</param>
+        /// <param name="updatedOn">updatedOn.</param>
+        /// <returns></returns>
+        public async Task<Tuple<List<Audit>, int>> GetAuditSearchDataAsync(string moduleId, string entityTypeId, string entityId, int pageSize, 
+            int pageNumber, int regionId, string fieldName, string updatedOn)
+        {
+	        if (pageNumber <= 0)
+		        pageNumber = 1;
+
+	        if (pageSize <= 0)
+		        pageSize = 20;
+
+	        var offset = (pageNumber - 1) * pageSize;
+	        var limit = pageSize;
+
+	        var count = 0;
+	        var pageData = new List<Audit>();
+
+            var auditSearchCountData = await GetAuditSearchCountData(moduleId.Trim().ToUpper(), entityTypeId.Trim().ToUpper(), entityId.Trim().ToUpper(), regionId, fieldName?.Trim().ToUpper(), updatedOn);
+
+			await foreach (dynamic item in auditSearchCountData)
+	        {
+		        count = Convert.ToInt32(item.Count);
+	        }
+
+	        if (count != 0)
+	        {
+                var auditSearchPageData = await GetAuditSearchPageResult(moduleId.Trim().ToUpper(), entityTypeId.Trim().ToUpper(), entityId.Trim().ToUpper(), regionId, fieldName?.Trim().ToUpper(), updatedOn, offset, limit);
+                pageData = await auditSearchPageData.ToListAsync();
+            }
+
+	        return Tuple.Create(pageData, count);
+        }
+
+        /// <summary>
         /// GetUsersAsync
         /// </summary>
         /// <param name="users"></param>
@@ -153,6 +212,42 @@ namespace PrimeroEdge.SharedUtilities.Components
             var timeZone = result[TimeZoneCode];
             var isDayLight = result[DayLightCode];
             return Tuple.Create(timeZone, isDayLight == "1");
+        }
+
+        private async Task<IQueryResult<ExpandoObject>> GetAuditSearchCountData(string moduleId, string entityTypeId, string entityId, int regionId, string fieldName, string updatedOn)
+        {
+
+            var countData = await _couchbaseCluster.QueryAsync<ExpandoObject>(GetAuditSearchCountQuery, parameters =>
+            {
+                parameters.Parameter("type", nameof(Audit));
+                parameters.Parameter("moduleId", moduleId);
+                parameters.Parameter("entityTypeId", entityTypeId);
+                parameters.Parameter("entityId", entityId);
+                parameters.Parameter("regionId", regionId);
+                parameters.Parameter("field", fieldName);
+                parameters.Parameter("updatedOn", updatedOn);
+            });
+
+            return countData;
+        }
+
+        private async Task<IQueryResult<Audit>> GetAuditSearchPageResult(string moduleId, string entityTypeId, string entityId, int regionId, string fieldName, string updatedOn, int offset, int limit)
+        {
+
+            var pageData = await _couchbaseCluster.QueryAsync<Audit>(GetAuditSearchPageQuery, parameters =>
+            {
+                parameters.Parameter("type", nameof(Audit));
+                parameters.Parameter("moduleId", moduleId);
+                parameters.Parameter("entityTypeId", entityTypeId);
+                parameters.Parameter("entityId", entityId);
+                parameters.Parameter("regionId", regionId);
+                parameters.Parameter("field", fieldName);
+                parameters.Parameter("updatedOn", updatedOn);
+                parameters.Parameter("offset", offset);
+                parameters.Parameter("limit", limit);
+            });
+
+            return pageData;
         }
     }
 }

@@ -2,6 +2,8 @@ host: demosharedutilitiesservice.schoolcafe.com
 namespace: demo
 secretname: sharedutilities-demo-secret-appsettings
 aspnetcore: Demo
+secretSPName: perseus-secret-sp-demo
+secretProviderClass: aks-secret-nf-demo
 #sharedutilitiesrepo: PerseusNonProdACR.azurecr.io/sharedutilities_qa:latest
 replicas: 1
 sslcert: schoolcafesslcert
