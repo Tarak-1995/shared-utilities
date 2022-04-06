@@ -1,4 +1,4 @@
-{{- define "uat.env" }}
+{{- define "stage.env" }}
           - name: "ASPNETCORE_ENVIRONMENT"
             value: {{ .Values.aspnetcore }}
           - name: "AppEnv"
