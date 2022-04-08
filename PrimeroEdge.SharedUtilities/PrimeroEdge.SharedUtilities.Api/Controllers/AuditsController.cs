@@ -86,7 +86,7 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
         public async Task<List<AuditResponse>> GetAuditDataAsync(string moduleId, string entityTypeId, string entityId, int pageSize, int pageNumber)
         {
             CheckValidations(moduleId, entityTypeId);
-            var data = await _auditManager.GetAuditDataAsync(moduleId, entityTypeId, entityId, pageSize, pageNumber, 33);
+            var data = await _auditManager.GetAuditDataAsync(moduleId, entityTypeId, entityId, pageSize, pageNumber, _authContext.RegionId);
             HttpContext.Items[APIConstants.RESPONSE_PAGINATION] = _auditManager.GetPaginationEnvelope();
             return data;
         }
