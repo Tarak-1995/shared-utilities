@@ -9,9 +9,12 @@ using System;
 using System.IO;
 using Cybersoft.Platform.Authorization.HeaderUtilities.Extensions;
 using Cybersoft.Platform.Authorization.HeaderUtilities.Factories;
+using Cybersoft.Platform.Cache.CacheObjects;
+using Cybersoft.Platform.Cache.CacheObjects.Contracts;
+using Cybersoft.Platform.Cache.Config;
 using Cybersoft.Platform.Couchbase.Client;
 using Cybersoft.Platform.Couchbase.Settings;
-using Cybersoft.Platform.Utilities.MiddleWare;
+using Cybersoft.Platform.Utilities.Factories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -65,6 +68,17 @@ namespace PrimeroEdge.SharedUtilities.Api
             var couchbaseOptions = Options.Create(this.Configuration.GetSection("AuditCouchbaseSettings").Get<CouchbaseSettings>());
             var couchbaseCluster = CouchbaseClusterFactory.Build(couchbaseOptions).Result;
             services.AddSingleton<ICouchbaseCluster>(_ => couchbaseCluster);
+
+            services.Configure<RedisClientConfiguration>(options => this.Configuration.GetSection(nameof(RedisClientConfiguration)).Bind(options));
+            services.AddSingleton<ICacheProvider, CacheProvider>();
+            services.AddSingleton<HttpStatusMessageFactory>(x =>
+            {
+                var cacheProvider = x.GetService<ICacheProvider>();
+                var options = Options.Create(this.Configuration.GetSection("CouchbaseSettings").Get<CouchbaseSettings>());
+                var cluster = CouchbaseClusterFactory.Build(options).Result;
+                return new HttpStatusMessageFactory(cluster, cacheProvider);
+            });
+
         }
 
         /// <summary>
