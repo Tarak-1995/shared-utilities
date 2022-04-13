@@ -107,7 +107,7 @@ stages:
                 helm_version=$(cat $(Pipeline.Workspace)/helmChartVersion.txt)
                 echo "##vso[task.setvariable variable=imageName;]$(registryServerName)/$(applicationName):$docker_version"
                 echo "##vso[task.setvariable variable=helmChartVersion;]$helm_version"
-            condition: and(succeeded(), in(variables['environment'], 'dev', 'qa', 'stg', 'uat'))
+            condition: and(succeeded(), in(variables['environment'], 'dev', 'qa', 'uat'))
 
           - task: Bash@3
             inputs:
