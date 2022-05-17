@@ -1,8 +1,8 @@
-FROM mcr.microsoft.com/dotnet/core/aspnet:latest AS base
+FROM perseusnonprodacr.azurecr.io/alldockerimages/aspnet AS base
 WORKDIR /app
 EXPOSE 5000
 
-FROM mcr.microsoft.com/dotnet/core/sdk:latest AS  build
+FROM perseusnonprodacr.azurecr.io/alldockerimages/sdk AS  build
 WORKDIR /src
 COPY NuGet.Config ./
 COPY ["PrimeroEdge.SharedUtilities.Api/PrimeroEdge.SharedUtilities.Api.csproj", "PrimeroEdge.SharedUtilities.Api/"]
