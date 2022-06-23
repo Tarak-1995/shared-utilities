@@ -8,6 +8,16 @@
               secretKeyRef:
                 name: servicesettingssourcesettingsconnectionstring
                 key: servicesettingssourcesettingsconnectionstring
+          - name: "RedisClientConfiguration__ConnectionString"
+            valueFrom:
+              secretKeyRef:
+                name: redisclientconfigurationconnectionstring
+                key: redisclientconfigurationconnectionstring
+          - name: "ConnectionStrings__ADMINISTRATION"
+            valueFrom:
+              secretKeyRef:
+                name: connectionstringsadministration
+                key: connectionstringsadministration
           - name: "LogSettings__LogProvider__LogConfiguration"
             valueFrom:
               secretKeyRef:
