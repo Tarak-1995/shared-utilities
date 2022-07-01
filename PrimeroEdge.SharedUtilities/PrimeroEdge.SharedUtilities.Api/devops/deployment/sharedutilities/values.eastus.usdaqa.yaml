@@ -1,0 +1,13 @@
+host: usdaqasharedutilitiesservice.perseusedge.com
+namespace: usdaqa
+secretname: sharedutilities-usdaqa-secret-appsettings
+aspnetcore: Usdaqa
+#sharedutilitiesrepo: PerseusNonProdACR.azurecr.io/sharedutilities_usdaqa:latest
+replicas: 1
+sslcert: perseusedgesslcert
+limitcpu: 500m
+limitmemory: 800Mi
+requestscpu: 400m
+requestsmemory: 600Mi
+autoscaling:
+  enabled: false
