@@ -8,7 +8,7 @@ trigger:
 resources:
 - repo: self
 
-name: '1.0$(Rev:.r)'
+name: '2.0$(Rev:.r)'
 
 pool:
   vmImage: 'ubuntu-latest'
