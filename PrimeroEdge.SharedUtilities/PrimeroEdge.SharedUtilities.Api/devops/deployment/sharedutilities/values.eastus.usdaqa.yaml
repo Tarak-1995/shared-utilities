@@ -2,6 +2,8 @@ host: usdaqasharedutilitiesservice.perseusedge.com
 namespace: usdaqa
 secretname: sharedutilities-usdaqa-secret-appsettings
 aspnetcore: Usdaqa
+secretProviderClass: aks-secret-nf-uat
+secretSPName: perseus-secret-sp-uat
 #sharedutilitiesrepo: PerseusNonProdACR.azurecr.io/sharedutilities_usdaqa:latest
 replicas: 1
 sslcert: perseusedgesslcert
