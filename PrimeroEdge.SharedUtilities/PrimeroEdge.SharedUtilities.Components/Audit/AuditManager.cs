@@ -94,8 +94,8 @@ namespace PrimeroEdge.SharedUtilities.Components
 	        int pageNumber, int regionId, string fieldName, string updatedBy, DateTime? updatedOn)
         {
             var settings = await this._auditRepository.GetTimeZoneSettingsAsync(regionId);
-            string fromDate = string.Empty;
-            string toDate = string.Empty;
+            string fromDate = null;
+            string toDate = null;
 			if (updatedOn != null)
 			{
                 var updatedDate = (DateTime) updatedOn;
