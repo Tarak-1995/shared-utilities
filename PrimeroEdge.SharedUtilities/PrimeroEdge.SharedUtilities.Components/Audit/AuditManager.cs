@@ -93,7 +93,6 @@ namespace PrimeroEdge.SharedUtilities.Components
         public async Task<List<AuditResponse>> GetAuditDataSearchAsync(string moduleId, string entityTypeId, string entityId, int pageSize, 
 	        int pageNumber, int regionId, string fieldName, string updatedBy, DateTime? updatedOn)
         {
-            string utcUpdatedDate = null;
             var settings = await this._auditRepository.GetTimeZoneSettingsAsync(regionId);
             string fromDate = string.Empty;
             string toDate = string.Empty;
