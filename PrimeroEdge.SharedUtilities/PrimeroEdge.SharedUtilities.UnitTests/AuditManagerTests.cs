@@ -96,7 +96,7 @@ namespace PrimeroEdge.SharedUtilities.UnitTests
 
 			_auditRepository.GetAuditSearchDataAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(),
 				Arg.Any<int>(), Arg.Any<int>(),
-				Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>()).ReturnsForAnyArgs(pageData);
+				Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>()).ReturnsForAnyArgs(pageData);
 
 			_auditRepository.GetTimeZoneSettingsAsync(Arg.Any<int>()).ReturnsForAnyArgs(timeZoneSettings);
 			_auditRepository.GetUsersAsync(Arg.Any<List<int>>()).ReturnsForAnyArgs(users);
@@ -122,7 +122,7 @@ namespace PrimeroEdge.SharedUtilities.UnitTests
 
 			_auditRepository.GetAuditSearchDataAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(),
 				Arg.Any<int>(), Arg.Any<int>(),
-				Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>()).ReturnsForAnyArgs(pageData);
+				Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>()).ReturnsForAnyArgs(pageData);
 
 			_auditRepository.GetTimeZoneSettingsAsync(Arg.Any<int>()).ReturnsForAnyArgs(timeZoneSettings);
 			_auditRepository.GetUsersAsync(Arg.Any<List<int>>()).ReturnsForAnyArgs(users);

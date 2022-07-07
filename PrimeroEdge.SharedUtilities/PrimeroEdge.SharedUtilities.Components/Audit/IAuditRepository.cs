@@ -37,10 +37,11 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// <param name="pageNumber">pageNumber.</param>
         /// <param name="regionId">regionId.</param>
         /// <param name="fieldName">fieldName.</param>
-        /// <param name="updatedOn">updatedOn.</param>
+        /// <param name="fromDate">fromDate.</param>
+        /// <param name="toDate">toDate.</param>
         /// <returns></returns>
         Task<Tuple<List<Audit>, int>> GetAuditSearchDataAsync(string moduleId, string entityTypeId, string entityId,
-	        int pageSize, int pageNumber, int regionId, string fieldName, string updatedOn);
+	        int pageSize, int pageNumber, int regionId, string fieldName, string fromDate, string toDate);
 
 
         /// <summary>
