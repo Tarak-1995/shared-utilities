@@ -14,6 +14,8 @@ using Newtonsoft.Json;
 
 namespace PrimeroEdge.SharedUtilities.Components
 {
+    using PrimeroEdge.SharedUtilities.Components.Common;
+
     /// <summary>
     /// AuditRepository
     /// </summary>
@@ -93,16 +95,17 @@ namespace PrimeroEdge.SharedUtilities.Components
         {
             string utcUpdatedDate = null;
             var settings = await this._auditRepository.GetTimeZoneSettingsAsync(regionId);
-            
+            string fromDate = string.Empty;
+            string toDate = string.Empty;
 			if (updatedOn != null)
 			{
-				var updatedDate = (DateTime) updatedOn;
-                updatedDate = this.GetUTCTime(updatedDate, settings.Item1, settings.Item2);
-                utcUpdatedDate = updatedDate.ToString("yyyy-MM-dd");
+                var updatedDate = (DateTime) updatedOn;
+                fromDate = updatedDate.ToUtcDateTime(false, settings.Item1);
+                toDate = updatedDate.ToUtcDateTime(true, settings.Item1);
             }
 
 			var data = await _auditRepository.GetAuditSearchDataAsync(moduleId, entityTypeId, entityId, pageSize, pageNumber, 
-	            regionId, fieldName, utcUpdatedDate);
+	            regionId, fieldName, fromDate, toDate);
 
             var result = new List<AuditResponse>();
             if (data.Item2 != 0)
