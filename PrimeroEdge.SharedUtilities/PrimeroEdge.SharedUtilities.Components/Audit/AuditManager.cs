@@ -96,7 +96,7 @@ namespace PrimeroEdge.SharedUtilities.Components
             var settings = await this._auditRepository.GetTimeZoneSettingsAsync(regionId);
             string fromDate = null;
             string toDate = null;
-			if (updatedOn != null)
+			if (updatedOn.HasValue)
 			{
                 var updatedDate = (DateTime) updatedOn;
                 fromDate = updatedDate.ToUtcDateTime(false, settings.Item1);
