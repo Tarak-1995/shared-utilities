@@ -1,4 +1,4 @@
-host: usdaqasharedutilitiesservice.schoolcafe.com
+host: usdaqasharedutilitiesservice.perseusedge.com
 namespace: usdaqa
 secretname: sharedutilities-usdaqa-secret-appsettings
 aspnetcore: Usdaqa
