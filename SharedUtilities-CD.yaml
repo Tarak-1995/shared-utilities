@@ -115,7 +115,7 @@ stages:
               script: |
                 echo "##vso[task.setvariable variable=imageName;]$(registryServerName)/$(applicationName):${{ parameters.buildId }}"
                 echo "##vso[task.setvariable variable=helmChartVersion;]${{ parameters.buildId }}"
-            condition: and(succeeded(), in(variables['environment'], 'stg', 'prod', 'demo', 'migration'))
+            condition: and(succeeded(), in(variables['environment'], 'stg', 'prod', 'demo', 'usdaqa', 'migration'))
 
           - bash: |
               echo $(imageName)
