@@ -6,7 +6,7 @@ secretSPName: perseus-secret-sp-usdaqa
 secretProviderClass: aks-secret-nf-usdaqa
 #sharedutilitiesrepo: PerseusNonProdACR.azurecr.io/sharedutilities_usdaqa:latest
 replicas: 1
-sslcert: schoolcafesslcert
+sslcert: perseusedgesslcert
 limitcpu: 500m
 limitmemory: 800Mi
 requestscpu: 400m
