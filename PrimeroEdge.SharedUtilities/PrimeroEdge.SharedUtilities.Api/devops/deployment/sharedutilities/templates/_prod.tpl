@@ -43,4 +43,14 @@
               secretKeyRef:
                 name: couchbasesettingspassword
                 key: couchbasesettingspassword
+          - name: "ConnectionStrings__ADMINISTRATION"
+            valueFrom:
+              secretKeyRef:
+                name: connectionstringsadministration
+                key: connectionstringsadministration
+          - name: "RedisClientConfiguration__ConnectionString"
+            valueFrom:
+              secretKeyRef:
+                name: redisclientconfigurationconnectionstring
+                key: redisclientconfigurationconnectionstring
 {{- end }}
