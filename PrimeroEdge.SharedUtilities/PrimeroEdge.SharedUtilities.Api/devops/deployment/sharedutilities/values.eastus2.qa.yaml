@@ -2,6 +2,8 @@ host: qasharedutilitiesservice.perseusedge.com
 namespace: qa
 secretname: sharedutilities-qa-secret-appsettings
 aspnetcore: QA
+secretProviderClass: aks-secret-nf-qa
+secretSPName: perseus-secret-sp-qa
 #sharedutilitiesrepo: PerseusNonProdACR.azurecr.io/sharedutilities_qa:latest
 replicas: 1
 sslcert: perseusedgesslcert
