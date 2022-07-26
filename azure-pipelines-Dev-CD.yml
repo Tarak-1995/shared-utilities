@@ -16,7 +16,7 @@ variables:
   registryServerName: "$(registryName).azurecr.io"
   projectName: "sharedutilities"
   helmchartdev: "sharedutilities-dev"
-  helmChartVersion: "1.0.33"
+  helmChartVersion: "1.0.57"
   azure.service.connection: "Perseus-Non-prod-AKS-eastus-Stg"
 
 resources: 
