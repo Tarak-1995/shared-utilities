@@ -85,7 +85,7 @@ stages:
               targetType: 'inline'
               script: |
                 echo "##vso[task.setvariable variable=aksNamespace;]preview"
-                echo "##vso[task.setvariable variable=definitionId;]909"
+                echo "##vso[task.setvariable variable=definitionId;]908"
             condition: and(succeeded(), eq(variables['environment'], 'preview'))
 
           - task: Bash@3
