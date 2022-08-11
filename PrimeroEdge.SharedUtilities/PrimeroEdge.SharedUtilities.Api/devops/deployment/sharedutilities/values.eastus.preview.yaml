@@ -1,4 +1,4 @@
-host: previewsharedutilitiesservice.perseusedge.com
+host: previewsharedutilitiesservice.schoolcafe.com
 namespace: preview
 secretname: sharedutilities-preview-secret-appsettings
 aspnetcore: Preview
@@ -6,7 +6,7 @@ secretSPName: perseus-secret-sp-preview
 secretProviderClass: aks-secret-nf-preview
 #sharedutilitiesrepo: PerseusNonProdACR.azurecr.io/sharedutilities_usdaqa:latest
 replicas: 1
-sslcert: perseusedgesslcert
+sslcert: schoolcafesslcert
 limitcpu: 500m
 limitmemory: 800Mi
 requestscpu: 400m
