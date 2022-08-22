@@ -11,5 +11,3 @@ limitcpu: 500m
 limitmemory: 800Mi
 requestscpu: 400m
 requestsmemory: 600Mi
-autoscaling:
-  enabled: false
