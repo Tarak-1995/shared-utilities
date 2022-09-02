@@ -12,7 +12,9 @@ using Cybersoft.Platform.Authorization.HeaderUtilities.Factories;
 using Cybersoft.Platform.Cache.CacheObjects;
 using Cybersoft.Platform.Cache.CacheObjects.Contracts;
 using Cybersoft.Platform.Cache.Config;
+using Cybersoft.Platform.Cache.Extensions;
 using Cybersoft.Platform.Couchbase.Client;
+using Cybersoft.Platform.Couchbase.Extensions;
 using Cybersoft.Platform.Couchbase.Settings;
 using Cybersoft.Platform.Utilities.Factories;
 using Microsoft.AspNetCore.Builder;
@@ -64,13 +66,8 @@ namespace PrimeroEdge.SharedUtilities.Api
             var bypassAuthSettings = Options.Create(Configuration.GetSection("BypassAuthenticationSettings").Get<BypassAuthenticationSettings>());
             services.AddSessionFactory(bypassAuthSettings.Value);
 
-            services.Configure<CouchbaseSettings>(options => this.Configuration.GetSection("AuditCouchbaseSettings").Bind(options));
-            var couchbaseOptions = Options.Create(this.Configuration.GetSection("AuditCouchbaseSettings").Get<CouchbaseSettings>());
-            var couchbaseCluster = CouchbaseClusterFactory.Build(couchbaseOptions).Result;
-            services.AddSingleton<ICouchbaseCluster>(_ => couchbaseCluster);
-
-            services.Configure<RedisClientConfiguration>(options => this.Configuration.GetSection(nameof(RedisClientConfiguration)).Bind(options));
-            services.AddSingleton<ICacheProvider, CacheProvider>();
+            services.AddCouchbase(Configuration);
+            services.AddRedisCache(Configuration);
             services.AddSingleton<HttpStatusMessageFactory>(x =>
             {
                 var cacheProvider = x.GetService<ICacheProvider>();
