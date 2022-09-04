@@ -1,3 +1,3 @@
 dotnet pack ..\PrimeroEdge.SharedUtilities.Components\PrimeroEdge.SharedUtilities.Components.csproj
-nuget push -Source "PrimeroEdgeDev" -ApiKey az -SkipDuplicate ..\PrimeroEdge.SharedUtilities.Components\bin\Debug\PrimeroEdge.SharedUtilities.Components.2.1.10902.nupkg
+nuget push -Source "PrimeroEdgeDev" -ApiKey az -SkipDuplicate ..\PrimeroEdge.SharedUtilities.Components\bin\Debug\PrimeroEdge.SharedUtilities.Components.2.1.10904.nupkg
 
