@@ -1,0 +1,11 @@
+host: stgsharedutilitiesservice.perseusedge.com
+namespace: staging
+secretname: sharedutilities-stg-secret-appsettings
+aspnetcore: Staging
+#sharedutilitiesrepo: PerseusNonProdACR.azurecr.io/sharedutilities_qa:latest
+replicas: 1
+sslcert: perseusedgesslcert
+limitcpu: 8m
+limitmemory: 400Mi
+requestscpu: 5m
+requestsmemory: 300Mi
