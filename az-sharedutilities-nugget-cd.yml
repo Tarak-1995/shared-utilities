@@ -19,8 +19,9 @@ variables:
 
 steps:
 
-- script: echo '$(Build.BuildNumber)' 
-- script: echo '$(System.DefaultWorkingDirectory)' 
+- script: echo building '$(Build.BuildNumber)' 
+- script: echo working'$(System.DefaultWorkingDirectory)'
+- script: echo stagig '$(Build.ArtifactStagingDirectory)'
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet pack'
@@ -33,6 +34,6 @@ steps:
   displayName: 'dotnet push'
   inputs:
     command: push
-    packagesToPush: '$(System.DefaultWorkingDirectory)/*.nupkg'
+    packagesToPush: '$(System.ArtifactStagingDirectory)/*.nupkg'
     publishVstsFeed: '45c955af-f071-48a6-9a89-7c31bc9146a5'
     publishPackageMetadata: false
