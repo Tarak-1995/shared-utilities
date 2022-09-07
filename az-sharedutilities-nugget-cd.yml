@@ -1,0 +1,25 @@
+# PrimeroEdge shared utilities nugget push pipeline.
+
+name: $(ReleaseNumber).$(SprintNumber).$(HotfixNumber).$(Rev:r)$(Date:MMdd)
+
+trigger:
+- dev
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- task: DotNetCoreCLI@2
+  displayName: 'Nuget pack'
+  inputs:
+    command: 'pack'
+    packagesToPack: '**/*.csproj'
+    versioningScheme: 'byBuildNumber'
+   
+- task: DotNetCoreCLI@2
+  displayName: 'Nuget push'
+  inputs:
+    command: push
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
+    publishVstsFeed: '45c955af-f071-48a6-9a89-7c31bc9146a5'
+    publishPackageMetadata: true
