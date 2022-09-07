@@ -31,6 +31,10 @@ steps:
     versioningScheme: 'byBuildNumber'
 
 - task: DotNetCoreCLI@2
+  inputs:
+    command: 'ls -l $(Build.ArtifactStagingDirectory)'
+   
+- task: DotNetCoreCLI@2
   displayName: 'dotnet push'
   inputs:
     command: push
