@@ -28,4 +28,29 @@
               secretKeyRef:
                 name: auditcouchbasesettingspassword
                 key: auditcouchbasesettingspassword
+          - name: "CouchbaseSettings__Host"
+            valueFrom:
+              secretKeyRef:
+                name: couchbasesettingshost
+                key: couchbasesettingshost
+          - name: "CouchbaseSettings__UserName"
+            valueFrom:
+              secretKeyRef:
+                name: couchbasesettingsusername
+                key: couchbasesettingsusername
+          - name: "CouchbaseSettings__Password"
+            valueFrom:
+              secretKeyRef:
+                name: couchbasesettingspassword
+                key: couchbasesettingspassword
+          - name: "ConnectionStrings__ADMINISTRATION"
+            valueFrom:
+              secretKeyRef:
+                name: connectionstringsadministration
+                key: connectionstringsadministration
+          - name: "RedisClientConfiguration__ConnectionString"
+            valueFrom:
+              secretKeyRef:
+                name: redisclientconfigurationconnectionstring
+                key: redisclientconfigurationconnectionstring
 {{- end }}
