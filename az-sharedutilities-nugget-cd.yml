@@ -32,7 +32,7 @@ steps:
 
 - task: DotNetCoreCLI@2
   inputs:
-    command: 'ls -l $(Build.ArtifactStagingDirectory)'
+    command: 'll $(Build.ArtifactStagingDirectory)'
    
 - task: DotNetCoreCLI@2
   displayName: 'dotnet push'
