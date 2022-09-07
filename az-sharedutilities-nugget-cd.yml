@@ -19,6 +19,8 @@ variables:
 
 steps:
 
+- script: echo '$(Build.BuildNumber)' 
+
 - task: DotNetCoreCLI@2
   displayName: 'dotnet pack'
   inputs:
