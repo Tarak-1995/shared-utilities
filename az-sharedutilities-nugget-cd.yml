@@ -32,6 +32,6 @@ steps:
   displayName: 'dotnet push'
   inputs:
     command: push
-    packagesToPush: '$(System.DefaultWorkingDirectory)/drop/*.nupkg'
+    packagesToPush: '$(System.DefaultWorkingDirectory)/*.nupkg'
     publishVstsFeed: '45c955af-f071-48a6-9a89-7c31bc9146a5'
     publishPackageMetadata: false
