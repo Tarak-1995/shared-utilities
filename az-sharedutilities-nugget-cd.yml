@@ -19,14 +19,14 @@ variables:
 
 steps:
 - task: DotNetCoreCLI@2
-  displayName: 'dotnet pack'
+  displayName: 'Nuget pack'
   inputs:
     command: 'pack'
     packagesToPack: '**/*.csproj'
     versioningScheme: 'byBuildNumber'
    
 - task: DotNetCoreCLI@2
-  displayName: 'dotnet push'
+  displayName: 'Nuget push'
   inputs:
     command: push
     packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
