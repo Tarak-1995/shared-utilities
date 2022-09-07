@@ -18,11 +18,6 @@ variables:
   value: $(RevisionNumber)
 
 steps:
-
-- script: echo building '$(Build.BuildNumber)' 
-- script: echo working'$(System.DefaultWorkingDirectory)'
-- script: echo staging '$(Build.ArtifactStagingDirectory)'
-
 - task: DotNetCoreCLI@2
   displayName: 'dotnet pack'
   inputs:
