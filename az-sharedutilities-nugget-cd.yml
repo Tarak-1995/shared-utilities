@@ -3,6 +3,8 @@
 # Add steps that publish symbols, save build artifacts, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
+name: $(ReleaseNumber).$(SprintNumber).$(HotfixNumber).$(Rev:r)$(Date:MMdd)
+
 trigger:
 - dev
 
@@ -26,7 +28,7 @@ steps:
     versioningScheme: byPrereleaseNumber
     majorVersion: '$(ReleaseNumber)'
     minorVersion: '$(SprintNumber)'
-    patchVersion: $(RevisionNumber)
+    patchVersion: $(Build.BuildNumber)
     # patchVersion: $(HotfixNumber).'$(Rev:r)$(Date:MMdd)'
     # $(ReleaseNumber).$(SprintNumber).$(HotfixNumber).$(Rev:r)$(Date:MMdd)
 
