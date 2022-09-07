@@ -21,7 +21,7 @@ steps:
 
 - script: echo building '$(Build.BuildNumber)' 
 - script: echo working'$(System.DefaultWorkingDirectory)'
-- script: echo stagig '$(Build.ArtifactStagingDirectory)'
+- script: echo staging '$(Build.ArtifactStagingDirectory)'
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet pack'
