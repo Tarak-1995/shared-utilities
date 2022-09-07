@@ -20,6 +20,7 @@ variables:
 steps:
 
 - script: echo '$(Build.BuildNumber)' 
+- script: echo '$(System.DefaultWorkingDirectory)' 
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet pack'
