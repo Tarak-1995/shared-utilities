@@ -34,6 +34,6 @@ steps:
   displayName: 'dotnet push'
   inputs:
     command: push
-    packagesToPush: '/home/vsts/work/1/a/PrimeroEdge.SharedUtilities.Components.2.1.0.70907.nupkg'
+    packagesToPush: '/home/vsts/work/1/a/PrimeroEdge.SharedUtilities.Components.2.1.0.*.nupkg'
     publishVstsFeed: '45c955af-f071-48a6-9a89-7c31bc9146a5'
     publishPackageMetadata: false
