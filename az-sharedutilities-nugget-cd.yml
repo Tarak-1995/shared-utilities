@@ -13,7 +13,7 @@ variables:
 - name: buildConfiguration
   value: 'Release'
 - name: patchVersion
-  value: $(HotfixNumber) + '.' + $(Date:MMdd)
+  value: $(HotfixNumber)$(Date:MMdd)
 
 steps:
 
