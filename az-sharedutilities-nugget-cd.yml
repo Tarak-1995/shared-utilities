@@ -26,10 +26,10 @@ steps:
     patchVersion: '$(HotfixNumber).$(Rev:r)$(Date:MMdd)'
     # $(ReleaseNumber).$(SprintNumber).$(HotfixNumber).$(Rev:r)$(Date:MMdd)
 
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet push'
-  inputs:
-    command: push
-    packagesToPush: '$(System.DefaultWorkingDirectory)/drop/*.nupkg'
-    publishVstsFeed: '45c955af-f071-48a6-9a89-7c31bc9146a5'
-    publishPackageMetadata: false
+#- task: DotNetCoreCLI@2
+#  displayName: 'dotnet push'
+#  inputs:
+#    command: push
+#    packagesToPush: '$(System.DefaultWorkingDirectory)/drop/*.nupkg'
+#    publishVstsFeed: '45c955af-f071-48a6-9a89-7c31bc9146a5'
+#    publishPackageMetadata: false
