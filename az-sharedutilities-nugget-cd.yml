@@ -22,4 +22,4 @@ steps:
     command: push
     packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
     publishVstsFeed: '45c955af-f071-48a6-9a89-7c31bc9146a5'
-    publishPackageMetadata: false
+    publishPackageMetadata: true
