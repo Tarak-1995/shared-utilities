@@ -26,8 +26,8 @@ steps:
     versioningScheme: byPrereleaseNumber
     majorVersion: '$(ReleaseNumber)'
     minorVersion: '$(SprintNumber)'
-    patchVersion: $(patchVersion)
-    #patchVersion: $(HotfixNumber).'$(Rev:r)$(Date:MMdd)'
+    patchVersion: $(RevisionNumber)
+    # patchVersion: $(HotfixNumber).'$(Rev:r)$(Date:MMdd)'
     # $(ReleaseNumber).$(SprintNumber).$(HotfixNumber).$(Rev:r)$(Date:MMdd)
 
 #- task: DotNetCoreCLI@2
