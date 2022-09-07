@@ -10,7 +10,10 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-  buildConfiguration: 'Release'
+- name: buildConfiguration
+  value: 'Release'
+- name: patchVersion
+  value: ${{HotfixNumber}}${{Rev:r}}
 
 steps:
 
@@ -23,7 +26,8 @@ steps:
     versioningScheme: byPrereleaseNumber
     majorVersion: '$(ReleaseNumber)'
     minorVersion: '$(SprintNumber)'
-    patchVersion: $(HotfixNumber).'$(Rev:r)$(Date:MMdd)'
+    patchVersion: $(patchVersion)
+    #patchVersion: $(HotfixNumber).'$(Rev:r)$(Date:MMdd)'
     # $(ReleaseNumber).$(SprintNumber).$(HotfixNumber).$(Rev:r)$(Date:MMdd)
 
 #- task: DotNetCoreCLI@2
