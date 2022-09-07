@@ -24,13 +24,9 @@ steps:
 - task: DotNetCoreCLI@2
   displayName: 'dotnet pack'
   inputs:
-    command: pack
+    command: 'pack'
     packagesToPack: '**/*.csproj'
-    packDirectory: '$(Build.ArtifactStagingDirectory)'
-    versioningScheme: byPrereleaseNumber
-    majorVersion: '$(ReleaseNumber)'
-    minorVersion: '$(SprintNumber)'
-    patchVersion: $(Build.BuildNumber)
+    versioningScheme: 'byBuildNumber'
     # patchVersion: $(HotfixNumber).'$(Rev:r)$(Date:MMdd)'
     # $(ReleaseNumber).$(SprintNumber).$(HotfixNumber).$(Rev:r)$(Date:MMdd)
 
