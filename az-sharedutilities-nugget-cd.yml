@@ -8,12 +8,6 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
-variables:
-- name: buildConfiguration
-  value: 'Release'
-- name: patchVersion
-  value: $(RevisionNumber)
-
 steps:
 - task: DotNetCoreCLI@2
   displayName: 'Nuget pack'
