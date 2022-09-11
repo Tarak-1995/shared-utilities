@@ -5,15 +5,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Cybersoft.Platform.Authorization.HeaderUtilities" Version="2.1.0.1390909" />
-    <PackageReference Include="Cybersoft.Platform.Swashbuckle.AspNetCore" Version="2.1.0.1390909" />
-    <PackageReference Include="Cybersoft.Platform.Logging" Version="2.1.0.1390909" />
-    <PackageReference Include="Cybersoft.Platform.Utilities" Version="2.1.0.1390909" />
-    <PackageReference Include="Cybersoft.Platform.Couchbase" Version="2.1.0.1390909" />
-    <PackageReference Include="Cybersoft.Platform.Contracts" Version="2.1.0.1390909" />
+    <PackageReference Include="Cybersoft.Platform.Authorization.HeaderUtilities" Version="2.1.0.1420911" />
+    <PackageReference Include="Cybersoft.Platform.Swashbuckle.AspNetCore" Version="2.1.0.1420911" />
+    <PackageReference Include="Cybersoft.Platform.Logging" Version="2.1.0.1420911" />
+    <PackageReference Include="Cybersoft.Platform.Utilities" Version="2.1.0.1420911" />
+    <PackageReference Include="Cybersoft.Platform.Couchbase" Version="2.1.0.1420911" />
+    <PackageReference Include="Cybersoft.Platform.Contracts" Version="2.1.0.1420911" />
     <PackageReference Include="TimeZoneConverter" Version="3.5.0" />
-    <PackageReference Include="Cybersoft.Platform.Data.Sql" Version="2.1.0.1390909" />
-    <PackageReference Include="Cybersoft.Platform.Autofac" Version="2.1.0.1390909" />
+    <PackageReference Include="Cybersoft.Platform.Data.Sql" Version="2.1.0.1420911" />
+    <PackageReference Include="Cybersoft.Platform.Autofac" Version="2.1.0.1420911" />
   </ItemGroup>
  
 </Project>
