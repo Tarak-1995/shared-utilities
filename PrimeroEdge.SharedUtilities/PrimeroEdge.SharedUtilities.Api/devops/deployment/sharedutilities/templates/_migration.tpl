@@ -17,7 +17,7 @@
             valueFrom:
               secretKeyRef:
                 name: connectionstringsadministration
-                key: connectionstringsadministration      
+                key: connectionstringsadministration
           - name: "LogSettings__LogProvider__LogConfiguration"
             valueFrom:
               secretKeyRef:
@@ -37,7 +37,7 @@
             valueFrom:
               secretKeyRef:
                 name: couchbasesettingspassword
-                key: couchbasesettingspassword      
+                key: couchbasesettingspassword
           - name: "AuditCouchbaseSettings__Host"
             valueFrom:
               secretKeyRef:
