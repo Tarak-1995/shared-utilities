@@ -43,6 +43,8 @@ spec:
           {{- template "uat.env" . }}
           {{- else if eq .Values.namespace "demo" }}
           {{- template "demo.env" . }}
+          {{- else if eq .Values.namespace "training" }}
+          {{- template "training.env" . }}
           {{- else if eq .Values.namespace "migration" }}
           {{- template "migration.env" . }}
           {{- else if eq .Values.namespace "staging" }}
