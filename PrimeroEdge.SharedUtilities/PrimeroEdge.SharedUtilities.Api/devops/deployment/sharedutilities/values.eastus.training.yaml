@@ -1,0 +1,15 @@
+host: learnsharedutilitiesservice.schoolcafe.com
+namespace: training
+secretname: sharedutilities-training-secret-appsettings
+aspnetcore: Training
+secretSPName: perseus-secret-sp-training
+secretProviderClass: aks-secret-nf-training
+#sharedutilitiesrepo: PerseusNonProdACR.azurecr.io/sharedutilities_qa:latest
+replicas: 1
+sslcert: schoolcafesslcert
+limitcpu: 500m
+limitmemory: 800Mi
+requestscpu: 400m
+requestsmemory: 600Mi
+autoscaling:
+  enabled: false
