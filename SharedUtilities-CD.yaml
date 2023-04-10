@@ -69,7 +69,7 @@ stages:
               targetType: 'inline'
               script: |
                 echo "##vso[task.setvariable variable=aksNamespace;]staging"
-                echo "##vso[task.setvariable variable=definitionId;]485"
+                echo "##vso[task.setvariable variable=definitionId;]798"
             condition: and(succeeded(), eq(variables['environment'], 'stg'))
 
           - task: Bash@3
