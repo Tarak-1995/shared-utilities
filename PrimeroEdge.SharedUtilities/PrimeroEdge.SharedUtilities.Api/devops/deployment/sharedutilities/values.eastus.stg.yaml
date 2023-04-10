@@ -7,9 +7,9 @@ secretSPName: perseus-secret-sp-stg
 #sharedutilitiesrepo: PerseusNonProdACR.azurecr.io/sharedutilities_qa:latest
 replicas: 1
 sslcert: perseusedgesslcert
-limitcpu: 800m
-limitmemory: 000Mi
+limitcpu: 600m
+limitmemory: 600Mi
 requestscpu: 600m
-requestsmemory: 800Mi
+requestsmemory: 600Mi
 autoscaling:
   enabled: false
