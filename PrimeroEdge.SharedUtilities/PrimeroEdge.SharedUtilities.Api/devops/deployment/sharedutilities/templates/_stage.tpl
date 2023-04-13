@@ -13,6 +13,11 @@
               secretKeyRef:
                 name: logsettingslogproviderlogconfiguration
                 key: logsettingslogproviderlogconfiguration
+          - name: "ConnectionStrings__ADMINISTRATION"
+            valueFrom:
+              secretKeyRef:
+                name: connectionstringsadministration
+                key: connectionstringsadministration                
           - name: "AuditCouchbaseSettings__Host"
             valueFrom:
               secretKeyRef:
