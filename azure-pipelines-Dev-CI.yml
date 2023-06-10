@@ -34,7 +34,7 @@ variables:
   project_csproj: "./PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/PrimeroEdge.SharedUtilities.Api.csproj"
   test_csproj: "./PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.UnitTests/PrimeroEdge.SharedUtilities.UnitTests.csproj"
   
-  dockerRegistryServiceConnection: '0308b8a7-8ae6-4c18-b610-58fe54dc62c4'
+  #dockerRegistryServiceConnection: '0308b8a7-8ae6-4c18-b610-58fe54dc62c4'
   devschoolcafeimagerepository: 'schoolcafe-dev/sharedutilities.devschoolcafe'
   imageRepository: 'sharedutilities-dev'
   projectName: 'sharedutilities'
