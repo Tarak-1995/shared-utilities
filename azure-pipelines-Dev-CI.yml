@@ -143,8 +143,6 @@ stages:
         destination: $(Build.ArtifactStagingDirectory)
         chartName: 'sharedutilities'
 
-
-  
 - stage: Secret
   displayName: Generate secret
   dependsOn: HelmPackage
@@ -160,3 +158,49 @@ stages:
         secretType: 'generic'
         secretArguments: '--from-file=PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/appsettings.Development.json'
         secretName: 'sharedutilities-dev-secret-appsettings'
+
+- stage: DevSchoolCafeImageBuild
+  displayName:  Dev SchoolCafe Image Build $ Push
+  dependsOn: 
+  - BuildandAnalysis
+  - DockerVersion
+  jobs:
+  - job: ImageBuildDevSchoolCafe
+    variables:
+      commitSHA: $[stageDependencies.DockerVersion.Generate.outputs['CommitSHA.shorthash']]
+    steps:
+    - task: Docker@2
+      displayName: Build docker image
+      inputs:
+        command: buildAndPush
+        repository: $(devschoolcafeimagerepository)
+        dockerfile: $(dockerfilePath)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        tags: |
+          $(tag)
+          latest
+          $(commitSHA)
+          
+- stage: ArgoCDInfraRepo
+  displayName: Update ArgoCd infra repo image tag
+  dependsOn: 
+    - DockerVersion
+    - DevSchoolCafeImageBuild
+  jobs:
+    - job: UpdateImage
+      variables:
+        commitSHA: $[stageDependencies.DockerVersion.Generate.outputs['CommitSHA.shorthash']]
+      steps:
+        - bash: |
+            git config --global user.email "azuredevops@primeroedge.com"
+            git config --global user.name "azuredevops"
+            git clone https://$(DEVOPS_USER):$(DEVOPS_TOKEN)@dev.azure.com/Cybersoft-Technologies-Inc/ArgoCD/_git/perseus-devqa-infra
+            cd perseus-devqa-infra
+            git checkout Develop
+
+            dockerImageUrl="perseusnonprodacr.azurecr.io/$(devschoolcafeimageRepository):$(commitSHA)"
+            sed -i "/image/c\image: $dockerImageUrl" $(helmValuesFile)
+
+            git add .
+            git commit -m 'AzDevops Image update commit sha: $(commitSHA)'
+            git push origin Develop
