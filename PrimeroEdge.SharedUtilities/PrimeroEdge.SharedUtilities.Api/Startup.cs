@@ -68,13 +68,7 @@ namespace PrimeroEdge.SharedUtilities.Api
 
             services.AddCouchbase(Configuration);
             services.AddRedisCache(Configuration);
-            services.AddSingleton<HttpStatusMessageFactory>(x =>
-            {
-                var cacheProvider = x.GetService<ICacheProvider>();
-                var options = Options.Create(this.Configuration.GetSection("CouchbaseSettings").Get<CouchbaseSettings>());
-                var cluster = CouchbaseClusterFactory.Build(options).Result;
-                return new HttpStatusMessageFactory(cluster, cacheProvider);
-            });
+            services.AddSingleton<HttpStatusMessageFactory>();
 
         }
 
