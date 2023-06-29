@@ -58,7 +58,7 @@ namespace PrimeroEdge.SharedUtilities.Api
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Shared Utilities", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Shared Utilities", Version = "v6" });
                 var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.XML";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 //c.IncludeXmlComments(xmlPath);
