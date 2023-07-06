@@ -58,7 +58,7 @@ namespace PrimeroEdge.SharedUtilities.Api
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Shared Utilities", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Shared Utilities", Version = "v6" });
                 var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.XML";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 //c.IncludeXmlComments(xmlPath);
@@ -68,13 +68,7 @@ namespace PrimeroEdge.SharedUtilities.Api
 
             services.AddCouchbase(Configuration);
             services.AddRedisCache(Configuration);
-            services.AddSingleton<HttpStatusMessageFactory>(x =>
-            {
-                var cacheProvider = x.GetService<ICacheProvider>();
-                var options = Options.Create(this.Configuration.GetSection("CouchbaseSettings").Get<CouchbaseSettings>());
-                var cluster = CouchbaseClusterFactory.Build(options).Result;
-                return new HttpStatusMessageFactory(cluster, cacheProvider);
-            });
+            services.AddSingleton<HttpStatusMessageFactory>();
 
         }
 

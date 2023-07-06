@@ -69,7 +69,7 @@ stages:
               targetType: 'inline'
               script: |
                 echo "##vso[task.setvariable variable=aksNamespace;]staging"
-                echo "##vso[task.setvariable variable=definitionId;]485"
+                echo "##vso[task.setvariable variable=definitionId;]798"
             condition: and(succeeded(), eq(variables['environment'], 'stg'))
 
           - task: Bash@3
@@ -116,7 +116,7 @@ stages:
               script: |
                 echo "##vso[task.setvariable variable=imageName;]$(registryServerName)/$(applicationName):${{ parameters.buildId }}"
                 echo "##vso[task.setvariable variable=helmChartVersion;]${{ parameters.buildId }}"
-            condition: and(succeeded(), in(variables['environment'], 'demo', 'migration', 'prod'))
+            condition: and(succeeded(), in(variables['environment'], 'demo', 'training', 'migration', 'prod'))
 
           - bash: |
               echo $(imageName)

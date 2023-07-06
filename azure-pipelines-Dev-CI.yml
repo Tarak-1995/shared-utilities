@@ -1,11 +1,19 @@
+#################################################################################################
+#
+#
+# Shared Utilities UI CI pipeline
 # Deploy to Azure Kubernetes Service
-# Build and push image to Azure Container Registry; Deploy to Azure Kubernetes Service
-# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+# Build and push image to Azure Container Registry
+# Deploy to Azure Kubernetes Service
+# Update argocd infra repo with latest docker image tag
+#
+#
+#################################################################################################
 
 trigger:
 - $(Build.SourceBranch)
 
-name: '1.0$(Rev:.r)'
+name: $(ReleaseNumber).$(Date:MMdd).$(Rev:r)
 
 resources:
 - repo: self
@@ -14,7 +22,6 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-
   # Env vars
   buildConfiguration: 'Release'
   buildPlatform: 'Any CPU'
@@ -27,9 +34,8 @@ variables:
   project_csproj: "./PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/PrimeroEdge.SharedUtilities.Api.csproj"
   test_csproj: "./PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.UnitTests/PrimeroEdge.SharedUtilities.UnitTests.csproj"
   
-
-  # Container registry service connection established during pipeline creation
-  dockerRegistryServiceConnection: '0308b8a7-8ae6-4c18-b610-58fe54dc62c4'
+  #dockerRegistryServiceConnection: '0308b8a7-8ae6-4c18-b610-58fe54dc62c4'
+  devschoolcafeimagerepository: 'schoolcafe-dev/sharedutilities.devschoolcafe'
   imageRepository: 'sharedutilities-dev'
   projectName: 'sharedutilities'
   helmchartdev: 'sharedutilities-dev'
@@ -37,15 +43,26 @@ variables:
   dockerfilePath: '**/Dockerfile'
   tag: '$(Build.BuildId)'
   imagePullSecret: 'perseusnonprodacr206701cc-auth'
-
   helmChartPath: './PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/deployment/sharedutilities/'
-  # Agent VM image name
+  helmValuesFile: 'platform/sharedutilities/api/values.yaml'
   vmImageNameW: 'windows-latest'
   vmImageNameU: 'ubuntu-latest'
 
 stages:
+- stage: DockerVersion
+  displayName: Generate docker version
+  jobs:
+    - job: Generate
+      steps:
+        - bash: |
+            longcommithash=$(Build.SourceVersion)
+            builtOn=$(date '+%Y%m%d')
+            echo "##vso[task.setvariable variable=shorthash;isOutput=true]$(echo $builtOn-${longcommithash::9})"
+          name: CommitSHA
+
 - stage: BuildandAnalysis
   displayName: Build and Analysis
+  dependsOn: DockerVersion
   jobs:
   - job: SLNBuild
     steps:
@@ -126,8 +143,6 @@ stages:
         destination: $(Build.ArtifactStagingDirectory)
         chartName: 'sharedutilities'
 
-
-  
 - stage: Secret
   displayName: Generate secret
   dependsOn: HelmPackage
@@ -143,3 +158,49 @@ stages:
         secretType: 'generic'
         secretArguments: '--from-file=PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/appsettings.Development.json'
         secretName: 'sharedutilities-dev-secret-appsettings'
+
+- stage: DevSchoolCafeImageBuild
+  displayName:  Dev SchoolCafe Image Build $ Push
+  dependsOn: 
+  - BuildandAnalysis
+  - DockerVersion
+  jobs:
+  - job: ImageBuildDevSchoolCafe
+    variables:
+      commitSHA: $[stageDependencies.DockerVersion.Generate.outputs['CommitSHA.shorthash']]
+    steps:
+    - task: Docker@2
+      displayName: Build docker image
+      inputs:
+        command: buildAndPush
+        repository: $(devschoolcafeimagerepository)
+        dockerfile: $(dockerfilePath)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        tags: |
+          $(tag)
+          latest
+          $(commitSHA)
+          
+- stage: ArgoCDInfraRepo
+  displayName: Update ArgoCd infra repo image tag
+  dependsOn: 
+    - DockerVersion
+    - DevSchoolCafeImageBuild
+  jobs:
+    - job: UpdateImage
+      variables:
+        commitSHA: $[stageDependencies.DockerVersion.Generate.outputs['CommitSHA.shorthash']]
+      steps:
+        - bash: |
+            git config --global user.email "azuredevops@primeroedge.com"
+            git config --global user.name "azuredevops"
+            git clone https://$(DEVOPS_USER):$(DEVOPS_TOKEN)@dev.azure.com/Cybersoft-Technologies-Inc/ArgoCD/_git/perseus-devqa-infra
+            cd perseus-devqa-infra
+            git checkout Develop
+
+            dockerImageUrl="perseusnonprodacr.azurecr.io/$(devschoolcafeimageRepository):$(commitSHA)"
+            sed -i "/image/c\image: $dockerImageUrl" $(helmValuesFile)
+
+            git add .
+            git commit -m 'AzDevops Image update commit sha: $(commitSHA)'
+            git push origin Develop
