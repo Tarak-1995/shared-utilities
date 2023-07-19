@@ -160,6 +160,7 @@ stages:
         secretName: 'sharedutilities-dev-secret-appsettings'
 
 - stage: DevSchoolCafeImageBuild
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
   displayName:  Dev SchoolCafe Image Build $ Push
   dependsOn: 
   - BuildandAnalysis
@@ -180,27 +181,18 @@ stages:
           $(tag)
           latest
           $(commitSHA)
-          
-- stage: ArgoCDInfraRepo
-  displayName: Update ArgoCd infra repo image tag
-  dependsOn: 
-    - DockerVersion
-    - DevSchoolCafeImageBuild
-  jobs:
-    - job: UpdateImage
-      variables:
-        commitSHA: $[stageDependencies.DockerVersion.Generate.outputs['CommitSHA.shorthash']]
-      steps:
-        - bash: |
-            git config --global user.email "azuredevops@primeroedge.com"
-            git config --global user.name "azuredevops"
-            git clone https://$(DEVOPS_USER):$(DEVOPS_TOKEN)@dev.azure.com/Cybersoft-Technologies-Inc/ArgoCD/_git/perseus-devqa-infra
-            cd perseus-devqa-infra
-            git checkout Develop
+ 
+    - bash: |
+        git config --global user.email "azuredevops@primeroedge.com"
+        git config --global user.name "azuredevops"
+        git clone https://$(DEVOPS_USER):$(DEVOPS_TOKEN)@dev.azure.com/Cybersoft-Technologies-Inc/ArgoCD/_git/perseus-devqa-infra
+        cd perseus-devqa-infra
+        git checkout Develop
 
-            dockerImageUrl="perseusnonprodacr.azurecr.io/$(devschoolcafeimageRepository):$(commitSHA)"
-            sed -i "/image/c\image: $dockerImageUrl" $(helmValuesFile)
+        dockerImageUrl="perseusnonprodacr.azurecr.io/$(devschoolcafeimageRepository):$(commitSHA)"
+        sed -i "/image/c\image: $dockerImageUrl" $(helmValuesFile)
 
-            git add .
-            git commit -m 'AzDevops Image update commit sha: $(commitSHA)'
-            git push origin Develop
+        git add .
+        git commit -m 'AzDevops Image update commit sha: $(commitSHA)'
+        git push origin Develop
+      displayName: Update infra image tag
