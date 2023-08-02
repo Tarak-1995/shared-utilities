@@ -1,4 +1,4 @@
-{{- define "demo.env" }}
+{{- define "sales.env" }}
           - name: "ASPNETCORE_ENVIRONMENT"
             value: {{ .Values.aspnetcore }}
           - name: "AppEnv"
