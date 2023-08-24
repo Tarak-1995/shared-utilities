@@ -48,7 +48,9 @@ spec:
           {{- else if eq .Values.namespace "migration" }}
           {{- template "migration.env" . }}
           {{- else if eq .Values.namespace "staging" }}
-          {{- template "stage.env" . }}            
+          {{- template "stage.env" . }}
+          {{- else if eq .Values.namespace "sales" }}
+          {{- template "sales.env" . }}            
           {{- else if eq .Values.namespace "prod" }}
           {{- template "prod.env" . }}
           {{- else }}

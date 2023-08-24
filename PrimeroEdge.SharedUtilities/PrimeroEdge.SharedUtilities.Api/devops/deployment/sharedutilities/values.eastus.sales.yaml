@@ -1,0 +1,15 @@
+host: salessharedutilitiesservice.schoolcafe.com
+namespace: sales
+secretname: sharedutilities-sales-secret-appsettings
+aspnetcore: Sales
+secretSPName: perseus-secret-sp-sales
+secretProviderClass: aks-secret-nf-sales
+#sharedutilitiesrepo: PerseusNonProdACR.azurecr.io/sharedutilities_qa:latest
+replicas: 1
+sslcert: schoolcafesslcert
+limitcpu: 500m
+limitmemory: 800Mi
+requestscpu: 400m
+requestsmemory: 600Mi
+autoscaling:
+  enabled: false
