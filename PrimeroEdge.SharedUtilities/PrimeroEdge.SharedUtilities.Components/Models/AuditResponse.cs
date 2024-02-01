@@ -82,5 +82,15 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// </summary>
         public DateTime CreatedDate { get; set; }
 
+        /// <summary>
+        /// Get or set AuditId.
+        /// </summary>
+        public Guid AuditId {  get; set; }
+
+        /// <summary>
+        /// Get or set ParentAuditId.
+        /// </summary>
+        public Guid? ParentAuditId { get; set; }
+
     }
 }

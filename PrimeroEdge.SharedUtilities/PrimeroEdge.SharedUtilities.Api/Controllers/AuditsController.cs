@@ -104,13 +104,13 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
         /// <param name="updatedOn">updatedOn.</param>
         /// <returns>List of audit data results.</returns>
         [HttpGet("ReadSearch")]
-        public async Task<List<AuditResponse>> GetAuditDataFieldSearchAsync(string moduleId, string entityTypeId, string entityId, int pageSize, int pageNumber, 
-	        string fieldName = null, string updatedBy = null, DateTime? updatedOn = null)
+        public async Task<List<AuditResponse>> GetAuditDataFieldSearchAsync(string moduleId, string entityTypeId, string entityId, int pageSize, int pageNumber,
+            string fieldName = null, string updatedBy = null, DateTime? updatedOn = null)
         {
-	        CheckValidations(moduleId, entityTypeId);
-	        var data = await _auditManager.GetAuditDataSearchAsync(moduleId, entityTypeId, entityId, pageSize, pageNumber, _authContext.RegionId, fieldName, updatedBy, updatedOn);
-	        HttpContext.Items[APIConstants.RESPONSE_PAGINATION] = _auditManager.GetPaginationEnvelope();
-	        return data;
+            CheckValidations(moduleId, entityTypeId);
+            var data = await _auditManager.GetAuditDataSearchAsync(moduleId, entityTypeId, entityId, pageSize, pageNumber, _authContext.RegionId, fieldName, updatedBy, updatedOn);
+            HttpContext.Items[APIConstants.RESPONSE_PAGINATION] = _auditManager.GetPaginationEnvelope();
+            return data;
         }
 
         /// <summary>
@@ -138,7 +138,9 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
                     Comment = item.Comment,
                     CreatedDate = item.CreatedDate,
                     OldValues = JsonConvert.DeserializeObject<List<string>>(item.OldValue),
-                    NewValues = JsonConvert.DeserializeObject<List<string>>(item.NewValue)
+                    NewValues = JsonConvert.DeserializeObject<List<string>>(item.NewValue),
+                    AuditId = item.AuditId,
+                    ParentAuditId = item.ParentAuditId
                 });
             }
 
