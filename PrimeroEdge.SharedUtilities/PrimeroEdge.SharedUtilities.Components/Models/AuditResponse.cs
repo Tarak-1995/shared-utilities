@@ -46,6 +46,9 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// </summary>
         public string UserName { get; set; }
 
+        public Guid AuditId { get; set; }
+        public Guid? ParentAuditId { get; set; }
+
     }
 
 

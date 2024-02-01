@@ -69,6 +69,8 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// Get or set Comment
         /// </summary>
         public string Comment { get; set; }
+
+        public Guid? ParentAuditId { get; set; }
     }
 
     

@@ -39,6 +39,12 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// Get or set EntityId
         /// </summary>
         public string EntityId { get; set; }
+
+        /// <summary>
+        /// Get or set ChildAuditRequest.
+        /// </summary>
+        public List<AuditRequest> childAuditRequest { get; set; }
+
     }
 
 
@@ -69,6 +75,11 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// Get or set EntityId
         /// </summary>
         public string EntityId { get; set; }
+
+        /// <summary>
+        /// Get or set ChildAuditRequest.
+        /// </summary>
+        public List<AuditGroupRequest> childAuditRequest { get; set; }
 
     }
 }

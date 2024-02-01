@@ -68,6 +68,8 @@ namespace PrimeroEdge.SharedUtilities.Components
 				        NewValue = item.NewValue,
 				        Comment = item.Comment,
 				        UserName = users.ContainsKey(item.CreatedBy) ? users[item.CreatedBy] : null,
+                        AuditId=item.AuditId,
+                        ParentAuditId=item.ParentAuditId,
 			        };
 			        result.Add(row);
 		        }
@@ -160,16 +162,16 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// <param name="userId"></param>
         /// <param name="regionId"></param>
         /// <returns></returns>
-        public async Task SaveAuditDataAsync(List<AuditRequest> data, string moduleId, string entityTypeId, string entityId, int userId, int regionId)
+        public async Task SaveAuditDataAsync(List<AuditRequest> data, string moduleId, string entityTypeId, string entityId, int userId, int regionId, Guid? parentAuditId=null)
         {
             var request = new List<Audit>();
             moduleId = moduleId.Trim().ToUpper();
             entityId = entityId?.Trim().ToUpper();
             entityTypeId = entityTypeId.Trim().ToUpper();
 
-            data.ForEach(x =>
+            foreach (var x in data)
             {
-                request.Add(new Audit()
+                var auditEntry = new Audit()
                 {
                     AuditId = Guid.NewGuid(),
                     CreatedBy = userId,
@@ -181,10 +183,18 @@ namespace PrimeroEdge.SharedUtilities.Components
                     OldValue = x.OldValue,
                     NewValue = x.NewValue,
                     Field = x.Field,
-                    Comment = x.Comment
-                });
-            });
+                    Comment = x.Comment,
+                    ParentAuditId = parentAuditId
+                };
 
+                request.Add(auditEntry);
+
+                // Recursive call for nested data
+                if (x.childAuditRequest != null && x.childAuditRequest.Any())
+                {
+                    SaveAuditDataAsync(x.childAuditRequest, moduleId, entityTypeId, entityId, userId, regionId, auditEntry.AuditId);
+                }
+            }
             await this._auditRepository.SaveAuditDataAsync(request);
         }
 
@@ -198,7 +208,7 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// <param name="userId"></param>
         /// <param name="regionId"></param>
         /// <returns></returns>
-        public async Task SaveAuditDataAsync(List<AuditGroupRequest> data, string moduleId, string entityTypeId, string entityId, int userId, int regionId)
+        public async Task SaveAuditDataAsync(List<AuditGroupRequest> data, string moduleId, string entityTypeId, string entityId, int userId, int regionId, Guid? parentAuditId=null)
         {
             var request = new List<Audit>();
             moduleId = moduleId.Trim().ToUpper();
@@ -207,9 +217,10 @@ namespace PrimeroEdge.SharedUtilities.Components
 
             data.ForEach(x =>
             {
+                var newAuditId = Guid.NewGuid();
                 request.Add(new Audit()
                 {
-                    AuditId = Guid.NewGuid(),
+                    AuditId = newAuditId,
                     CreatedBy = userId,
                     CreatedDate = DateTime.UtcNow,
                     ModuleId = moduleId,
@@ -220,10 +231,17 @@ namespace PrimeroEdge.SharedUtilities.Components
                     NewValue = JsonConvert.SerializeObject(x.NewValues ?? new List<string>()),
                     Comment = x.Comment
                 });
+                // Recursive call for nested data
+                if (x.childAuditRequest != null && x.childAuditRequest.Any())
+                {
+                    SaveAuditDataAsync(x.childAuditRequest, moduleId, entityTypeId, entityId, userId, regionId, newAuditId);
+                }
+
             });
 
             await this._auditRepository.SaveAuditDataAsync(request);
 
-        }
+        }  
+
     }
 }

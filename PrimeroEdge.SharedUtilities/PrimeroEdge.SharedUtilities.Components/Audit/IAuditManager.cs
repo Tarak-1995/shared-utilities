@@ -66,7 +66,7 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// <param name="userId"></param>
         /// <param name="regionId"></param>
         /// <returns></returns>
-        Task SaveAuditDataAsync(List<AuditRequest> data, string moduleId, string entityTypeId, string entityId, int userId, int regionId);
+        Task SaveAuditDataAsync(List<AuditRequest> data, string moduleId, string entityTypeId, string entityId, int userId, int regionId, Guid? parentAuditId=null);
 
       /// <summary>
       /// Save audit data
@@ -78,7 +78,7 @@ namespace PrimeroEdge.SharedUtilities.Components
       /// <param name="userId"></param>
       /// <param name="regionId"></param>
       /// <returns></returns>
-        Task SaveAuditDataAsync(List<AuditGroupRequest> data, string moduleId, string entityTypeId, string entityId, int userId, int regionId);
+        Task SaveAuditDataAsync(List<AuditGroupRequest> data, string moduleId, string entityTypeId, string entityId, int userId, int regionId, Guid? parentAuditId = null);
 
     }
 }
