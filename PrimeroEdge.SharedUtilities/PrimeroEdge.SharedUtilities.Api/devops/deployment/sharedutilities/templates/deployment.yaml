@@ -53,6 +53,8 @@ spec:
           {{- template "sales.env" . }}            
           {{- else if eq .Values.namespace "prod" }}
           {{- template "prod.env" . }}
+          {{- else if eq .Values.namespace "qa" }}
+          
           {{- else }}
           - name: "ASPNETCORE_ENVIRONMENT"
             value: {{ .Values.aspnetcore }}
