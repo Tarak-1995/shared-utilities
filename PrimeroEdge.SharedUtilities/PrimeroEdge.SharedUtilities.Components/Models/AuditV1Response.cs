@@ -1,20 +1,21 @@
-﻿/*
- ***********************************************************************
- * Copyright © 2020 Cybersoft Technologies, Inc. All rights reserved.
- * Unauthorized copying of this file is strictly prohibited.
- ***********************************************************************
- */
-
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace PrimeroEdge.SharedUtilities.Components
 {
     /// <summary>
     /// AuditResponse
     /// </summary>
-    public class AuditRequest
+    public class AuditV1Response
     {
+        /// <summary>
+        /// Get or set CreatedDate
+        /// </summary>
+        public DateTime CreatedDate { get; set; }
+
         /// <summary>
         /// Get or set Field
         /// </summary>
@@ -36,24 +37,25 @@ namespace PrimeroEdge.SharedUtilities.Components
         public string Comment { get; set; }
 
         /// <summary>
-        /// Get or set EntityId
+        /// Get or set userName
         /// </summary>
-        public string EntityId { get; set; }
+        public string UserName { get; set; }
 
-        /// <summary>
-        /// Get or set ChildAuditRequest.
-        /// </summary>
-        public List<AuditRequest> childAuditRequest { get; set; }
+        public Guid AuditId { get; set; }
+        public Guid? ParentAuditId { get; set; }
+
+        public List<AuditV1Response> Children { get; set; }
 
     }
 
 
-    public class AuditGroupRequest
+    public class AuditV1GroupResponse
     {
+
         /// <summary>
-        /// Get or set Field
+        /// Get or set UserId
         /// </summary>
-        public string Field { get; set; }
+        public string UserName { get; set; }
 
         /// <summary>
         /// Get or set OldValue
@@ -66,20 +68,29 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// </summary>
         public List<string> NewValues { get; set; }
 
+
         /// <summary>
         /// Get or set Comment
         /// </summary>
         public string Comment { get; set; }
 
         /// <summary>
-        /// Get or set EntityId
+        /// Get or set CreatedDate
         /// </summary>
-        public string EntityId { get; set; }
+        public DateTime CreatedDate { get; set; }
 
         /// <summary>
-        /// Get or set ChildAuditRequest.
+        /// Get or set AuditId.
         /// </summary>
-        public List<AuditGroupRequest> childAuditRequest { get; set; }
+        public Guid AuditId { get; set; }
+
+        /// <summary>
+        /// Get or set ParentAuditId.
+        /// </summary>
+        public Guid? ParentAuditId { get; set; }
+
+        public List<AuditV1GroupResponse> Children { get; set; }
+
 
     }
 }

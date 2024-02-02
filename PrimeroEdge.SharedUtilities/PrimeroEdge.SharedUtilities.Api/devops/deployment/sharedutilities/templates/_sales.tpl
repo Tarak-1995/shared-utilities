@@ -1,4 +1,4 @@
-{{- define "migration.env" }}
+{{- define "sales.env" }}
           - name: "ASPNETCORE_ENVIRONMENT"
             value: {{ .Values.aspnetcore }}
           - name: "AppEnv"
@@ -53,6 +53,16 @@
               secretKeyRef:
                 name: auditcouchbasesettingspassword
                 key: auditcouchbasesettingspassword
+          - name: "RedisClientConfiguration__Server"
+            valueFrom:
+              secretKeyRef:
+                name: redisclientconfigurationserver
+                key: redisclientconfigurationserver
+          - name: "RedisClientConfiguration__Password"
+            valueFrom:
+              secretKeyRef:
+                name: redisclientconfigurationpassword
+                key: redisclientconfigurationpassword
           - name: "AzureBlobStorageCredential__Key"
             valueFrom:
               secretKeyRef:
