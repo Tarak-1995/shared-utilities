@@ -63,4 +63,14 @@
               secretKeyRef:
                 name: redisclientconfigurationpassword
                 key: redisclientconfigurationpassword
+          - name: "AzureBlobStorageCredential__Key"
+            valueFrom:
+              secretKeyRef:
+                name: azureblobstoragecredentialkey
+                key: azureblobstoragecredentialkey
+          - name: "AzureBlobStorageCredential__ConnectionString"
+            valueFrom:
+              secretKeyRef:
+                name: azureblobstoragecredentialconnectionstring
+                key: azureblobstoragecredentialconnectionstring 
 {{- end }}
