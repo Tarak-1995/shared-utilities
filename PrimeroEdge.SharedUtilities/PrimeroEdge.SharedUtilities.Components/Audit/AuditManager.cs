@@ -15,6 +15,8 @@ using Newtonsoft.Json;
 namespace PrimeroEdge.SharedUtilities.Components
 {
     using PrimeroEdge.SharedUtilities.Components.Common;
+    using PrimeroEdge.SharedUtilities.Components.Models;
+    using TableStorage.Abstractions.Store;
 
     /// <summary>
     /// AuditRepository
@@ -26,14 +28,16 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// auditRepository
         /// </summary>
         private readonly IAuditRepository _auditRepository;
+        private readonly ITableStore<AuditLogEntity> _azureTableService;
 
         /// <summary>
         /// auditRepository
         /// </summary>
         /// <param name="auditRepository"></param>
-        public AuditManager(IAuditRepository auditRepository)
+        public AuditManager(IAuditRepository auditRepository, ITableStore<AuditLogEntity> azureTableService)
         {
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
+            _azureTableService = azureTableService ?? throw new ArgumentNullException(nameof(azureTableService));
         }
 
 
@@ -68,6 +72,8 @@ namespace PrimeroEdge.SharedUtilities.Components
 				        NewValue = item.NewValue,
 				        Comment = item.Comment,
 				        UserName = users.ContainsKey(item.CreatedBy) ? users[item.CreatedBy] : null,
+                        AuditId=item.AuditId,
+                        ParentAuditId=item.ParentAuditId,
 			        };
 			        result.Add(row);
 		        }
@@ -135,6 +141,43 @@ namespace PrimeroEdge.SharedUtilities.Components
 			return result;
         }
 
+
+        /// <summary>
+        /// Get audit data
+        /// </summary>
+        /// <param name="moduleId"></param>
+        /// <param name="entityTypeId"></param>
+        /// <param name="entityId"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="regionId"></param>
+        /// <returns></returns>
+        public async Task<List<AuditV1Response>> GetAuditDataV1Async(string moduleId, string entityTypeId, string entityId, int pageSize, int pageNumber, int regionId)
+        {
+            var result = await GetAuditDataAsync(moduleId, entityTypeId, entityId, pageSize, pageNumber, regionId);
+            return result.ToAuditReponseTree();
+        }
+
+        /// <summary>
+        /// Gets audit data based on matching field search.
+        /// </summary>
+        /// <param name="moduleId">moduleId.</param>
+        /// <param name="entityTypeId">entityTypeId.</param>
+        /// <param name="entityId">entityId.</param>
+        /// <param name="pageSize">pageSize.</param>
+        /// <param name="pageNumber">pageNumber.</param>
+        /// <param name="regionId">regionId.</param>
+        /// <param name="fieldName">fieldName.</param>
+        /// <param name="updatedBy">updatedBy.</param>
+        /// <param name="updatedOn">updatedOn.</param>
+        /// <returns></returns>
+        public async Task<List<AuditV1Response>> GetAuditDataSearchV1Async(string moduleId, string entityTypeId, string entityId, int pageSize,
+            int pageNumber, int regionId, string fieldName, string updatedBy, DateTime? updatedOn)
+        {
+            var result = await GetAuditDataSearchAsync(moduleId, entityTypeId, entityId, pageSize, pageNumber, regionId, fieldName, updatedBy, updatedOn);
+            return result.ToAuditReponseTree();
+        }
+
         /// <summary>
         /// Save audit data
         /// </summary>
@@ -162,30 +205,9 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// <returns></returns>
         public async Task SaveAuditDataAsync(List<AuditRequest> data, string moduleId, string entityTypeId, string entityId, int userId, int regionId)
         {
-            var request = new List<Audit>();
-            moduleId = moduleId.Trim().ToUpper();
-            entityId = entityId?.Trim().ToUpper();
-            entityTypeId = entityTypeId.Trim().ToUpper();
-
-            data.ForEach(x =>
-            {
-                request.Add(new Audit()
-                {
-                    AuditId = Guid.NewGuid(),
-                    CreatedBy = userId,
-                    CreatedDate = DateTime.UtcNow,
-                    ModuleId = moduleId,
-                    EntityTypeId = entityTypeId,
-                    EntityId = !string.IsNullOrEmpty(x.EntityId) ? x.EntityId.Trim().ToUpper() : entityId,
-                    RegionId = regionId,
-                    OldValue = x.OldValue,
-                    NewValue = x.NewValue,
-                    Field = x.Field,
-                    Comment = x.Comment
-                });
-            });
-
+            var request = GetSummarizedAuditRequest(data, moduleId, entityTypeId, entityId, userId, regionId);
             await this._auditRepository.SaveAuditDataAsync(request);
+            await _azureTableService.InsertAsync(request.ToAuditTableStorage());
         }
 
         /// <summary>
@@ -200,30 +222,85 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// <returns></returns>
         public async Task SaveAuditDataAsync(List<AuditGroupRequest> data, string moduleId, string entityTypeId, string entityId, int userId, int regionId)
         {
+            var request = GetSummarizedAuditGroupRequest(data, moduleId, entityTypeId, entityId, userId, regionId);
+            await this._auditRepository.SaveAuditDataAsync(request);
+            await _azureTableService.InsertAsync(request.ToAuditTableStorage());
+        }
+        
+
+        private List<Audit> GetSummarizedAuditRequest(List<AuditRequest> data, string moduleId, string entityTypeId, string entityId, int userId, int regionId, Guid? parentAuditId = null)
+        {
             var request = new List<Audit>();
             moduleId = moduleId.Trim().ToUpper();
             entityId = entityId?.Trim().ToUpper();
             entityTypeId = entityTypeId.Trim().ToUpper();
 
-            data.ForEach(x =>
+            foreach (var x in data)
             {
-                request.Add(new Audit()
+                var auditEntry = new Audit()
                 {
                     AuditId = Guid.NewGuid(),
                     CreatedBy = userId,
                     CreatedDate = DateTime.UtcNow,
                     ModuleId = moduleId,
                     EntityTypeId = entityTypeId,
-                    EntityId = !string.IsNullOrEmpty(x.EntityId)? x.EntityId.Trim().ToUpper() : entityId,
+                    EntityId = !string.IsNullOrEmpty(x.EntityId) ? x.EntityId.Trim().ToUpper() : entityId,
+                    RegionId = regionId,
+                    OldValue = x.OldValue,
+                    NewValue = x.NewValue,
+                    Field = x.Field,
+                    Comment = x.Comment,
+                    ParentAuditId = parentAuditId
+                };
+
+                request.Add(auditEntry);
+
+                // Recursive call for nested data
+                if (x.childAuditRequest != null && x.childAuditRequest.Any())
+                {
+                    request.AddRange(GetSummarizedAuditRequest(x.childAuditRequest, moduleId, entityTypeId, entityId, userId, regionId, auditEntry.AuditId));
+                }
+            }
+
+            return request;
+        }
+
+        private List<Audit> GetSummarizedAuditGroupRequest(List<AuditGroupRequest> data, string moduleId, string entityTypeId, string entityId, int userId, int regionId, Guid? parentAuditId = null)
+        {
+            var request = new List<Audit>();
+            moduleId = moduleId.Trim().ToUpper();
+            entityId = entityId?.Trim().ToUpper();
+            entityTypeId = entityTypeId.Trim().ToUpper();
+
+            foreach (var x in data)
+            {
+                var auditEntry = new Audit()
+                {
+                    AuditId = Guid.NewGuid(),
+                    CreatedBy = userId,
+                    CreatedDate = DateTime.UtcNow,
+                    ModuleId = moduleId,
+                    EntityTypeId = entityTypeId,
+                    EntityId = !string.IsNullOrEmpty(x.EntityId) ? x.EntityId.Trim().ToUpper() : entityId,
                     RegionId = regionId,
                     OldValue = JsonConvert.SerializeObject(x.OldValues ?? new List<string>()),
                     NewValue = JsonConvert.SerializeObject(x.NewValues ?? new List<string>()),
-                    Comment = x.Comment
-                });
-            });
+                    Field = x.Field,
+                    Comment = x.Comment,
+                    ParentAuditId = parentAuditId
+                };
 
-            await this._auditRepository.SaveAuditDataAsync(request);
+                request.Add(auditEntry);
 
+                // Recursive call for nested data
+                if (x.childAuditRequest != null && x.childAuditRequest.Any())
+                {
+                    request.AddRange(GetSummarizedAuditGroupRequest(x.childAuditRequest, moduleId, entityTypeId, entityId, userId, regionId, auditEntry.AuditId));
+                }
+            }
+
+            return request;
         }
+
     }
 }

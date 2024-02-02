@@ -46,6 +46,9 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// </summary>
         public string UserName { get; set; }
 
+        public Guid AuditId { get; set; }
+        public Guid? ParentAuditId { get; set; }
+
     }
 
 
@@ -78,6 +81,16 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// Get or set CreatedDate
         /// </summary>
         public DateTime CreatedDate { get; set; }
+
+        /// <summary>
+        /// Get or set AuditId.
+        /// </summary>
+        public Guid AuditId {  get; set; }
+
+        /// <summary>
+        /// Get or set ParentAuditId.
+        /// </summary>
+        public Guid? ParentAuditId { get; set; }
 
     }
 }

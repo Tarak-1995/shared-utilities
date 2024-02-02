@@ -6,6 +6,7 @@
  */
 
 using System;
+using System.Configuration;
 using System.IO;
 using Cybersoft.Platform.Authorization.HeaderUtilities.Extensions;
 using Cybersoft.Platform.Authorization.HeaderUtilities.Factories;
@@ -16,6 +17,8 @@ using Cybersoft.Platform.Cache.Extensions;
 using Cybersoft.Platform.Couchbase.Client;
 using Cybersoft.Platform.Couchbase.Extensions;
 using Cybersoft.Platform.Couchbase.Settings;
+using Cybersoft.Platform.DocumentStorage.AzureTable;
+using Cybersoft.Platform.DocumentStorage.Settings;
 using Cybersoft.Platform.Utilities.Factories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -24,7 +27,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using PrimeroEdge.SharedUtilities.Components.Models;
 using Swashbuckle.AspNetCore.SwaggerUI;
+using TableStorage.Abstractions.Store;
 
 namespace PrimeroEdge.SharedUtilities.Api
 {
@@ -69,6 +74,12 @@ namespace PrimeroEdge.SharedUtilities.Api
             services.AddCouchbase(Configuration);
             services.AddRedisCache(Configuration);
             services.AddSingleton<HttpStatusMessageFactory>();
+            services.AddTransient<ITableStore<AuditLogEntity>>(provider =>
+            {
+                var connString = Configuration.GetSection("AzureBlobStorageCredential").Get<AzureBlobStorageCredential>().ConnectionString;
+                return new AzureTableService("AuditLogs", connString).GetTableStore<AuditLogEntity>();
+            });
+
 
         }
 

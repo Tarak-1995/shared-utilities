@@ -1,34 +1,21 @@
-﻿/*
- ***********************************************************************
- * Copyright © 2020 Cybersoft Technologies, Inc. All rights reserved.
- * Unauthorized copying of this file is strictly prohibited.
- ***********************************************************************
- */
-using Cybersoft.Platform.Couchbase.Entities;
+﻿using Azure;
+using Azure.Data.Tables;
 using System;
-using System.Collections.Generic;
 
-namespace PrimeroEdge.SharedUtilities.Components
+
+namespace PrimeroEdge.SharedUtilities.Components.Models
 {
-    /// <summary>
-    /// Audit
-    /// </summary>
-    public class Audit : BaseEntity
+    public class AuditLogEntity : ITableEntity
     {
-        /// <summary>
-        /// Gets key
-        /// </summary>
-        public override string Id => $"{this.Type}_{this.AuditId.ToString().ToLower()}";
-
+        public AuditLogEntity()
+        {
+            this.PartitionKey = this.ModuleId.ToString();
+            this.RowKey = this.AuditId.ToString();
+        }
         /// <summary>
         /// Gets or sets verificationSampleId
         /// </summary>
         public Guid AuditId { get; set; }
-
-        /// <summary>
-        /// Gets totalAppCount
-        /// </summary>
-        public override string Type => nameof(Audit);
 
         /// <summary>
         /// Get or set RegionId
@@ -71,9 +58,11 @@ namespace PrimeroEdge.SharedUtilities.Components
         public string Comment { get; set; }
 
         public Guid? ParentAuditId { get; set; }
+
+        public string PartitionKey { get; set; }
+
+        public string RowKey { get; set; }
+        public DateTimeOffset? Timestamp { get; set; }
+        public ETag ETag { get; set; }
     }
-
-    
-
-   
 }
