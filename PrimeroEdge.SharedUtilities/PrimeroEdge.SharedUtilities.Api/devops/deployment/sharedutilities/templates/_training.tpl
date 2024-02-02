@@ -52,7 +52,7 @@
             valueFrom:
               secretKeyRef:
                 name: auditcouchbasesettingspassword
-                key: 
+                key: auditcouchbasesettingspassword
           - name: "AzureBlobStorageCredential__Key"
             valueFrom:
               secretKeyRef:
