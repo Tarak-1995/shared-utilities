@@ -67,5 +67,15 @@
             valueFrom:
               secretKeyRef:
                 name: couchbasesettingspassword
-                key: couchbasesettingspassword                
+                key: couchbasesettingspassword
+          - name: "AzureBlobStorageCredential__Key"
+            valueFrom:
+              secretKeyRef:
+                name: azureblobstoragecredentialkey
+                key: azureblobstoragecredentialkey
+          - name: "AzureBlobStorageCredential__ConnectionString"
+            valueFrom:
+              secretKeyRef:
+                name: azureblobstoragecredentialconnectionstring
+                key: azureblobstoragecredentialconnectionstring             
 {{- end }}
