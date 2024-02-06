@@ -64,7 +64,9 @@ namespace PrimeroEdge.SharedUtilities.Components.Common
                     Field = audit.Field,
                     NewValue = audit.NewValue,
                     OldValue = audit.OldValue,
-                    Children = ToAuditReponseTree(flatList, audit.AuditId)
+                    Children = ToAuditReponseTree(flatList, audit.AuditId),
+                    UserName= audit.UserName,
+                    CreatedDate = audit.CreatedDate,                    
                 }).ToList();
         }
 
@@ -79,7 +81,9 @@ namespace PrimeroEdge.SharedUtilities.Components.Common
                     Comment = audit.Comment,
                     NewValues = audit.NewValues,
                     OldValues = audit.OldValues,
-                    Children = ToAuditReponseTree(flatList, audit.AuditId)
+                    Children = ToAuditReponseTree(flatList, audit.AuditId),
+                    UserName= audit.UserName,
+                    CreatedDate = audit.CreatedDate,
                 }).ToList();
         }
 
