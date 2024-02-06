@@ -24,6 +24,8 @@ namespace PrimeroEdge.SharedUtilities.Components.Common
                 NewValue = audit.NewValue,
                 OldValue = audit.OldValue,
                 RegionId = audit.RegionId,
+                PartitionKey = audit.ModuleId.ToString(),
+                RowKey = audit.AuditId.ToString(),
             };
         }
         public static List<AuditLogEntity> ToAuditTableStorage(this List<Audit> auditEntries)
@@ -43,6 +45,8 @@ namespace PrimeroEdge.SharedUtilities.Components.Common
                     NewValue = audit.NewValue,
                     OldValue = audit.OldValue,
                     RegionId = audit.RegionId,
+                    PartitionKey = audit.ModuleId.ToString(),
+                    RowKey = audit.AuditId.ToString(),
                 });
             }
             return auditLogEntityList;
