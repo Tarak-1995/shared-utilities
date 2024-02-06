@@ -8,9 +8,7 @@ namespace PrimeroEdge.SharedUtilities.Components.Models
     public class AuditLogEntity : ITableEntity
     {
         public AuditLogEntity()
-        {
-            this.PartitionKey = this.ModuleId.ToString();
-            this.RowKey = this.AuditId.ToString();
+        {            
         }
         /// <summary>
         /// Gets or sets verificationSampleId
