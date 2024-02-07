@@ -29,7 +29,7 @@ variables:
   test_csproj: "./PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.UnitTests/PrimeroEdge.SharedUtilities.UnitTests.csproj"
   
   # Container registry service connection established during pipeline creation
-  dockerRegistryServiceConnection: '080de9e3-d7ce-498e-947e-3a9429ac3931'
+  dockerRegistryServiceConnection: 'PerseusNonProdACR'
   imageRepository: 'sharedutilities_qa'
   stgimageRepository: 'sharedutilities_stg'
   migimageRepository: 'sharedutilities_mig'
