@@ -36,6 +36,7 @@ variables:
   migimageRepository: 'sharedutilities_mig'
   demoimageRepository: 'sharedutilities_demo'
   containerRegistry: 'perseusnonprodacr.azurecr.io'
+  tag: '$(Build.BuildNumber)'
   projectName: 'sharedutilities'
   dockerfilePath: '**/Dockerfile'
   imagePullSecret: 'perseusnonprodacr10848ea9-auth'
