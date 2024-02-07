@@ -30,7 +30,7 @@ variables:
   
   # Container registry service connection established during pipeline creation
   #dockerRegistryServiceConnection: 'PerseusNonProdACR'
-  devschoolcafeimagerepository: 'schoolcafe-qa/sharedutilities.qaschoolcafe'
+  qaschoolcafeimagerepository: 'schoolcafe-qa/sharedutilities.qaschoolcafe'
   imageRepository: 'sharedutilities_qa'
   stgimageRepository: 'sharedutilities_stg'
   migimageRepository: 'sharedutilities_mig'
