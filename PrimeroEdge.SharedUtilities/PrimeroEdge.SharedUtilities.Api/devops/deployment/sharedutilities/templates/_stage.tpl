@@ -8,16 +8,36 @@
               secretKeyRef:
                 name: servicesettingssourcesettingsconnectionstring
                 key: servicesettingssourcesettingsconnectionstring
+          - name: "RedisClientConfiguration__ConnectionString"
+            valueFrom:
+              secretKeyRef:
+                name: redisclientconfigurationconnectionstring
+                key: redisclientconfigurationconnectionstring
+          - name: "ConnectionStrings__ADMINISTRATION"
+            valueFrom:
+              secretKeyRef:
+                name: connectionstringsadministration
+                key: connectionstringsadministration      
           - name: "LogSettings__LogProvider__LogConfiguration"
             valueFrom:
               secretKeyRef:
                 name: logsettingslogproviderlogconfiguration
                 key: logsettingslogproviderlogconfiguration
-          - name: "ConnectionStrings__ADMINISTRATION"
+          - name: "CouchbaseSettings__Host"
             valueFrom:
               secretKeyRef:
-                name: connectionstringsadministration
-                key: connectionstringsadministration                
+                name: couchbasesettingshost 
+                key: couchbasesettingshost
+          - name: "CouchbaseSettings__UserName"
+            valueFrom:
+              secretKeyRef:
+                name: couchbasesettingsusername
+                key: couchbasesettingsusername
+          - name: "CouchbaseSettings__Password"
+            valueFrom:
+              secretKeyRef:
+                name: couchbasesettingspassword
+                key: couchbasesettingspassword      
           - name: "AuditCouchbaseSettings__Host"
             valueFrom:
               secretKeyRef:
@@ -27,7 +47,7 @@
             valueFrom:
               secretKeyRef:
                 name: auditcouchbasesettingsusername
-                key: auditcouchbasesettingsusername
+                key: auditcouchbasesettingsusername                
           - name: "AuditCouchbaseSettings__Password"
             valueFrom:
               secretKeyRef:
@@ -47,5 +67,15 @@
             valueFrom:
               secretKeyRef:
                 name: couchbasesettingspassword
-                key: couchbasesettingspassword                
+                key: couchbasesettingspassword
+          - name: "AzureBlobStorageCredential__Key"
+            valueFrom:
+              secretKeyRef:
+                name: azureblobstoragecredentialkey
+                key: azureblobstoragecredentialkey
+          - name: "AzureBlobStorageCredential__ConnectionString"
+            valueFrom:
+              secretKeyRef:
+                name: azureblobstoragecredentialconnectionstring
+                key: azureblobstoragecredentialconnectionstring             
 {{- end }}

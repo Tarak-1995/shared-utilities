@@ -88,6 +88,8 @@ namespace PrimeroEdge.SharedUtilities.Components
             }
         }
 
+        
+
         /// <summary>
         /// Get audit data
         /// </summary>
@@ -129,6 +131,7 @@ namespace PrimeroEdge.SharedUtilities.Components
             return Tuple.Create(pageData, count);
 
         }
+
 
         /// <summary>
         /// Gets audit data based on matching field search.

@@ -6,6 +6,7 @@
  */
 
 using System;
+using System.Configuration;
 using System.IO;
 using Cybersoft.Platform.Authorization.HeaderUtilities.Extensions;
 using Cybersoft.Platform.Authorization.HeaderUtilities.Factories;
@@ -16,6 +17,8 @@ using Cybersoft.Platform.Cache.Extensions;
 using Cybersoft.Platform.Couchbase.Client;
 using Cybersoft.Platform.Couchbase.Extensions;
 using Cybersoft.Platform.Couchbase.Settings;
+using Cybersoft.Platform.DocumentStorage.AzureTable;
+using Cybersoft.Platform.DocumentStorage.Settings;
 using Cybersoft.Platform.Utilities.Factories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -24,7 +27,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using PrimeroEdge.SharedUtilities.Components.Models;
 using Swashbuckle.AspNetCore.SwaggerUI;
+using TableStorage.Abstractions.Store;
 
 namespace PrimeroEdge.SharedUtilities.Api
 {
@@ -58,7 +63,7 @@ namespace PrimeroEdge.SharedUtilities.Api
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Shared Utilities", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Shared Utilities", Version = "v6" });
                 var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.XML";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 //c.IncludeXmlComments(xmlPath);
@@ -68,13 +73,13 @@ namespace PrimeroEdge.SharedUtilities.Api
 
             services.AddCouchbase(Configuration);
             services.AddRedisCache(Configuration);
-            services.AddSingleton<HttpStatusMessageFactory>(x =>
+            services.AddSingleton<HttpStatusMessageFactory>();
+            services.AddTransient<ITableStore<AuditLogEntity>>(provider =>
             {
-                var cacheProvider = x.GetService<ICacheProvider>();
-                var options = Options.Create(this.Configuration.GetSection("CouchbaseSettings").Get<CouchbaseSettings>());
-                var cluster = CouchbaseClusterFactory.Build(options).Result;
-                return new HttpStatusMessageFactory(cluster, cacheProvider);
+                var connString = Configuration.GetSection("AzureBlobStorageCredential").Get<AzureBlobStorageCredential>().ConnectionString;
+                return new AzureTableService("AuditLogs", connString).GetTableStore<AuditLogEntity>();
             });
+
 
         }
 
