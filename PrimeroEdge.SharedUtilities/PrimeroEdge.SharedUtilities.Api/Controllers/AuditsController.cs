@@ -17,6 +17,7 @@ using Cybersoft.Platform.Authorization.HeaderUtilities.Models;
 using Cybersoft.Platform.Authorization.HeaderUtilities.Factories;
 using Cybersoft.Platform.Utilities.Exceptions;
 using Newtonsoft.Json;
+using PrimeroEdge.SharedUtilities.Components.Common;
 
 namespace PrimeroEdge.SharedUtilities.Api.Controllers
 {
@@ -92,6 +93,24 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
         }
 
         /// <summary>
+        /// Get audit data
+        /// </summary>
+        /// <param name="moduleId"></param>
+        /// <param name="entityTypeId"></param>
+        /// <param name="entityId"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="pageNumber"></param>
+        /// <returns></returns>
+        [HttpGet("ReadV1")]
+        public async Task<List<AuditV1Response>> GetAuditDataV1Async(string moduleId, string entityTypeId, string entityId, int pageSize, int pageNumber)
+        {
+            CheckValidations(moduleId, entityTypeId);
+            var data = await _auditManager.GetAuditDataV1Async(moduleId, entityTypeId, entityId, pageSize, pageNumber, _authContext.RegionId);
+            HttpContext.Items[APIConstants.RESPONSE_PAGINATION] = _auditManager.GetPaginationEnvelope();
+            return data;
+        }
+
+        /// <summary>
         ///     Gets all audit data results if no optional filters given or matching data based on given filters.
         /// </summary>
         /// <param name="moduleId">moduleId.</param>
@@ -104,13 +123,34 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
         /// <param name="updatedOn">updatedOn.</param>
         /// <returns>List of audit data results.</returns>
         [HttpGet("ReadSearch")]
-        public async Task<List<AuditResponse>> GetAuditDataFieldSearchAsync(string moduleId, string entityTypeId, string entityId, int pageSize, int pageNumber, 
-	        string fieldName = null, string updatedBy = null, DateTime? updatedOn = null)
+        public async Task<List<AuditResponse>> GetAuditDataFieldSearchAsync(string moduleId, string entityTypeId, string entityId, int pageSize, int pageNumber,
+            string fieldName = null, string updatedBy = null, DateTime? updatedOn = null)
         {
-	        CheckValidations(moduleId, entityTypeId);
-	        var data = await _auditManager.GetAuditDataSearchAsync(moduleId, entityTypeId, entityId, pageSize, pageNumber, _authContext.RegionId, fieldName, updatedBy, updatedOn);
-	        HttpContext.Items[APIConstants.RESPONSE_PAGINATION] = _auditManager.GetPaginationEnvelope();
-	        return data;
+            CheckValidations(moduleId, entityTypeId);
+            var data = await _auditManager.GetAuditDataSearchAsync(moduleId, entityTypeId, entityId, pageSize, pageNumber, _authContext.RegionId, fieldName, updatedBy, updatedOn);
+            HttpContext.Items[APIConstants.RESPONSE_PAGINATION] = _auditManager.GetPaginationEnvelope();
+            return data;
+        }
+        /// <summary>
+        ///     Gets all audit data results if no optional filters given or matching data based on given filters.
+        /// </summary>
+        /// <param name="moduleId">moduleId.</param>
+        /// <param name="entityTypeId">entityTypeId.</param>
+        /// <param name="entityId">entityId.</param>
+        /// <param name="pageSize">pageSize.</param>
+        /// <param name="pageNumber">pageNumber.</param>
+        /// <param name="fieldName">fieldName.</param>
+        /// <param name="updatedBy">updatedBy.</param>
+        /// <param name="updatedOn">updatedOn.</param>
+        /// <returns>List of audit data results.</returns>
+        [HttpGet("ReadSearchV1")]
+        public async Task<List<AuditV1Response>> GetAuditDataFieldSearchV1Async(string moduleId, string entityTypeId, string entityId, int pageSize, int pageNumber,
+            string fieldName = null, string updatedBy = null, DateTime? updatedOn = null)
+        {
+            CheckValidations(moduleId, entityTypeId);
+            var data = await _auditManager.GetAuditDataSearchV1Async(moduleId, entityTypeId, entityId, pageSize, pageNumber, _authContext.RegionId, fieldName, updatedBy, updatedOn);
+            HttpContext.Items[APIConstants.RESPONSE_PAGINATION] = _auditManager.GetPaginationEnvelope();
+            return data;
         }
 
         /// <summary>
@@ -138,11 +178,47 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
                     Comment = item.Comment,
                     CreatedDate = item.CreatedDate,
                     OldValues = JsonConvert.DeserializeObject<List<string>>(item.OldValue),
-                    NewValues = JsonConvert.DeserializeObject<List<string>>(item.NewValue)
+                    NewValues = JsonConvert.DeserializeObject<List<string>>(item.NewValue),
+                    AuditId = item.AuditId,
+                    ParentAuditId = item.ParentAuditId
                 });
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Get audit data
+        /// </summary>
+        /// <param name="moduleId"></param>
+        /// <param name="entityTypeId"></param>
+        /// <param name="entityId"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="pageNumber"></param>
+        /// <returns></returns>
+        [HttpGet("GroupReadV1")]
+        public async Task<List<AuditV1GroupResponse>> GetAuditGroupDataV1Async(string moduleId, string entityTypeId, string entityId, int pageSize, int pageNumber)
+        {
+
+            CheckValidations(moduleId, entityTypeId);
+            var data = await _auditManager.GetAuditDataAsync(moduleId, entityTypeId, entityId, pageSize, pageNumber, _authContext.RegionId);
+            HttpContext.Items[APIConstants.RESPONSE_PAGINATION] = _auditManager.GetPaginationEnvelope();
+            var result = new List<AuditGroupResponse>();
+            foreach (var item in data)
+            {
+                result.Add(new AuditGroupResponse()
+                {
+                    UserName = item.UserName,
+                    Comment = item.Comment,
+                    CreatedDate = item.CreatedDate,
+                    OldValues = JsonConvert.DeserializeObject<List<string>>(item.OldValue),
+                    NewValues = JsonConvert.DeserializeObject<List<string>>(item.NewValue),
+                    AuditId = item.AuditId,
+                    ParentAuditId = item.ParentAuditId
+                });
+            }
+
+            return result.ToAuditReponseTree();
         }
 
         private void CheckValidations(string moduleId, string entityTypeId)

@@ -25,6 +25,6 @@
 
             var modified = TimeZoneInfo.ConvertTimeToUtc(cleanTime, originalTimeZone);
             return modified.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss");
-        }
+        }        
     }
 }

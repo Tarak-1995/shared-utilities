@@ -5,13 +5,16 @@
  ***********************************************************************
  */
 
+using Alachisoft.NCache.Runtime.Exceptions;
 using NSubstitute;
 using NUnit.Framework;
 using PrimeroEdge.SharedUtilities.Components;
+using PrimeroEdge.SharedUtilities.Components.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TableStorage.Abstractions.Store;
 
 namespace PrimeroEdge.SharedUtilities.UnitTests
 {
@@ -19,8 +22,9 @@ namespace PrimeroEdge.SharedUtilities.UnitTests
 	{
 		private IAuditManager _auditManager;
 		private IAuditRepository _auditRepository;
+		private ITableStore<AuditLogEntity> _azureTableService;
 
-		private int regionId;
+        private int regionId;
 		private string moduleId;
 		private string entityTypeId;
 		private string entityId;
@@ -37,8 +41,9 @@ namespace PrimeroEdge.SharedUtilities.UnitTests
 		public void SetUp()
 		{
 			this._auditRepository = Substitute.For<IAuditRepository>();
+			this._azureTableService = Substitute.For<ITableStore<AuditLogEntity>>();
 
-			_auditManager = new AuditManager(_auditRepository);
+			_auditManager = new AuditManager(_auditRepository, this._azureTableService);
 
 			auditId = Guid.NewGuid();
 			regionId = 54;
