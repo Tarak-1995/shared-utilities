@@ -196,12 +196,80 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
         /// <param name="pageSize"></param>
         /// <param name="pageNumber"></param>
         /// <returns></returns>
+        [HttpGet("GroupReadByRegion")]
+        public async Task<List<AuditGroupResponse>> GetAuditGroupDataByRegionAsync(string moduleId, string entityTypeId, string entityId,int regionId, int pageSize, int pageNumber)
+        {
+
+            CheckValidations(moduleId, entityTypeId);
+            var data = await _auditManager.GetAuditDataAsync(moduleId, entityTypeId, entityId, pageSize, pageNumber, regionId);
+            HttpContext.Items[APIConstants.RESPONSE_PAGINATION] = _auditManager.GetPaginationEnvelope();
+            var result = new List<AuditGroupResponse>();
+            foreach (var item in data)
+            {
+                result.Add(new AuditGroupResponse()
+                {
+                    UserName = item.UserName,
+                    Comment = item.Comment,
+                    CreatedDate = item.CreatedDate,
+                    OldValues = JsonConvert.DeserializeObject<List<string>>(item.OldValue),
+                    NewValues = JsonConvert.DeserializeObject<List<string>>(item.NewValue),
+                    AuditId = item.AuditId,
+                    ParentAuditId = item.ParentAuditId
+                });
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Get audit data
+        /// </summary>
+        /// <param name="moduleId"></param>
+        /// <param name="entityTypeId"></param>
+        /// <param name="entityId"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="pageNumber"></param>
+        /// <returns></returns>
         [HttpGet("GroupReadV1")]
         public async Task<List<AuditV1GroupResponse>> GetAuditGroupDataV1Async(string moduleId, string entityTypeId, string entityId, int pageSize, int pageNumber)
         {
 
             CheckValidations(moduleId, entityTypeId);
             var data = await _auditManager.GetAuditDataAsync(moduleId, entityTypeId, entityId, pageSize, pageNumber, _authContext.RegionId);
+            HttpContext.Items[APIConstants.RESPONSE_PAGINATION] = _auditManager.GetPaginationEnvelope();
+            var result = new List<AuditGroupResponse>();
+            foreach (var item in data)
+            {
+                result.Add(new AuditGroupResponse()
+                {
+                    UserName = item.UserName,
+                    Comment = item.Comment,
+                    CreatedDate = item.CreatedDate,
+                    OldValues = JsonConvert.DeserializeObject<List<string>>(item.OldValue),
+                    NewValues = JsonConvert.DeserializeObject<List<string>>(item.NewValue),
+                    AuditId = item.AuditId,
+                    ParentAuditId = item.ParentAuditId
+                });
+            }
+
+            return result.ToAuditReponseTree();
+        }
+
+        /// <summary>
+        /// Get audit data
+        /// </summary>
+        /// <param name="moduleId"></param>
+        /// <param name="entityTypeId"></param>
+        /// <param name="entityId"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="pageNumber"></param>
+        /// <returns></returns>
+        [HttpGet("GroupReadByRegionV1")]
+        public async Task<List<AuditV1GroupResponse>> GetAuditGroupDataByRegionV1Async(string moduleId, string entityTypeId, string entityId,int regionId, int pageSize, int pageNumber)
+        {
+
+            CheckValidations(moduleId, entityTypeId);
+            var data = await _auditManager.GetAuditDataAsync(moduleId, entityTypeId, entityId, pageSize, pageNumber, regionId);
             HttpContext.Items[APIConstants.RESPONSE_PAGINATION] = _auditManager.GetPaginationEnvelope();
             var result = new List<AuditGroupResponse>();
             foreach (var item in data)
