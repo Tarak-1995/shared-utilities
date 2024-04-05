@@ -75,6 +75,22 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
         }
 
         /// <summary>
+        /// Save audit data
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="moduleId"></param>
+        /// <param name="entityTypeId"></param>
+        /// <param name="entityId"></param>
+        /// <param name="regionId"></param>
+        /// <returns></returns>
+        [HttpPost("GroupCreateByRegion")]
+        public async Task SaveAuditGroupDataByRegionAsync(List<AuditGroupRequest> data, string moduleId, string entityTypeId, string entityId, int regionId)
+        {
+            CheckValidations(moduleId, entityTypeId);
+            await _auditManager.SaveAuditDataAsync(data, moduleId, entityTypeId, entityId, _authContext.UserId, regionId);
+        }
+
+        /// <summary>
         /// Get audit data
         /// </summary>
         /// <param name="moduleId"></param>
