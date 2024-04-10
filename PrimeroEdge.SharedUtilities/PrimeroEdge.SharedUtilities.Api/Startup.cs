@@ -25,6 +25,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using PrimeroEdge.SharedUtilities.Components.Models;
@@ -74,10 +75,10 @@ namespace PrimeroEdge.SharedUtilities.Api
             services.AddCouchbase(Configuration);
             services.AddRedisCache(Configuration);
             services.AddSingleton<HttpStatusMessageFactory>();
-            services.AddTransient<ITableStore<AuditLogEntity>>(provider =>
+            services.AddTransient(provider =>
             {
                 var connString = Configuration.GetSection("AzureBlobStorageCredential").Get<AzureBlobStorageCredential>().ConnectionString;
-                return new AzureTableService("AuditLogs", connString).GetTableStore<AuditLogEntity>();
+                return new AzureTableStorage<AuditLogEntity>("AuditLogs", connString, provider.GetService<ILogger<AzureTableStorage<AuditLogEntity>>>());
             });
 
 
