@@ -75,7 +75,7 @@ namespace PrimeroEdge.SharedUtilities.Api
             services.AddCouchbase(Configuration);
             services.AddRedisCache(Configuration);
             services.AddSingleton<HttpStatusMessageFactory>();
-            services.AddTransient(provider =>
+            services.AddTransient<IAzureTableStorage<AuditLogEntity>>(provider =>
             {
                 var connString = Configuration.GetSection("AzureBlobStorageCredential").Get<AzureBlobStorageCredential>().ConnectionString;
                 return new AzureTableStorage<AuditLogEntity>("AuditLogs", connString, provider.GetService<ILogger<AzureTableStorage<AuditLogEntity>>>());
