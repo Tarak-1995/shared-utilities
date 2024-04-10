@@ -1,11 +1,10 @@
-﻿using Azure;
-using Azure.Data.Tables;
+﻿using Microsoft.WindowsAzure.Storage.Table;
 using System;
 
 
 namespace PrimeroEdge.SharedUtilities.Components.Models
 {
-    public class AuditLogEntity : ITableEntity
+    public class AuditLogEntity : TableEntity
     {
         public AuditLogEntity()
         {            
@@ -56,11 +55,6 @@ namespace PrimeroEdge.SharedUtilities.Components.Models
         public string Comment { get; set; }
 
         public Guid? ParentAuditId { get; set; }
-
-        public string PartitionKey { get; set; }
-
-        public string RowKey { get; set; }
-        public DateTimeOffset? Timestamp { get; set; }
-        public ETag ETag { get; set; }
+       
     }
 }
