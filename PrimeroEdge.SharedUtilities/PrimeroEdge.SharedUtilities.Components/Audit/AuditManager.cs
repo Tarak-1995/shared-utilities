@@ -14,6 +14,7 @@ using Newtonsoft.Json;
 
 namespace PrimeroEdge.SharedUtilities.Components
 {
+    using Cybersoft.Platform.DocumentStorage.AzureTable;
     using PrimeroEdge.SharedUtilities.Components.Common;
     using PrimeroEdge.SharedUtilities.Components.Models;
     using TableStorage.Abstractions.Store;
@@ -28,13 +29,13 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// auditRepository
         /// </summary>
         private readonly IAuditRepository _auditRepository;
-        private readonly ITableStore<AuditLogEntity> _azureTableService;
+        private readonly IAzureTableStorage<AuditLogEntity> _azureTableService;
 
         /// <summary>
         /// auditRepository
         /// </summary>
         /// <param name="auditRepository"></param>
-        public AuditManager(IAuditRepository auditRepository, ITableStore<AuditLogEntity> azureTableService)
+        public AuditManager(IAuditRepository auditRepository, IAzureTableStorage<AuditLogEntity> azureTableService)
         {
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
             _azureTableService = azureTableService ?? throw new ArgumentNullException(nameof(azureTableService));
@@ -53,34 +54,34 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// <returns></returns>
         public async Task<List<AuditResponse>> GetAuditDataAsync(string moduleId, string entityTypeId, string entityId, int pageSize, int pageNumber, int regionId)
         {
-	        var data = await _auditRepository.GetAuditDataAsync(moduleId, entityTypeId, entityId, pageSize, pageNumber, regionId);
+            var data = await _auditRepository.GetAuditDataAsync(moduleId, entityTypeId, entityId, pageSize, pageNumber, regionId);
 
-	        var result = new List<AuditResponse>();
-	        if (data.Item2 != 0)
-	        {
-		        var settings = await this._auditRepository.GetTimeZoneSettingsAsync(regionId);
-		        var userIdList = data.Item1.Select(x => x.CreatedBy).Distinct().ToList();
-		        var users = await this._auditRepository.GetUsersAsync(userIdList);
+            var result = new List<AuditResponse>();
+            if (data.Item2 != 0)
+            {
+                var settings = await this._auditRepository.GetTimeZoneSettingsAsync(regionId);
+                var userIdList = data.Item1.Select(x => x.CreatedBy).Distinct().ToList();
+                var users = await this._auditRepository.GetUsersAsync(userIdList);
 
-		        foreach (var item in data.Item1)
-		        {
-			        var row = new AuditResponse()
-			        {
-				        CreatedDate = this.GetDistrictDateTime(item.CreatedDate, settings.Item1, settings.Item2),
-				        Field = item.Field,
-				        OldValue = item.OldValue,
-				        NewValue = item.NewValue,
-				        Comment = item.Comment,
-				        UserName = users.ContainsKey(item.CreatedBy) ? users[item.CreatedBy] : null,
-                        AuditId=item.AuditId,
-                        ParentAuditId=item.ParentAuditId,
-			        };
-			        result.Add(row);
-		        }
-	        }
+                foreach (var item in data.Item1)
+                {
+                    var row = new AuditResponse()
+                    {
+                        CreatedDate = this.GetDistrictDateTime(item.CreatedDate, settings.Item1, settings.Item2),
+                        Field = item.Field,
+                        OldValue = item.OldValue,
+                        NewValue = item.NewValue,
+                        Comment = item.Comment,
+                        UserName = users.ContainsKey(item.CreatedBy) ? users[item.CreatedBy] : null,
+                        AuditId = item.AuditId,
+                        ParentAuditId = item.ParentAuditId,
+                    };
+                    result.Add(row);
+                }
+            }
 
-	        PaginationEnvelope = new Pagination(pageNumber, pageSize, data.Item2);
-	        return result;
+            PaginationEnvelope = new Pagination(pageNumber, pageSize, data.Item2);
+            return result;
         }
 
         /// <summary>
@@ -96,21 +97,21 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// <param name="updatedBy">updatedBy.</param>
         /// <param name="updatedOn">updatedOn.</param>
         /// <returns></returns>
-        public async Task<List<AuditResponse>> GetAuditDataSearchAsync(string moduleId, string entityTypeId, string entityId, int pageSize, 
-	        int pageNumber, int regionId, string fieldName, string updatedBy, DateTime? updatedOn)
+        public async Task<List<AuditResponse>> GetAuditDataSearchAsync(string moduleId, string entityTypeId, string entityId, int pageSize,
+            int pageNumber, int regionId, string fieldName, string updatedBy, DateTime? updatedOn)
         {
             var settings = await this._auditRepository.GetTimeZoneSettingsAsync(regionId);
             string fromDate = null;
             string toDate = null;
-			if (updatedOn.HasValue)
-			{
-                var updatedDate = (DateTime) updatedOn;
+            if (updatedOn.HasValue)
+            {
+                var updatedDate = (DateTime)updatedOn;
                 fromDate = updatedDate.ToUtcDateTime(false, settings.Item1);
                 toDate = updatedDate.ToUtcDateTime(true, settings.Item1);
             }
 
-			var data = await _auditRepository.GetAuditSearchDataAsync(moduleId, entityTypeId, entityId, pageSize, pageNumber, 
-	            regionId, fieldName, fromDate, toDate);
+            var data = await _auditRepository.GetAuditSearchDataAsync(moduleId, entityTypeId, entityId, pageSize, pageNumber,
+                regionId, fieldName, fromDate, toDate);
 
             var result = new List<AuditResponse>();
             if (data.Item2 != 0)
@@ -132,13 +133,13 @@ namespace PrimeroEdge.SharedUtilities.Components
                     result.Add(row);
                 }
             }
-            
+
             PaginationEnvelope = new Pagination(pageNumber, pageSize, data.Item2);
 
-            if(!string.IsNullOrEmpty(updatedBy))
-			    result = result.Where(s => !string.IsNullOrEmpty(s.UserName) && s.UserName.ToLower().Contains(updatedBy.ToLower())).ToList();
+            if (!string.IsNullOrEmpty(updatedBy))
+                result = result.Where(s => !string.IsNullOrEmpty(s.UserName) && s.UserName.ToLower().Contains(updatedBy.ToLower())).ToList();
 
-			return result;
+            return result;
         }
 
 
@@ -190,7 +191,7 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// <returns></returns>
         public async Task SaveAuditDataAsync(AuditRequest data, string moduleId, string entityTypeId, string entityId, int userId, int regionId)
         {
-            await this.SaveAuditDataAsync(new List<AuditRequest> {data}, moduleId, entityTypeId, entityId, userId, regionId);
+            await this.SaveAuditDataAsync(new List<AuditRequest> { data }, moduleId, entityTypeId, entityId, userId, regionId);
         }
 
         /// <summary>
@@ -207,7 +208,7 @@ namespace PrimeroEdge.SharedUtilities.Components
         {
             var request = GetSummarizedAuditRequest(data, moduleId, entityTypeId, entityId, userId, regionId);
             await this._auditRepository.SaveAuditDataAsync(request);
-            await _azureTableService.InsertAsync(request.ToAuditTableStorage());
+            await _azureTableService.Insert(request.ToAuditTableStorage());
         }
 
         /// <summary>
@@ -224,9 +225,9 @@ namespace PrimeroEdge.SharedUtilities.Components
         {
             var request = GetSummarizedAuditGroupRequest(data, moduleId, entityTypeId, entityId, userId, regionId);
             await this._auditRepository.SaveAuditDataAsync(request);
-            await _azureTableService.InsertAsync(request.ToAuditTableStorage());
+            await _azureTableService.Insert(request.ToAuditTableStorage());
         }
-        
+
 
         private List<Audit> GetSummarizedAuditRequest(List<AuditRequest> data, string moduleId, string entityTypeId, string entityId, int userId, int regionId, Guid? parentAuditId = null)
         {
