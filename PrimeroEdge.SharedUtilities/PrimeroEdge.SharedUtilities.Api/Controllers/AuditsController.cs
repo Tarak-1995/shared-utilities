@@ -18,6 +18,7 @@ using Cybersoft.Platform.Authorization.HeaderUtilities.Factories;
 using Cybersoft.Platform.Utilities.Exceptions;
 using Newtonsoft.Json;
 using PrimeroEdge.SharedUtilities.Components.Common;
+using System.Drawing;
 
 namespace PrimeroEdge.SharedUtilities.Api.Controllers
 {
@@ -53,10 +54,10 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
         /// <param name="entityId"></param>
         /// <returns></returns>
         [HttpPost("Create")]
-        public async Task SaveAuditDataAsync(List<AuditRequest> data, string moduleId, string entityTypeId, string entityId)
+        public async Task SaveAuditDataAsync(List<AuditRequest> data, string moduleId, string entityTypeId, string entityId, int regionId = default(int))
         {
             CheckValidations(moduleId, entityTypeId);
-            await _auditManager.SaveAuditDataAsync(data, moduleId, entityTypeId, entityId, _authContext.UserId, _authContext.RegionId);
+            await _auditManager.SaveAuditDataAsync(data, moduleId, entityTypeId, entityId, _authContext.UserId, (regionId == default(int) ? _authContext.RegionId : regionId));
         }
 
         /// <summary>
@@ -68,10 +69,10 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
         /// <param name="entityId"></param>
         /// <returns></returns>
         [HttpPost("GroupCreate")]
-        public async Task SaveAuditGroupDataAsync(List<AuditGroupRequest> data, string moduleId, string entityTypeId, string entityId)
+        public async Task SaveAuditGroupDataAsync(List<AuditGroupRequest> data, string moduleId, string entityTypeId, string entityId, int regionId = default(int))
         {
             CheckValidations(moduleId, entityTypeId);
-            await _auditManager.SaveAuditDataAsync(data, moduleId, entityTypeId, entityId, _authContext.UserId, _authContext.RegionId);
+            await _auditManager.SaveAuditDataAsync(data, moduleId, entityTypeId, entityId, _authContext.UserId, (regionId == default(int) ? _authContext.RegionId : regionId));
         }
 
         /// <summary>
@@ -100,10 +101,10 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
         /// <param name="pageNumber"></param>
         /// <returns></returns>
         [HttpGet("Read")]
-        public async Task<List<AuditResponse>> GetAuditDataAsync(string moduleId, string entityTypeId, string entityId, int pageSize, int pageNumber)
+        public async Task<List<AuditResponse>> GetAuditDataAsync(string moduleId, string entityTypeId, string entityId, int pageSize, int pageNumber, int regionId = default(int))
         {
             CheckValidations(moduleId, entityTypeId);
-            var data = await _auditManager.GetAuditDataAsync(moduleId, entityTypeId, entityId, pageSize, pageNumber, _authContext.RegionId);
+            var data = await _auditManager.GetAuditDataAsync(moduleId, entityTypeId, entityId, pageSize, pageNumber, (regionId == default(int) ? _authContext.RegionId : regionId));
             HttpContext.Items[APIConstants.RESPONSE_PAGINATION] = _auditManager.GetPaginationEnvelope();
             return data;
         }
@@ -118,10 +119,10 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
         /// <param name="pageNumber"></param>
         /// <returns></returns>
         [HttpGet("ReadV1")]
-        public async Task<List<AuditV1Response>> GetAuditDataV1Async(string moduleId, string entityTypeId, string entityId, int pageSize, int pageNumber)
+        public async Task<List<AuditV1Response>> GetAuditDataV1Async(string moduleId, string entityTypeId, string entityId, int pageSize, int pageNumber, int regionId = default(int))
         {
             CheckValidations(moduleId, entityTypeId);
-            var data = await _auditManager.GetAuditDataV1Async(moduleId, entityTypeId, entityId, pageSize, pageNumber, _authContext.RegionId);
+            var data = await _auditManager.GetAuditDataV1Async(moduleId, entityTypeId, entityId, pageSize, pageNumber, (regionId == default(int) ? _authContext.RegionId : regionId));
             HttpContext.Items[APIConstants.RESPONSE_PAGINATION] = _auditManager.GetPaginationEnvelope();
             return data;
         }
@@ -213,7 +214,7 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
         /// <param name="pageNumber"></param>
         /// <returns></returns>
         [HttpGet("GroupReadByRegion")]
-        public async Task<List<AuditGroupResponse>> GetAuditGroupDataByRegionAsync(string moduleId, string entityTypeId, string entityId,int regionId, int pageSize, int pageNumber)
+        public async Task<List<AuditGroupResponse>> GetAuditGroupDataByRegionAsync(string moduleId, string entityTypeId, string entityId, int regionId, int pageSize, int pageNumber)
         {
 
             CheckValidations(moduleId, entityTypeId);
@@ -281,7 +282,7 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
         /// <param name="pageNumber"></param>
         /// <returns></returns>
         [HttpGet("GroupReadByRegionV1")]
-        public async Task<List<AuditV1GroupResponse>> GetAuditGroupDataByRegionV1Async(string moduleId, string entityTypeId, string entityId,int regionId, int pageSize, int pageNumber)
+        public async Task<List<AuditV1GroupResponse>> GetAuditGroupDataByRegionV1Async(string moduleId, string entityTypeId, string entityId, int regionId, int pageSize, int pageNumber)
         {
 
             CheckValidations(moduleId, entityTypeId);
