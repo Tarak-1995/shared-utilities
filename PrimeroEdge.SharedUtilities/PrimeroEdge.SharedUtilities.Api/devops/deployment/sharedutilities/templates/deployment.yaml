@@ -14,8 +14,15 @@ spec:
       annotations:
         timestamp: "{{ date "20060102150405" .Release.Time }}"
     spec: 
-      nodeSelector:
-        pooltype: linux 
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: pooltype
+                operator: In
+                values:
+                - linux
       securityContext:
           runAsNonRoot: true
           runAsUser: 1001
