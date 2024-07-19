@@ -7,10 +7,13 @@
 
 using System;
 using Autofac;
+using System.IO;
+using System.Reflection;
 using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Cybersoft.Platform.Configuration.KeyVaultConfigurationProvider;
 
 namespace PrimeroEdge.SharedUtilities.Api
 {
@@ -19,6 +22,18 @@ namespace PrimeroEdge.SharedUtilities.Api
     /// </summary>
     public class Program
     {
+        public static readonly string Env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
+        public static string AppName => typeof(Program).Assembly.GetName().Name;
+        public static Version AppVersion => typeof(Program).Assembly.GetName().Version;
+
+        public static IConfiguration Configuration { get; } = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .AddJsonFile($"appsettings.{Env}.json", optional: true)
+            .AddJsonFile("settings/appsettings.secrets.json", optional: true, reloadOnChange: true)
+            .AddUserSecrets(Assembly.GetExecutingAssembly(), optional: true)
+            .AddEnvironmentVariables()
+            .Build();
 
         /// <summary>
         /// Main
@@ -35,32 +50,23 @@ namespace PrimeroEdge.SharedUtilities.Api
         /// <param name="args"></param>
         /// <returns></returns>
         public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration((hostingContext, config) =>
-                {
-                    config.Sources.Clear();
-
-                    var env = hostingContext.HostingEnvironment;
-
-                    config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                        .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
-
-                    config.AddJsonFile("secrets/appsettings.secrets.json", optional: true);
-
-                    config.AddEnvironmentVariables();
-
-                    if (args != null)
-                        config.AddCommandLine(args);
-                })
-
-                .UseServiceProviderFactory(new AutofacServiceProviderFactory())
-                .ConfigureContainer<ContainerBuilder>(builder =>
-                {
-                    builder.RegisterModule(new AutofacModule());
-                })
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
+                Host.CreateDefaultBuilder(args) 
+                    .UseServiceProviderFactory(new AutofacServiceProviderFactory())
+                    .ConfigureAppConfiguration(builder =>
+                    {
+                        //
+                        // add keyvault configuration provider.
+                        //
+                        builder.AddKeyVaultConfigurationSource();
+                    })
+                    .ConfigureContainer<ContainerBuilder>(builder =>
+                    {
+                        builder.RegisterModule(new AutofacModule());
+                    })
+                    .ConfigureWebHostDefaults(webBuilder =>
+                    {
+                        webBuilder.UseStartup<Startup>()
+                                    .UseConfiguration(Configuration);
+                    });
     }
 }
