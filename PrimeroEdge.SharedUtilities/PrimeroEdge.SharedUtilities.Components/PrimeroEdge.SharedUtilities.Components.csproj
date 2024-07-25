@@ -9,7 +9,7 @@
     <PackageReference Include="Cybersoft.Platform.DocumentStorage" Version="3.1.0.820406" />
     <PackageReference Include="Cybersoft.Platform.Swashbuckle.AspNetCore" Version="3.1.0.820406" />
     <PackageReference Include="Cybersoft.Platform.Logging" Version="3.1.0.820406" />
-    <PackageReference Include="Cybersoft.Platform.Utilities" Version="3.1.0.820406" />
+    <PackageReference Include="Cybersoft.Platform.Utilities" Version="3.1.0.880624" />
     <PackageReference Include="TimeZoneConverter" Version="6.1.0" />
     <PackageReference Include="Cybersoft.Platform.Data.Sql" Version="3.1.0.820406" />
     <PackageReference Include="Cybersoft.Platform.Autofac" Version="3.1.0.820406" />
