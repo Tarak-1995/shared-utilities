@@ -29,12 +29,9 @@ variables:
   imageVersion: $(Build.BuildNumber)
   helmChartVersion: $(Build.BuildNumber)
   imageName: PerseusNonProdACR.azurecr.io/sharedutilities-dev:$(Build.BuildNumber)
-  # .sln .csproj(UnitTests) relative paths
   project_sln: "PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.sln"
   project_csproj: "./PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/PrimeroEdge.SharedUtilities.Api.csproj"
   test_csproj: "./PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.UnitTests/PrimeroEdge.SharedUtilities.UnitTests.csproj"
-  
-  #dockerRegistryServiceConnection: '0308b8a7-8ae6-4c18-b610-58fe54dc62c4'
   devschoolcafeimagerepository: 'schoolcafe-dev/sharedutilities.devschoolcafe'
   imageRepository: 'sharedutilities-dev'
   projectName: 'sharedutilities'
@@ -42,9 +39,6 @@ variables:
   containerRegistry: 'perseusnonprodacr.azurecr.io'
   dockerfilePath: '**/Dockerfile'
   tag: '$(Build.BuildId)'
-  imagePullSecret: 'perseusnonprodacr206701cc-auth'
-  helmChartPath: './PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/deployment/sharedutilities/'
-  helmValuesFile: 'platform/sharedutilities/api/values.yaml'
   vmImageNameW: 'windows-latest'
   vmImageNameU: 'ubuntu-latest'
 
@@ -92,79 +86,12 @@ stages:
         projects: '$(test_csproj)'
         arguments: '--configuration $(buildConfiguration)'
 
-- stage: ImageBuild
-  displayName: Image Build $ Push
-  dependsOn: BuildandAnalysis
-  pool:
-    vmImage: $(vmImageNameU)
-  jobs:
-  - job: ImageBuild
-    steps:  
-    - task: Docker@2
-      displayName: Image Build $ Push
-      inputs:
-        command: buildAndPush
-        repository: $(imageRepository)
-        dockerfile: $(dockerfilePath)
-        containerRegistry: $(dockerRegistryServiceConnection)
-        tags: |
-          $(tag)
-          latest
-  
-- stage: HelmInstall
-  displayName: Helm Installs
-  dependsOn: ImageBuild
-  jobs: 
-  - job: Init
-    steps:
-    - task: HelmInstaller@1
-      inputs:
-        helmVersionToInstall: '3.2.3'
-    - bash: |
-          echo $(registryPassword) | helm registry login $(registryName).azurecr.io --username $(registryLogin) --password-stdin
-          cd PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/devops/deployment
-          helm chart save $(helm package --app-version $(imageVersion) --version $(helmChartVersion) ./$(projectName) | grep -o '/.*.tgz') $(registryName).azurecr.io/charts/$(helmchartdev):$(imageVersion)
-          helm chart push $(registryName).azurecr.io/charts/$(helmchartdev):$(imageVersion)
-          echo $(jq -n --arg version "$(helmChartVersion)" '{helmChartVersion: $version}') > $(build.artifactStagingDirectory)/variables.json
-      failOnStderr: true
-      displayName: "helm package"
-
-- stage: HelmPackage
-  displayName: Helm Chart Package
-  dependsOn: HelmInstall
-  jobs: 
-  - job: HelmPackage
-    displayName: Helm Package
-    steps:
-    - task: HelmDeploy@0
-      inputs:
-        command: 'package'
-        chartPath: $(helmChartPath)
-        destination: $(Build.ArtifactStagingDirectory)
-        chartName: 'sharedutilities'
-
-- stage: Secret
-  displayName: Generate secret
-  dependsOn: HelmPackage
-  jobs: 
-  - job: DevKubesecret
-    displayName: Kubernetes Secret
-    steps:
-    - task: Kubernetes@1
-      inputs:
-        connectionType: 'Kubernetes Service Connection'
-        kubernetesServiceEndpoint: 'perseus-sharedutilities-dev'
-        namespace: 'dev'
-        secretType: 'generic'
-        secretArguments: '--from-file=PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/appsettings.Development.json'
-        secretName: 'sharedutilities-dev-secret-appsettings'
-
 - stage: DevSchoolCafeImageBuild
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
   displayName:  Dev SchoolCafe Image Build $ Push
-  dependsOn: 
-  - BuildandAnalysis
+  dependsOn:
   - DockerVersion
+  - BuildandAnalysis
   jobs:
   - job: ImageBuildDevSchoolCafe
     variables:
