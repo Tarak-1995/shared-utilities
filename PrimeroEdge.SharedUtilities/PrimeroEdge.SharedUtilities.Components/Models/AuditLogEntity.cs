@@ -4,7 +4,7 @@ using System;
 
 namespace PrimeroEdge.SharedUtilities.Components.Models
 {
-    public class AuditLogEntity : TableEntity
+    public class AuditLogEntity : TableEntity, ITableEntity
     {
         public AuditLogEntity()
         {            
