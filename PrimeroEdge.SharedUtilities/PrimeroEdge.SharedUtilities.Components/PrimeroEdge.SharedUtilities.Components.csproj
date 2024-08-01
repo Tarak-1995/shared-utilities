@@ -5,14 +5,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Cybersoft.Platform.Configuration" Version="3.1.0.1110731" />
-    <PackageReference Include="Cybersoft.Platform.DocumentStorage" Version="3.1.0.1110731" />
-    <PackageReference Include="Cybersoft.Platform.Swashbuckle.AspNetCore" Version="3.1.0.1110731" />
-    <PackageReference Include="Cybersoft.Platform.Logging" Version="3.1.0.1110731" />
-    <PackageReference Include="Cybersoft.Platform.Utilities" Version="3.1.0.1110731" />
+    <PackageReference Include="Cybersoft.Platform.Configuration" Version="3.1.0.1130801" />
+    <PackageReference Include="Cybersoft.Platform.DocumentStorage" Version="3.1.0.1130801" />
+    <PackageReference Include="Cybersoft.Platform.Swashbuckle.AspNetCore" Version="3.1.0.1130801" />
+    <PackageReference Include="Cybersoft.Platform.Logging" Version="3.1.0.1130801" />
+    <PackageReference Include="Cybersoft.Platform.Utilities" Version="3.1.0.1130801" />
     <PackageReference Include="TimeZoneConverter" Version="6.1.0" />
-    <PackageReference Include="Cybersoft.Platform.Data.Sql" Version="3.1.0.1110731" />
-    <PackageReference Include="Cybersoft.Platform.Autofac" Version="3.1.0.1110731" />
+    <PackageReference Include="Cybersoft.Platform.Data.Sql" Version="3.1.0.1130801" />
+    <PackageReference Include="Cybersoft.Platform.Autofac" Version="3.1.0.1130801" />
   </ItemGroup>
  
 </Project>
