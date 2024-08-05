@@ -16,7 +16,7 @@ WORKDIR /app
 EXPOSE 5000
 
 # Create a group and user
-RUN groupadd -g 1001 1001 useradd -u 1001 -g 1001 1001
+RUN groupadd -g 1001 1001 && useradd -u 1001 -g 1001 1001
 USER 1001
 
 WORKDIR /app
