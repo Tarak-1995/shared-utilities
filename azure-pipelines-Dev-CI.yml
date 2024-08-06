@@ -114,12 +114,12 @@ stages:
         git config --global user.name "azuredevops"
         git clone https://$(DEVOPS_USER):$(DEVOPS_TOKEN)@dev.azure.com/Cybersoft-Technologies-Inc/ArgoCD/_git/perseus-devqa-infra
         cd perseus-devqa-infra
-        git checkout Develop
+        git checkout SchoolCafeDev
 
         dockerImageUrl="perseusnonprodacr.azurecr.io/$(devschoolcafeimageRepository):$(commitSHA)"
         sed -i "/image/c\image: $dockerImageUrl" $(helmValuesFile)
 
         git add .
         git commit -m 'AzDevops Image update commit sha: $(commitSHA)'
-        git push origin Develop
+        git push origin SchoolCafeDev
       displayName: Update infra image tag
