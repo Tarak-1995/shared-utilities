@@ -34,6 +34,7 @@ variables:
   test_csproj: "./PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.UnitTests/PrimeroEdge.SharedUtilities.UnitTests.csproj"
   devschoolcafeimagerepository: 'schoolcafe-dev/sharedutilities.devschoolcafe'
   imageRepository: 'sharedutilities-dev'
+  helmValuesFile: 'platform/sharedutilities/api/values.yaml'
   projectName: 'sharedutilities'
   helmchartdev: 'sharedutilities-dev'
   containerRegistry: 'perseusnonprodacr.azurecr.io'
