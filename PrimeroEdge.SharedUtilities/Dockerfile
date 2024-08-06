@@ -10,7 +10,7 @@ COPY . .
 WORKDIR "/src/PrimeroEdge.SharedUtilities.Api"
 RUN dotnet publish "PrimeroEdge.SharedUtilities.Api.csproj" -c release -o /app/publish --no-restore
 
-FROM  perseusnonprodacr.azurecr.io/dotnet6/dotnet-slim-6.0.411 AS base
+FROM  perseusnonprodacr.azurecr.io/dotnet6/dotnet-slim-6.0.411
 WORKDIR /app
 EXPOSE 5000
 
