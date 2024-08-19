@@ -1,14 +1,54 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
+name: SharedUtilitiesApi-APIM-$(Date:MMdd).$(Rev:r)
 
 pool:
   vmImage: ubuntu-latest
 
+variables:
+  project: "PrimeroEdge.SharedUtilities.Api"
+  openapifile: "$(Build.ArtifactStagingDirectory)/swagger.json"
+
 steps:
+- task: DotNetCoreCLI@2
+  displayName: 'Restore tools'
+  inputs:
+    command: custom
+    custom: tool
+    arguments: restore --tool-manifest $(project)/.config/dotnet-tools.json
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet build'
+  inputs:
+    command: build
+    projects: $(project)/*.csproj
+    arguments: -c Release
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet publish'
+  inputs:
+    command: publish
+    projects: $(project)/*.csproj
+    publishWebProjects: false
+    arguments: -c Release -o $(Build.ArtifactStagingDirectory)/$(project)/
+    zipAfterPublish: True
+
+- task: DotNetCoreCLI@2
+  displayName: 'Build Swagger v1'
+  inputs:
+    command: custom
+    custom: swagger
+    arguments:  tofile --output $(openapifile) $(System.DefaultWorkingDirectory)/$(project)/bin/Release/net6.0/$(project).dll v1
+    workingDirectory: $(project)
+  env:
+    "ASPNETCORE_ENVIRONMENT": "Development"
+    "OPENAPI": "True"
+    "AuthSettings__TenantId": $(AUTHSETTINGS__TENANTID)
+    "AuthSettings__ClientId": $(AUTHSETTINGS__CLIENTID)
+    "AuthSettings__ClientSecret": $(AUTHSETTINGS__CLIENTSECRET)
+    "KeyVaultSettings__KeyVaultName": $(KEYVAULTSETTINGS__KEYVAULTNAME)
+    "KeyVaultSettings__VaultUri": $(KEYVAULTSETTINGS__VAULTURI)
+
 - task: PowerShell@2
   displayName: "Publish Shared Utilities Api to APIM"
   inputs:
-    filePath: 'Scripts/apim-import-swagger.ps1'
-    arguments: '-api sharedutilities -env dev'
+    filePath: 'Scripts/apim-import-swagger-file.ps1'
+    arguments: '-api sharedutilities -env dev -openapifile $(openapifile)'
