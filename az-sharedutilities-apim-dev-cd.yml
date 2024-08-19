@@ -36,7 +36,7 @@ steps:
   inputs:
     command: custom
     custom: swagger
-    arguments:  tofile --output $(openapifile) $(System.DefaultWorkingDirectory)/$(project)/bin/Release/net6.0/$(project).dll v1
+    arguments:  tofile --output $(openapifile) $(System.DefaultWorkingDirectory)/PrimeroEdge.SharedUtilities/$(project)/bin/Release/net6.0/$(project).dll v1
     workingDirectory: ./PrimeroEdge.SharedUtilities/$(project)
   env:
     "ASPNETCORE_ENVIRONMENT": "Development"
