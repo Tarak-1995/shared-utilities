@@ -13,22 +13,22 @@ steps:
   inputs:
     command: custom
     custom: tool
-    arguments: restore --tool-manifest PrimeroEdge.SharedUtilities/$(project)/.config/dotnet-tools.json
+    arguments: restore --tool-manifest ./PrimeroEdge.SharedUtilities/$(project)/.config/dotnet-tools.json
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet build'
   inputs:
     command: build
-    projects: $(project)/*.csproj
+    projects: ./PrimeroEdge.SharedUtilities/$(project)/*.csproj
     arguments: -c Release
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet publish'
   inputs:
     command: publish
-    projects: $(project)/*.csproj
+    projects: ./PrimeroEdge.SharedUtilities/$(project)/*.csproj
     publishWebProjects: false
-    arguments: -c Release -o $(Build.ArtifactStagingDirectory)/PrimeroEdge.SharedUtilities/$(project)/
+    arguments: -c Release -o $(Build.ArtifactStagingDirectory)/$(project)/
     zipAfterPublish: True
 
 - task: DotNetCoreCLI@2
@@ -36,7 +36,7 @@ steps:
   inputs:
     command: custom
     custom: swagger
-    arguments:  tofile --output $(openapifile) $(System.DefaultWorkingDirectory)/PrimeroEdge.SharedUtilities/$(project)/bin/Release/net6.0/$(project).dll v1
+    arguments:  tofile --output $(openapifile) $(System.DefaultWorkingDirectory)$(project)/bin/Release/net6.0/$(project).dll v1
     workingDirectory: $(project)
   env:
     "ASPNETCORE_ENVIRONMENT": "Development"
