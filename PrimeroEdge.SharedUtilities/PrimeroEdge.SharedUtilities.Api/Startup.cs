@@ -69,6 +69,15 @@ namespace PrimeroEdge.SharedUtilities.Api
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 //c.IncludeXmlComments(xmlPath);
             });
+
+            if (Program.IsOpenApi)
+            {
+                //
+                // Swashbuckle CLI bootstrapper will return here without loading all connfigurations
+                //
+                return;
+            }
+
             var bypassAuthSettings = Options.Create(Configuration.GetSection("BypassAuthenticationSettings").Get<BypassAuthenticationSettings>());
             services.AddSessionFactory(bypassAuthSettings.Value);
 

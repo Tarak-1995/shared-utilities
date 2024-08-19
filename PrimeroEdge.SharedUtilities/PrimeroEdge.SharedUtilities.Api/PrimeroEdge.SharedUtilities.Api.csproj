@@ -13,6 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="6.2.3.0" />
     <ProjectReference Include="..\PrimeroEdge.SharedUtilities.Components\PrimeroEdge.SharedUtilities.Components.csproj" />
   </ItemGroup>
 

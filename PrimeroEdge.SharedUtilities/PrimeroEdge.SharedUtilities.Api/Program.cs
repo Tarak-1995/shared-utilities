@@ -25,6 +25,14 @@ namespace PrimeroEdge.SharedUtilities.Api
         public static readonly string Env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
         public static string AppName => typeof(Program).Assembly.GetName().Name;
         public static Version AppVersion => typeof(Program).Assembly.GetName().Version;
+        public static bool IsOpenApi
+        {
+            get
+            {
+                string openapi = Environment.GetEnvironmentVariable("OPENAPI") ?? "False";
+                return openapi.Equals("True", StringComparison.CurrentCultureIgnoreCase);
+            }
+        }
 
         public static IConfiguration Configuration { get; } = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
