@@ -19,14 +19,14 @@ steps:
   displayName: 'dotnet build'
   inputs:
     command: build
-    projects: ./PrimeroEdge.SharedUtilities/$(project)/$(project).csproj
+    projects: '**/$(project)/*.csproj'
     arguments: -c Release
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet publish'
   inputs:
     command: publish
-    projects: ./PrimeroEdge.SharedUtilities/$(project)/$(project).csproj
+    projects: '**/$(project)/*.csproj'
     publishWebProjects: false
     arguments: -c Release -o $(Build.ArtifactStagingDirectory)/$(project)/
     zipAfterPublish: True
