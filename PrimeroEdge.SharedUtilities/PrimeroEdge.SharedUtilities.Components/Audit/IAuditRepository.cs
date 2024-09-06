@@ -4,6 +4,7 @@
  * Unauthorized copying of this file is strictly prohibited.
  ***********************************************************************
  */
+using PrimeroEdge.SharedUtilities.Components.Models;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -65,6 +66,14 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// <param name="regionId"></param>
         /// <returns></returns>
         Task<Tuple<string, bool>> GetTimeZoneSettingsAsync(int regionId);
+
+        /// <summary>
+        /// Get Multiple entites audit data
+        /// </summary>
+        /// <param name="requestContract"></param>
+        /// <param name="regionId"></param>
+        /// <returns></returns>
+        Task<AuditDataResultContact> GetAuditDataAsync(GetAuditDataRequestContract requestContract, int regionId);
 
     }
 }

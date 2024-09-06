@@ -4,6 +4,7 @@
  * Unauthorized copying of this file is strictly prohibited.
  ***********************************************************************
  */
+using PrimeroEdge.SharedUtilities.Components.Models;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -107,6 +108,14 @@ namespace PrimeroEdge.SharedUtilities.Components
       /// <param name="regionId"></param>
       /// <returns></returns>
         Task SaveAuditDataAsync(List<AuditGroupRequest> data, string moduleId, string entityTypeId, string entityId, int userId, int regionId);
+
+        /// <summary>
+        /// Get Multiple entities audit data.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="regionId"></param>
+        /// <returns></returns>
+        Task<List<AuditResponse>> GetAuditDataAsync(GetAuditDataRequestContract request, int regionId);
 
     }
 }
