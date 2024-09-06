@@ -15,6 +15,7 @@ using System.Dynamic;
 using System.Data;
 using System.Data.SqlClient;
 using Couchbase.Query;
+using PrimeroEdge.SharedUtilities.Components.Models;
 
 namespace PrimeroEdge.SharedUtilities.Components
 {
@@ -62,6 +63,27 @@ namespace PrimeroEdge.SharedUtilities.Components
 														AND ((IS_NULL($fromDate) AND IS_NULL($toDate)) OR V.createdDate BETWEEN $fromDate AND $toDate)
 														ORDER BY V.createdDate DESC
 			                                            OFFSET $offset LIMIT $limit";
+
+        private const string GetAuditDataMultipleEntities= @"
+                                                
+                                                            SELECT V.*
+                                                            FROM Audit V
+                                                            WHERE V.type = 'Audit'
+                                                              AND V.regionId = $regionId
+                                                              AND V.moduleId = $moduleId
+                                                              AND ANY pair IN $entityPairs SATISFIES V.entityTypeId = pair[0] AND V.entityId = pair[1] END
+                                                            ORDER BY V.createdDate DESC
+                                                            LIMIT $limit OFFSET $offset";
+
+        private const string GetAuditDataCountMultipleEntities = @"
+                                                
+                                                            SELECT Count(*) AS Count
+                                                            FROM Audit V
+                                                            WHERE V.type = 'Audit'
+                                                              AND V.regionId = $regionId
+                                                              AND V.moduleId = $moduleId
+                                                              AND ANY pair IN $entityPairs SATISFIES V.entityTypeId = pair[0] AND V.entityId = pair[1] END
+                                                            LIMIT $limit OFFSET $offset";
 
         /// <summary>
         /// AuditRepository
@@ -216,6 +238,62 @@ namespace PrimeroEdge.SharedUtilities.Components
             var timeZone = result[TimeZoneCode];
             var isDayLight = result[DayLightCode];
             return Tuple.Create(timeZone, isDayLight == "1");
+        }
+
+        /// <summary>
+        /// Get Multiple entities audit data.
+        /// </summary>
+        /// <param name="requestContract"></param>
+        /// <param name="regionId"></param>
+        /// <returns></returns>
+        public async Task<AuditDataResultContact> GetAuditDataAsync(GetAuditDataRequestContract requestContract, int regionId = 34)
+        {
+            var pageNumber = requestContract.PageNumber;
+            var pageSize = requestContract.PageSize;
+
+            if (pageNumber <= 0)
+                pageNumber = 1;
+
+            if (pageSize <= 0)
+                pageSize = 20;
+
+            var count = 0;
+
+            var offset = (pageNumber - 1) * pageSize;
+            var limit = pageSize;
+
+            var entityPairs = requestContract.Entities.Select(pair => new object[] { pair.EntityTypeId.Trim().ToUpper(), pair.EntityId.Trim().ToUpper() }).ToList();
+
+            var totalCountResult = await _couchbaseCluster.QueryAsync<ExpandoObject>(GetAuditDataCountMultipleEntities, parameters =>
+            {
+                parameters.Parameter("regionId", regionId);
+                parameters.Parameter("moduleId", requestContract.ModuleId.Trim().ToUpper());
+                parameters.Parameter("entityPairs", entityPairs);
+                parameters.Parameter("limit", limit);
+                parameters.Parameter("offset", offset);
+            });
+
+            await foreach (dynamic item in totalCountResult)
+            {
+                count = Convert.ToInt32(item.Count);
+            }
+
+            var result = await _couchbaseCluster.QueryAsync<Audit>(GetAuditDataMultipleEntities, parameters =>
+            {
+                parameters.Parameter("regionId", regionId);
+                parameters.Parameter("moduleId", requestContract.ModuleId);
+                parameters.Parameter("entityPairs", entityPairs);
+                parameters.Parameter("limit", limit);
+                parameters.Parameter("offset", offset);
+            });
+
+            // Return both the records and the total count
+            return new AuditDataResultContact
+            {
+                AuditData = await result.Rows.ToListAsync(),
+                Count = count
+            };
+
         }
 
         private async Task<IQueryResult<ExpandoObject>> GetAuditSearchCountData(string moduleId, string entityTypeId, string entityId, int regionId, string fieldName, string fromDate, string toDate)
