@@ -19,6 +19,7 @@ using Cybersoft.Platform.Utilities.Exceptions;
 using Newtonsoft.Json;
 using PrimeroEdge.SharedUtilities.Components.Common;
 using System.Drawing;
+using PrimeroEdge.SharedUtilities.Components.Models;
 
 namespace PrimeroEdge.SharedUtilities.Api.Controllers
 {
@@ -185,6 +186,35 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
 
             CheckValidations(moduleId, entityTypeId);
             var data = await _auditManager.GetAuditDataAsync(moduleId, entityTypeId, entityId, pageSize, pageNumber, _authContext.RegionId);
+            HttpContext.Items[APIConstants.RESPONSE_PAGINATION] = _auditManager.GetPaginationEnvelope();
+            var result = new List<AuditGroupResponse>();
+            foreach (var item in data)
+            {
+                result.Add(new AuditGroupResponse()
+                {
+                    UserName = item.UserName,
+                    Comment = item.Comment,
+                    CreatedDate = item.CreatedDate,
+                    OldValues = JsonConvert.DeserializeObject<List<string>>(item.OldValue),
+                    NewValues = JsonConvert.DeserializeObject<List<string>>(item.NewValue),
+                    AuditId = item.AuditId,
+                    ParentAuditId = item.ParentAuditId
+                });
+            }
+
+            return result;
+        }
+
+
+        /// <summary>
+        ///  Get Multiple entities audit data.
+        /// </summary>
+        /// <param name="GetAuditDataRequestContract request"></param>
+        /// <returns>list of AuditGroupResponse.</returns>
+        [HttpPost("GroupRead")]
+        public async Task<List<AuditGroupResponse>> GetAuditGroupDataAsync(GetAuditDataRequestContract request)
+        {
+            var data = await _auditManager.GetAuditDataAsync(request, _authContext.RegionId);
             HttpContext.Items[APIConstants.RESPONSE_PAGINATION] = _auditManager.GetPaginationEnvelope();
             var result = new List<AuditGroupResponse>();
             foreach (var item in data)
