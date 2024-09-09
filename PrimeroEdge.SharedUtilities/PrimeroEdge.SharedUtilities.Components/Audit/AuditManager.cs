@@ -29,13 +29,13 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// auditRepository
         /// </summary>
         private readonly IAuditRepository _auditRepository;
-        private readonly ITableStore<AuditLogEntity> _azureTableService;
+        private readonly IAzureTableStorage<AuditLogEntity> _azureTableService;
 
         /// <summary>
         /// auditRepository
         /// </summary>
         /// <param name="auditRepository"></param>
-        public AuditManager(IAuditRepository auditRepository, ITableStore<AuditLogEntity> azureTableService)
+        public AuditManager(IAuditRepository auditRepository, IAzureTableStorage<AuditLogEntity> azureTableService)
         {
             _auditRepository = auditRepository ?? throw new ArgumentNullException(nameof(auditRepository));
             _azureTableService = azureTableService ?? throw new ArgumentNullException(nameof(azureTableService));
@@ -208,7 +208,7 @@ namespace PrimeroEdge.SharedUtilities.Components
         {
             var request = GetSummarizedAuditRequest(data, moduleId, entityTypeId, entityId, userId, regionId);
             await this._auditRepository.SaveAuditDataAsync(request);
-            await _azureTableService.InsertAsync(request.ToAuditTableStorage());
+            await _azureTableService.Insert(request.ToAuditTableStorage());
         }
 
         /// <summary>
@@ -225,7 +225,7 @@ namespace PrimeroEdge.SharedUtilities.Components
         {
             var request = GetSummarizedAuditGroupRequest(data, moduleId, entityTypeId, entityId, userId, regionId);
             await this._auditRepository.SaveAuditDataAsync(request);
-            await _azureTableService.InsertAsync(request.ToAuditTableStorage());
+            await _azureTableService.Insert(request.ToAuditTableStorage());
         }
 
         /// <summary>
