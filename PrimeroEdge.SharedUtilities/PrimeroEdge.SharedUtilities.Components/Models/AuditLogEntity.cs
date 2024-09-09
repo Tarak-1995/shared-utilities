@@ -1,11 +1,11 @@
 ﻿using Azure;
-using Azure.Data.Tables;
+using Microsoft.WindowsAzure.Storage.Table;
 using System;
 
 
 namespace PrimeroEdge.SharedUtilities.Components.Models
 {
-    public class AuditLogEntity : ITableEntity
+    public class AuditLogEntity : TableEntity
     {
         public AuditLogEntity()
         {
