@@ -23,7 +23,7 @@ namespace PrimeroEdge.SharedUtilities.UnitTests
     {
         private IAuditManager _auditManager;
         private IAuditRepository _auditRepository;
-        private ITableStore<AuditLogEntity> _azureTableService;
+        private IAzureTableStorage<AuditLogEntity> _azureTableService;
 
         private int regionId;
         private string moduleId;
@@ -42,7 +42,7 @@ namespace PrimeroEdge.SharedUtilities.UnitTests
         public void SetUp()
         {
             this._auditRepository = Substitute.For<IAuditRepository>();
-            this._azureTableService = Substitute.For<ITableStore<AuditLogEntity>>();
+            this._azureTableService = Substitute.For<IAzureTableStorage<AuditLogEntity>>();
 
             _auditManager = new AuditManager(_auditRepository, this._azureTableService);
 
