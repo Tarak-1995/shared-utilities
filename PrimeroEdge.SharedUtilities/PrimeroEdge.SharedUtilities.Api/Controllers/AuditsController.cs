@@ -212,26 +212,11 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
         /// <param name="GetAuditDataRequestContract request"></param>
         /// <returns>list of AuditGroupResponse.</returns>
         [HttpPost("GroupRead")]
-        public async Task<List<AuditGroupResponse>> GetAuditGroupDataAsync(GetAuditDataRequestContract request)
+        public async Task<List<MultipleEntitiesAuditGroupResponseContract>> GetAuditGroupDataAsync(GetAuditDataRequestContract request)
         {
             var data = await _auditManager.GetAuditDataAsync(request, _authContext.RegionId);
             HttpContext.Items[APIConstants.RESPONSE_PAGINATION] = _auditManager.GetPaginationEnvelope();
-            var result = new List<AuditGroupResponse>();
-            foreach (var item in data)
-            {
-                result.Add(new AuditGroupResponse()
-                {
-                    UserName = item.UserName,
-                    Comment = item.Comment,
-                    CreatedDate = item.CreatedDate,
-                    OldValues = JsonConvert.DeserializeObject<List<string>>(item.OldValue),
-                    NewValues = JsonConvert.DeserializeObject<List<string>>(item.NewValue),
-                    AuditId = item.AuditId,
-                    ParentAuditId = item.ParentAuditId
-                });
-            }
-
-            return result;
+            return data;
         }
 
         /// <summary>

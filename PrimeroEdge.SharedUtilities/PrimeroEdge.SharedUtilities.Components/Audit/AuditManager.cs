@@ -234,11 +234,11 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// <param name="GetAuditDataRequestContract request"></param>
         /// <param name="regionId"></param>
         /// <returns>list of audit response.</returns>
-        public async Task<List<AuditResponse>> GetAuditDataAsync(GetAuditDataRequestContract request, int regionId)
+        public async Task<List<MultipleEntitiesAuditGroupResponseContract>> GetAuditDataAsync(GetAuditDataRequestContract request, int regionId)
         {
             var result = await _auditRepository.GetAuditDataAsync(request, regionId);
 
-            var response = new List<AuditResponse>();
+            var response = new List<MultipleEntitiesAuditGroupResponseContract>();
             if (result.Count > 0)
             {
                 var settings = await this._auditRepository.GetTimeZoneSettingsAsync(regionId);
@@ -247,13 +247,13 @@ namespace PrimeroEdge.SharedUtilities.Components
 
                 foreach (var item in result.AuditData)
                 {
-                    var row = new AuditResponse()
+                    var row = new MultipleEntitiesAuditGroupResponseContract()
                     {
                         CreatedDate = this.GetDistrictDateTime(item.CreatedDate, settings.Item1, settings.Item2),
-                        Field = item.Field,
-                        OldValue = item.OldValue,
-                        NewValue = item.NewValue,
+                        OldValues = JsonConvert.DeserializeObject<List<string>>(item.OldValue),
+                        NewValues = JsonConvert.DeserializeObject<List<string>>(item.NewValue),
                         Comment = item.Comment,
+                        EntityTypeId = item.EntityTypeId,
                         UserName = users.ContainsKey(item.CreatedBy) ? users[item.CreatedBy] : null,
                         AuditId = item.AuditId,
                         ParentAuditId = item.ParentAuditId,
