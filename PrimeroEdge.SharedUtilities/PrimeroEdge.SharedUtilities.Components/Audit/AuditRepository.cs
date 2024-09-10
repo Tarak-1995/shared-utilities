@@ -246,7 +246,7 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// <param name="requestContract"></param>
         /// <param name="regionId"></param>
         /// <returns></returns>
-        public async Task<AuditDataResultContact> GetAuditDataAsync(GetAuditDataRequestContract requestContract, int regionId = 34)
+        public async Task<AuditDataResultContact> GetAuditDataAsync(GetAuditDataRequestContract requestContract, int regionId)
         {
             var pageNumber = requestContract.PageNumber;
             var pageSize = requestContract.PageSize;
@@ -281,7 +281,7 @@ namespace PrimeroEdge.SharedUtilities.Components
             var result = await _couchbaseCluster.QueryAsync<Audit>(GetAuditDataMultipleEntities, parameters =>
             {
                 parameters.Parameter("regionId", regionId);
-                parameters.Parameter("moduleId", requestContract.ModuleId);
+                parameters.Parameter("moduleId", requestContract.ModuleId.Trim().ToUpper());
                 parameters.Parameter("entityPairs", entityPairs);
                 parameters.Parameter("limit", limit);
                 parameters.Parameter("offset", offset);
