@@ -115,7 +115,7 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// <param name="request"></param>
         /// <param name="regionId"></param>
         /// <returns></returns>
-        Task<List<AuditResponse>> GetAuditDataAsync(GetAuditDataRequestContract request, int regionId);
+        Task<List<MultipleEntitiesAuditGroupResponseContract>> GetAuditDataAsync(GetAuditDataRequestContract request, int regionId);
 
     }
 }
