@@ -189,21 +189,21 @@ stages:
         chartName: 'sharedutilities'  
 
     
-- stage: Secret
-  displayName: Generate secret
-  dependsOn: HelmPackage
-  jobs: 
-  - job: QAKubesecret
-    displayName: Kubernetes QA Secret
-    steps:
-    - task: Kubernetes@1
-      inputs:
-        connectionType: 'Kubernetes Service Connection'
-        kubernetesServiceEndpoint: 'Perseus-Non-prod-AKS-eastus-QA'
-        namespace: 'qa'
-        secretType: 'generic'
-        secretArguments: '--from-file=PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/appsettings.QA.json' 
-        secretName: 'sharedutilities-qa-secret-appsettings'
+# - stage: Secret
+#   displayName: Generate secret
+#   dependsOn: HelmPackage
+#   jobs: 
+#   - job: QAKubesecret
+#     displayName: Kubernetes QA Secret
+#     steps:
+#     - task: Kubernetes@1
+#       inputs:
+#         connectionType: 'Kubernetes Service Connection'
+#         kubernetesServiceEndpoint: 'Perseus-Non-prod-AKS-eastus-QA'
+#         namespace: 'qa'
+#         secretType: 'generic'
+#         secretArguments: '--from-file=PrimeroEdge.SharedUtilities/PrimeroEdge.SharedUtilities.Api/appsettings.QA.json' 
+#         secretName: 'sharedutilities-qa-secret-appsettings'
 
     - task: Kubernetes@1
       inputs:
