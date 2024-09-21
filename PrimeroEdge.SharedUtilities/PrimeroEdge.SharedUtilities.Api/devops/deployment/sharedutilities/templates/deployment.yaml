@@ -2,9 +2,6 @@ apiVersion : apps/v1
 kind: Deployment
 metadata:
   name: sharedutilities
-  labels:
-    tags.datadoghq.com/env: Production
-    tags.datadoghq.com/service: sharedutilitiesservice
 spec:
   replicas: {{ .Values.replicas }}
   selector:
@@ -14,11 +11,7 @@ spec:
     metadata:
       labels:
         app: sharedutilities
-        tags.datadoghq.com/env: Production
-        tags.datadoghq.com/service: sharedutilitiesservice
-        admission.datadoghq.com/enabled: "true"
       annotations:
-        admission.datadoghq.com/dotnet-lib.version: v2.55.0
         timestamp: "{{ date "20060102150405" .Release.Time }}"
     spec: 
       affinity:
