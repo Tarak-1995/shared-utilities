@@ -1,6 +1,4 @@
 {{- define "prod.env" }}
-          - name: DD_LOGS_INJECTION
-            value: "false"
           - name: "ASPNETCORE_ENVIRONMENT"
             value: {{ .Values.aspnetcore }}
           - name: "AppEnv"
