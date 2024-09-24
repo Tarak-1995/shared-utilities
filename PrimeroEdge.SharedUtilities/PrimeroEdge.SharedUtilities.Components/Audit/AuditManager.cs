@@ -228,6 +228,44 @@ namespace PrimeroEdge.SharedUtilities.Components
             await _azureTableService.Insert(request.ToAuditTableStorage());
         }
 
+        /// <summary>
+        /// Get Multiple entities audit data.
+        /// </summary>
+        /// <param name="GetAuditDataRequestContract request"></param>
+        /// <param name="regionId"></param>
+        /// <returns>list of audit response.</returns>
+        public async Task<List<MultipleEntitiesAuditGroupResponseContract>> GetAuditDataAsync(GetAuditDataRequestContract request, int regionId)
+        {
+            var result = await _auditRepository.GetAuditDataAsync(request, regionId);
+
+            var response = new List<MultipleEntitiesAuditGroupResponseContract>();
+            if (result.Count > 0)
+            {
+                var settings = await this._auditRepository.GetTimeZoneSettingsAsync(regionId);
+                var userIdList = result.AuditData.Select(x => x.CreatedBy).Distinct().ToList();
+                var users = await this._auditRepository.GetUsersAsync(userIdList);
+
+                foreach (var item in result.AuditData)
+                {
+                    var row = new MultipleEntitiesAuditGroupResponseContract()
+                    {
+                        CreatedDate = this.GetDistrictDateTime(item.CreatedDate, settings.Item1, settings.Item2),
+                        OldValues = JsonConvert.DeserializeObject<List<string>>(item.OldValue),
+                        NewValues = JsonConvert.DeserializeObject<List<string>>(item.NewValue),
+                        Comment = item.Comment,
+                        EntityTypeId = item.EntityTypeId,
+                        UserName = users.ContainsKey(item.CreatedBy) ? users[item.CreatedBy] : null,
+                        AuditId = item.AuditId,
+                        ParentAuditId = item.ParentAuditId,
+                    };
+                    response.Add(row);
+                }
+            }
+
+            PaginationEnvelope = new Pagination(request.PageNumber, request.PageSize, result.Count);
+            return response;
+        }
+
 
         private List<Audit> GetSummarizedAuditRequest(List<AuditRequest> data, string moduleId, string entityTypeId, string entityId, int userId, int regionId, Guid? parentAuditId = null)
         {
