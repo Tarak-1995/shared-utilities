@@ -19,6 +19,7 @@ using Cybersoft.Platform.Utilities.Exceptions;
 using Newtonsoft.Json;
 using PrimeroEdge.SharedUtilities.Components.Common;
 using System.Drawing;
+using PrimeroEdge.SharedUtilities.Components.Models;
 
 namespace PrimeroEdge.SharedUtilities.Api.Controllers
 {
@@ -202,6 +203,20 @@ namespace PrimeroEdge.SharedUtilities.Api.Controllers
             }
 
             return result;
+        }
+
+
+        /// <summary>
+        ///  Get Multiple entities audit data.
+        /// </summary>
+        /// <param name="GetAuditDataRequestContract request"></param>
+        /// <returns>list of AuditGroupResponse.</returns>
+        [HttpPost("GroupRead")]
+        public async Task<List<MultipleEntitiesAuditGroupResponseContract>> GetAuditGroupDataAsync(GetAuditDataRequestContract request)
+        {
+            var data = await _auditManager.GetAuditDataAsync(request, _authContext.RegionId);
+            HttpContext.Items[APIConstants.RESPONSE_PAGINATION] = _auditManager.GetPaginationEnvelope();
+            return data;
         }
 
         /// <summary>

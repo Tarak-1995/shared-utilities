@@ -4,6 +4,7 @@
  * Unauthorized copying of this file is strictly prohibited.
  ***********************************************************************
  */
+using PrimeroEdge.SharedUtilities.Components.Models;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -52,8 +53,8 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// <param name="updatedBy">updatedBy.</param>
         /// <param name="updatedOn">updatedOn.</param>
         /// <returns></returns>
-        Task<List<AuditResponse>> GetAuditDataSearchAsync(string moduleId, string entityTypeId, string entityId, 
-	        int pageSize, int pageNumber, int regionId, string fieldName, string updatedBy, DateTime? updatedOn);
+        Task<List<AuditResponse>> GetAuditDataSearchAsync(string moduleId, string entityTypeId, string entityId,
+            int pageSize, int pageNumber, int regionId, string fieldName, string updatedBy, DateTime? updatedOn);
 
         /// <summary>
         ///  Gets audit data based on matching field search.
@@ -96,17 +97,25 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// <returns></returns>
         Task SaveAuditDataAsync(List<AuditRequest> data, string moduleId, string entityTypeId, string entityId, int userId, int regionId);
 
-      /// <summary>
-      /// Save audit data
-      /// </summary>
-      /// <param name="data"></param>
-      /// <param name="moduleId"></param>
-      /// <param name="entityTypeId"></param>
-      /// <param name="entityId"></param>
-      /// <param name="userId"></param>
-      /// <param name="regionId"></param>
-      /// <returns></returns>
+        /// <summary>
+        /// Save audit data
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="moduleId"></param>
+        /// <param name="entityTypeId"></param>
+        /// <param name="entityId"></param>
+        /// <param name="userId"></param>
+        /// <param name="regionId"></param>
+        /// <returns></returns>
         Task SaveAuditDataAsync(List<AuditGroupRequest> data, string moduleId, string entityTypeId, string entityId, int userId, int regionId);
+
+        /// <summary>
+        /// Get Multiple entities audit data.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="regionId"></param>
+        /// <returns></returns>
+        Task<List<MultipleEntitiesAuditGroupResponseContract>> GetAuditDataAsync(GetAuditDataRequestContract request, int regionId);
 
     }
 }

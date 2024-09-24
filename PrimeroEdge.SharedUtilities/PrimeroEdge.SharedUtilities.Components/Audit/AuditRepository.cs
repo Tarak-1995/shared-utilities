@@ -15,6 +15,7 @@ using System.Dynamic;
 using System.Data;
 using System.Data.SqlClient;
 using Couchbase.Query;
+using PrimeroEdge.SharedUtilities.Components.Models;
 
 namespace PrimeroEdge.SharedUtilities.Components
 {
@@ -49,7 +50,7 @@ namespace PrimeroEdge.SharedUtilities.Components
         private const string GetAuditCountData = @"SELECT COUNT(*) AS Count FROM Audit V
                                                  WHERE V.type ='Audit' AND  V.regionId = {0} AND V.moduleId = '{1}' AND  V.entityTypeId = '{2}' AND   V.entityId = '{3}'";
 
-		private const string GetAuditSearchCountQuery = @"SELECT COUNT(*) AS Count FROM Audit V
+        private const string GetAuditSearchCountQuery = @"SELECT COUNT(*) AS Count FROM Audit V
 														 WHERE V.type = $type AND V.regionId = $regionId AND V.moduleId = $moduleId 
 														 AND V.entityTypeId = $entityTypeId AND V.entityId = $entityId
 														 AND (IS_NULL($field) OR CONTAINS (UPPER(V.field), $field)) 
@@ -62,6 +63,27 @@ namespace PrimeroEdge.SharedUtilities.Components
 														AND ((IS_NULL($fromDate) AND IS_NULL($toDate)) OR V.createdDate BETWEEN $fromDate AND $toDate)
 														ORDER BY V.createdDate DESC
 			                                            OFFSET $offset LIMIT $limit";
+
+        private const string GetAuditDataMultipleEntities = @"
+                                                
+                                                            SELECT V.*
+                                                            FROM Audit V
+                                                            WHERE V.type = 'Audit'
+                                                              AND V.regionId = $regionId
+                                                              AND V.moduleId = $moduleId
+                                                              AND ANY pair IN $entityPairs SATISFIES V.entityTypeId = pair[0] AND V.entityId = pair[1] END
+                                                            ORDER BY V.createdDate DESC
+                                                            LIMIT $limit OFFSET $offset";
+
+        private const string GetAuditDataCountMultipleEntities = @"
+                                                
+                                                            SELECT Count(*) AS Count
+                                                            FROM Audit V
+                                                            WHERE V.type = 'Audit'
+                                                              AND V.regionId = $regionId
+                                                              AND V.moduleId = $moduleId
+                                                              AND ANY pair IN $entityPairs SATISFIES V.entityTypeId = pair[0] AND V.entityId = pair[1] END
+                                                            LIMIT $limit OFFSET $offset";
 
         /// <summary>
         /// AuditRepository
@@ -88,7 +110,7 @@ namespace PrimeroEdge.SharedUtilities.Components
             }
         }
 
-        
+
 
         /// <summary>
         /// Get audit data
@@ -146,35 +168,35 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// <param name="fromDate"></param>
         /// <param name="toDate"></param>
         /// <returns></returns>
-        public async Task<Tuple<List<Audit>, int>> GetAuditSearchDataAsync(string moduleId, string entityTypeId, string entityId, int pageSize, 
+        public async Task<Tuple<List<Audit>, int>> GetAuditSearchDataAsync(string moduleId, string entityTypeId, string entityId, int pageSize,
             int pageNumber, int regionId, string fieldName, string fromDate, string toDate)
         {
-	        if (pageNumber <= 0)
-		        pageNumber = 1;
+            if (pageNumber <= 0)
+                pageNumber = 1;
 
-	        if (pageSize <= 0)
-		        pageSize = 20;
+            if (pageSize <= 0)
+                pageSize = 20;
 
-	        var offset = (pageNumber - 1) * pageSize;
-	        var limit = pageSize;
+            var offset = (pageNumber - 1) * pageSize;
+            var limit = pageSize;
 
-	        var count = 0;
-	        var pageData = new List<Audit>();
+            var count = 0;
+            var pageData = new List<Audit>();
 
             var auditSearchCountData = await GetAuditSearchCountData(moduleId.Trim().ToUpper(), entityTypeId.Trim().ToUpper(), entityId.Trim().ToUpper(), regionId, fieldName?.Trim().ToUpper(), fromDate, toDate);
 
-			await foreach (dynamic item in auditSearchCountData)
-	        {
-		        count = Convert.ToInt32(item.Count);
-	        }
+            await foreach (dynamic item in auditSearchCountData)
+            {
+                count = Convert.ToInt32(item.Count);
+            }
 
-	        if (count != 0)
-	        {
+            if (count != 0)
+            {
                 var auditSearchPageData = await GetAuditSearchPageResult(moduleId.Trim().ToUpper(), entityTypeId.Trim().ToUpper(), entityId.Trim().ToUpper(), regionId, fieldName?.Trim().ToUpper(), fromDate, toDate, offset, limit);
                 pageData = await auditSearchPageData.ToListAsync();
             }
 
-	        return Tuple.Create(pageData, count);
+            return Tuple.Create(pageData, count);
         }
 
         /// <summary>
@@ -216,6 +238,62 @@ namespace PrimeroEdge.SharedUtilities.Components
             var timeZone = result[TimeZoneCode];
             var isDayLight = result[DayLightCode];
             return Tuple.Create(timeZone, isDayLight == "1");
+        }
+
+        /// <summary>
+        /// Get Multiple entities audit data.
+        /// </summary>
+        /// <param name="requestContract"></param>
+        /// <param name="regionId"></param>
+        /// <returns></returns>
+        public async Task<AuditDataResultContact> GetAuditDataAsync(GetAuditDataRequestContract requestContract, int regionId)
+        {
+            var pageNumber = requestContract.PageNumber;
+            var pageSize = requestContract.PageSize;
+
+            if (pageNumber <= 0)
+                pageNumber = 1;
+
+            if (pageSize <= 0)
+                pageSize = 20;
+
+            var count = 0;
+
+            var offset = (pageNumber - 1) * pageSize;
+            var limit = pageSize;
+
+            var entityPairs = requestContract.Entities.Select(pair => new object[] { pair.EntityTypeId.Trim().ToUpper(), pair.EntityId.Trim().ToUpper() }).ToList();
+
+            var totalCountResult = await _couchbaseCluster.QueryAsync<ExpandoObject>(GetAuditDataCountMultipleEntities, parameters =>
+            {
+                parameters.Parameter("regionId", regionId);
+                parameters.Parameter("moduleId", requestContract.ModuleId.Trim().ToUpper());
+                parameters.Parameter("entityPairs", entityPairs);
+                parameters.Parameter("limit", limit);
+                parameters.Parameter("offset", offset);
+            });
+
+            await foreach (dynamic item in totalCountResult)
+            {
+                count = Convert.ToInt32(item.Count);
+            }
+
+            var result = await _couchbaseCluster.QueryAsync<Audit>(GetAuditDataMultipleEntities, parameters =>
+            {
+                parameters.Parameter("regionId", regionId);
+                parameters.Parameter("moduleId", requestContract.ModuleId.Trim().ToUpper());
+                parameters.Parameter("entityPairs", entityPairs);
+                parameters.Parameter("limit", limit);
+                parameters.Parameter("offset", offset);
+            });
+
+            // Return both the records and the total count
+            return new AuditDataResultContact
+            {
+                AuditData = await result.Rows.ToListAsync(),
+                Count = count
+            };
+
         }
 
         private async Task<IQueryResult<ExpandoObject>> GetAuditSearchCountData(string moduleId, string entityTypeId, string entityId, int regionId, string fieldName, string fromDate, string toDate)
