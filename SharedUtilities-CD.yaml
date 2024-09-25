@@ -147,6 +147,7 @@ stages:
             
           - task: HelmDeploy@0
             displayName: Deploy Helm Chart to AKS
+            timeoutInMinutes: 10
             inputs:
               connectionType: 'Azure Resource Manager'
               azureSubscription: '$(aksAzureSubscription)'
