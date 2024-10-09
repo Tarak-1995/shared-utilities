@@ -27,6 +27,8 @@ variables:
     value: "$(registryName).azurecr.io"
   - name: applicationName
     value: "$(application)-$(environment)"
+  - name: deployApplicationName
+    value: "$(application)-$(imagesourceenv)"
   - name: HELM_EXPERIMENTAL_OCI
     value: 1
   - name: helmValuesFile
@@ -106,7 +108,7 @@ stages:
               script: |
                 docker_version=$(cat $(Pipeline.Workspace)/dockerImageVersion.txt)
                 helm_version=$(cat $(Pipeline.Workspace)/helmChartVersion.txt)
-                echo "##vso[task.setvariable variable=imageName;]$(registryServerName)/$(applicationName):$docker_version"
+                echo "##vso[task.setvariable variable=imageName;]$(registryServerName)/$(deployApplicationName):$docker_version"
                 echo "##vso[task.setvariable variable=helmChartVersion;]$helm_version"
             condition: and(succeeded(), in(variables['environment'], 'dev',  'qa', 'uat', 'usdaqa'))
 
@@ -114,9 +116,9 @@ stages:
             inputs:
               targetType: 'inline'
               script: |
-                echo "##vso[task.setvariable variable=imageName;]$(registryServerName)/$(applicationName):${{ parameters.buildId }}"
+                echo "##vso[task.setvariable variable=imageName;]$(registryServerName)/$(deployApplicationName):${{ parameters.buildId }}"
                 echo "##vso[task.setvariable variable=helmChartVersion;]${{ parameters.buildId }}"
-            condition: and(succeeded(), in(variables['environment'], 'stg', 'demo', 'sales', 'training', 'migration', 'prod', 'preview'))
+            condition: and(succeeded(), in(variables['environment'], 'stg', 'demo', 'dm', 'sales', 'training', 'migration', 'prod', 'preview'))
 
           - bash: |
               echo $(imageName)
@@ -130,8 +132,8 @@ stages:
 
           - bash: |
               echo $(registryPassword) | helm registry login $(registryServerName) --username $(registryLogin) --password-stdin
-              helm chart pull $(registryServerName)/charts/$(applicationName):$(helmChartVersion)
-              helm chart export $(registryServerName)/charts/$(applicationName):$(helmChartVersion) --destination $(pipeline.workspace)/install
+              helm chart pull $(registryServerName)/charts/$(deployApplicationName):$(helmChartVersion)
+              helm chart export $(registryServerName)/charts/$(deployApplicationName):$(helmChartVersion) --destination $(pipeline.workspace)/install
             failOnStderr: false
             displayName: "pull helm chart"
             
