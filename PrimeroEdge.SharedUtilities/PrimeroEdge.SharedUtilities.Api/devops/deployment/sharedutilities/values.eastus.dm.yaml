@@ -1,0 +1,18 @@
+host: dmsharedutilitiesservice.perseusedge.com
+namespace: dm
+secretname: sharedutilities-dm-secret-appsettings
+secretProviderClass: aks-secret-nf-dm
+secretSPName: perseus-secret-sp-dm
+aspnetcore: dm
+#sharedutilitiesrepo: PerseusNonProdACR.azurecr.io/sharedutilities_qa:latest
+replicas: 1
+sslcert: perseusedgesslcert
+limitcpu: 500m
+limitmemory: 800Mi
+requestscpu: 300m
+requestsmemory: 500Mi
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 70

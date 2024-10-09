@@ -56,6 +56,8 @@ spec:
           {{- template "training.env" . }}
           {{- else if eq .Values.namespace "migration" }}
           {{- template "migration.env" . }}
+          {{- else if eq .Values.namespace "dm" }}
+          {{- template "dm.env" . }}
           {{- else if eq .Values.namespace "staging" }}
           {{- template "stage.env" . }}
           {{- else if eq .Values.namespace "sales" }}
