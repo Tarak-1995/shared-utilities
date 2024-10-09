@@ -12,11 +12,11 @@ using Cybersoft.Platform.Authorization.HeaderUtilities.Extensions;
 using Cybersoft.Platform.Authorization.HeaderUtilities.Factories;
 using Cybersoft.Platform.Cache.CacheObjects;
 using Cybersoft.Platform.Cache.CacheObjects.Contracts;
-using Cybersoft.Platform.Cache.Config;
 using Cybersoft.Platform.Cache.Extensions;
 using Cybersoft.Platform.Couchbase.Client;
 using Cybersoft.Platform.Couchbase.Extensions;
-using Cybersoft.Platform.Couchbase.Settings;
+using Cybersoft.Platform.AppSettings.Services;
+using Cybersoft.Platform.AppSettings.Azure;
 using Cybersoft.Platform.DocumentStorage.AzureTable;
 using Cybersoft.Platform.DocumentStorage.Settings;
 using Cybersoft.Platform.Utilities.Factories;
@@ -69,6 +69,15 @@ namespace PrimeroEdge.SharedUtilities.Api
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 //c.IncludeXmlComments(xmlPath);
             });
+
+            if (Program.IsOpenApi)
+            {
+                //
+                // Swashbuckle CLI bootstrapper will return here without loading all connfigurations
+                //
+                return;
+            }
+
             var bypassAuthSettings = Options.Create(Configuration.GetSection("BypassAuthenticationSettings").Get<BypassAuthenticationSettings>());
             services.AddSessionFactory(bypassAuthSettings.Value);
 

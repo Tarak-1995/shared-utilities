@@ -1,4 +1,5 @@
-﻿using Microsoft.WindowsAzure.Storage.Table;
+﻿using Azure;
+using Microsoft.WindowsAzure.Storage.Table;
 using System;
 
 
@@ -7,7 +8,7 @@ namespace PrimeroEdge.SharedUtilities.Components.Models
     public class AuditLogEntity : TableEntity
     {
         public AuditLogEntity()
-        {            
+        {
         }
         /// <summary>
         /// Gets or sets verificationSampleId
@@ -55,6 +56,5 @@ namespace PrimeroEdge.SharedUtilities.Components.Models
         public string Comment { get; set; }
 
         public Guid? ParentAuditId { get; set; }
-       
     }
 }

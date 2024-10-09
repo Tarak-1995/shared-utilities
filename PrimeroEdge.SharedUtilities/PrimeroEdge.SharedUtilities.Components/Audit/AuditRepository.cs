@@ -63,8 +63,6 @@ namespace PrimeroEdge.SharedUtilities.Components
 														AND ((IS_NULL($fromDate) AND IS_NULL($toDate)) OR V.createdDate BETWEEN $fromDate AND $toDate)
 														ORDER BY V.createdDate DESC
 			                                            OFFSET $offset LIMIT $limit";
-
-        private const string GetAuditDataMultipleEntities = @"
                                                 
                                                             SELECT V.*
                                                             FROM Audit V
