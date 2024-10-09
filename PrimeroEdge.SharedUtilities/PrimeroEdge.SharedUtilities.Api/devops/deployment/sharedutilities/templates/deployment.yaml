@@ -10,10 +10,19 @@ spec:
   template:
     metadata:
       labels:
-        app: sharedutilities 
+        app: sharedutilities
       annotations:
         timestamp: "{{ date "20060102150405" .Release.Time }}"
     spec: 
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: pooltype
+                operator: In
+                values:
+                - linux
       securityContext:
           runAsNonRoot: true
           runAsUser: 1001

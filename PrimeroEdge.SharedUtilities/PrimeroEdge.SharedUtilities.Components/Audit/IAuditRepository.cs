@@ -42,7 +42,7 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// <param name="toDate">toDate.</param>
         /// <returns></returns>
         Task<Tuple<List<Audit>, int>> GetAuditSearchDataAsync(string moduleId, string entityTypeId, string entityId,
-	        int pageSize, int pageNumber, int regionId, string fieldName, string fromDate, string toDate);
+            int pageSize, int pageNumber, int regionId, string fieldName, string fromDate, string toDate);
 
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace PrimeroEdge.SharedUtilities.Components
         /// <param name="data"></param>
         /// <returns></returns>
         Task SaveAuditDataAsync(List<Audit> data);
-        
+
 
         /// <summary>
         /// GetUsersAsync
